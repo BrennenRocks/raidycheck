@@ -19,6 +19,7 @@ router.get('/auth/bnet', (req, res, next) => {
     if (!user) {
       return res.redirect('/')
     }
+    
     res.redirect('/');
   })(req, res, next);
 });

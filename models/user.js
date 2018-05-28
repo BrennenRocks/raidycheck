@@ -37,7 +37,7 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.generateJwt = function () {
-  return jwt.sign({ id: this._id }, config.secret, { expiresIn: '30d' });
+  return jwt.sign({ id: this._id, bnet: { id: this.bnet.id, battletag: this.bnet.battletag, region: this.bnet.region } }, config.secret, { expiresIn: '30d' });
 }
 
 module.exports = mongoose.model('User', userSchema);

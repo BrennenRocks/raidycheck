@@ -19,7 +19,8 @@ mongoose.connect(config.uri, (err) => {
 });
 
 // Require Paths
-const auth = require('./routes/auth');
+const auth = require('./routes/auth'),
+  groups = require('./routes/groups');
 require('./config/passport');
 
 app.use(cors({ origin: '*' }));
@@ -37,6 +38,7 @@ app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
 
 app.use('/api', auth);
+app.use('/api', groups);
 
 //Entrance to the website
 // app.get('*', (req, res) => {
