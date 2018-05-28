@@ -1,0 +1,29 @@
+{
+  "name": "raidycheck",
+  "version": "1.0.0",
+  "description": "An advanced Ready Check for your group",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://brennenrocks@bitbucket.org/brennenrocks/raidycheck.git"
+  },
+  "author": "Brennen Davis",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/brennenrocks/raidycheck#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "jsonwebtoken": "^8.2.1",
+    "lodash": "^4.17.10",
+    "mongoose": "^5.1.2",
+    "passport": "^0.4.0",
+    "passport-bnet": "^1.2.2",
+    "path": "^0.12.7"
+  }
+}
