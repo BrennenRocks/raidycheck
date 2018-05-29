@@ -29,6 +29,7 @@ router.get('/auth/bnet', (req, res, next) => {
 ==============================*/
 router.get('/auth/bnet/callback', (req, res, next) => {
   passport.authenticate('bnet-' + req.query.region, { failureRedirect: process.env.DEVDOMAIN }, (err, user, info) => {
+    console.log(user.jwt);
     res.set('Authorization', 'Bearer ' + user.jwt);
     res.redirect(process.env.DOMAIN + '/groups?new=' + user.isNewUser);
   })(req, res, next);

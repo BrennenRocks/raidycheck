@@ -58,7 +58,7 @@ passport.use('bnet-us', new BnetStrategy({
             return done(err);
           }
 
-          savedUser.jwt = savedUser.generateJwt;
+          savedUser.jwt = savedUser.generateJwt();
           savedUser.isNewUser = true;
           return done(null, savedUser);
         });

@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/database');
 
-const User = require('../models/user');
+const User = require('../models/user'),
+  Group = require('../models/group');
 
 let middlewareObj = {};
 
