@@ -69,6 +69,7 @@ router.get('/groups/:id', middleware.getAuthToken, middleware.checkGroupOwnershi
   });
 });
 
+// TODO: Move to characters.js route file
 /*==============================================================
    Add Characters from either DB or BlizzardAPI to your Group
 ================================================================*/

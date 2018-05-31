@@ -15,6 +15,7 @@ const userSchema = new Schema({
       {
         name: { type: String, required: true },
         realm: { type: String, required: true },
+        thumbnail: { type: String },
       }
     ]
   },
