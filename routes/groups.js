@@ -130,6 +130,7 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
               return res.json({ success: false, message: 'Error saving group to database: ', err });
             }
 
+            // Find the group again to populate the characters before sending back to Front End
             Group.findById(group._id).populate('characters').exec((err, retGroup) => {
               if (err) {
                 return res.json({ success: false, message: 'Error: ', err });

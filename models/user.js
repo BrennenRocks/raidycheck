@@ -10,11 +10,12 @@ const userSchema = new Schema({
   bnet: {
     id: { type: Number, required: true },
     battletag: { type: String, required: true },
-    region: { type: String, required: true },
+    regions: [String],
     personalCharacters: [
       {
         name: { type: String, required: true },
         realm: { type: String, required: true },
+        region: { type: String, required: true },
         thumbnail: { type: String },
       }
     ]

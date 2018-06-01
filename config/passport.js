@@ -1,9 +1,12 @@
 const passport = require('passport'),
   BnetStrategy = require('passport-bnet').Strategy,
   mongoose = require('mongoose'),
-  axios = require('axios');
+  axios = require('axios'),
+  _ = require('lodash');
 
 const User = require('../models/user');
+
+const Util = require('../config/util');
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -36,50 +39,63 @@ passport.use('bnet-eu', new BnetStrategy({
 ));
 
 function passportCallback(req, accessToken, refreshToken, profile, done) {
-  User.findOne({ 'bnet.id': profile.id, 'bnet.region': req.query.region }, (err, user) => {
+  User.findOne({ 'bnet.id': profile.id }, (err, user) => {
     if (err) {
       return done(err);
     }
 
-    if (user) {
+    if (user && _.includes(user.bnet.regions, req.query.region)) {
       user.jwt = user.generateJwt();
       user.isNewUser = false;
+      user.newChars = false;
       return done(null, user);
-    }
-
-    axios({
-      method: 'get',
-      url: 'https://' + req.query.region + '.api.battle.net/wow/user/characters',
-      headers: { 'Authorization': 'Bearer ' + accessToken }
-    })
-      .then(response => {
-        const personalCharacters = [];
-        if (response.data.characters) {
-          response.data.characters.map((character) => {
-            personalCharacters.push({ name: character.name, realm: character.realm, thumbnail: character.thumbnail });
-          });
-        }
-
-        new User({
-          bnet: {
-            id: profile.id,
-            battletag: profile.battletag,
-            region: req.query.region,
-            personalCharacters: personalCharacters,
-          }
-        }).save((err, savedUser) => {
-          if (err) {
-            return done(err);
-          }
-
-          savedUser.jwt = savedUser.generateJwt();
-          savedUser.isNewUser = true;
-          return done(null, savedUser);
-        });
+    } else {
+      axios({
+        method: 'get',
+        url: 'https://' + req.query.region + '.api.battle.net/wow/user/characters',
+        headers: { 'Authorization': 'Bearer ' + accessToken }
       })
-      .catch(error => {
-        console.log(error);
-        return done('Error with Axios get User characters');
-      });
-  });
-}
+        .then(response => {
+          const personalChars = [];
+          if (response.data.characters.length > 0) {
+            response.data.characters.map((character) => {
+              personalChars.push({ name: character.name, realm: character.realm, region: req.query.region, thumbnail: character.thumbnail });
+            });
+          }
+          
+          let savingUser = {};
+          if (user) {
+            savingUser = user;
+            savingUser.bnet.regions.push(req.query.region);
+            savingUser.personalCharacters = _.concat(personalChars);
+          } else {
+            const regions = [];
+            regions.push(req.query.region);
+            savingUser = new User({
+              bnet: {
+                id: profile.id,
+                battletag: profile.battletag,
+                regions: regions,
+                personalCharacters: personalChars,
+              }
+            });
+          }
+
+          savingUser.save((err, savedUser) => {
+            if (err) {
+              return done(err);
+            }
+  
+            savedUser.jwt = savedUser.generateJwt();
+            savedUser.isNewUser = false;
+            savedUser.newChars = true;
+            return done(null, savedUser);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          return done('Error with Axios get User characters');
+        });
+      }
+    });
+  }
