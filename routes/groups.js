@@ -27,10 +27,10 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
       return res.json({ success: false, message: 'User not found' });
     }
 
-    let newGroup = new Group({
+    new Group({
       title: req.body.title,
       owner: req.decodedUser.bnet.battletag,
-      public: req.body.public
+      isPublic: req.body.isPublic
     }).save((err, group) => {
       if (err) {
         if (err.errors.title) {
@@ -55,7 +55,7 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
 /*=====================
    Get a single group 
 =======================*/
-router.get('/groups/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
+router.get('/groups/:id', (req, res) => {
   Group.findOne({ _id: req.params.id }).populate('characters').exec((err, group) => {
     if (err) {
       return res.json({ success: false, message: 'Error: ', err });
@@ -66,6 +66,65 @@ router.get('/groups/:id', middleware.getAuthToken, middleware.checkGroupOwnershi
     }
 
     return res.json({ success: true, message: '', group: group });
+  });
+});
+
+/*===========================================
+   Get all groups with characters populated
+=============================================*/
+router.get('/groups', middleware.getAuthToken, (req, res) => {
+  User.findOne({ _id: req.decodedUser.id }).populate({ path: 'groups.favorites groups.personal', populate: { path: 'characters' } })
+    .exec((err, user) => {
+      if (err) {
+        console.log(err);
+        return res.json({ success: false, message: 'Error: ', err });
+      }
+      
+      if (!user) {
+        return res.json({ success: false, message: 'User not found' });
+      }
+      
+      return res.json({ success: true, groups: user.groups });
+    });
+});
+
+/*=======================
+   Update a single group 
+=========================*/
+router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
+  if (!req.body.title) {
+    return res.json({ success: false, message: 'No title provided' });
+  }
+
+  if (!req.body.isPublic) {
+    return res.json({ success: false, message: 'No public or private field provided' });
+  }
+
+  if (!req.body.allowOthersToUpdateCharacters) {
+    return res.json({ success: false, message: 'No option to allow others to update characters provided' });
+  }
+
+  Group.findOne({ _id: req.params.id }, (err, group) => {
+    if (err) {
+      console.log(err);
+      return res.json({ success: false, message: 'There was a problem, please try again later' });
+    }
+
+    if (!group) {
+      return res.json({ success: false, message: 'Group not found' });
+    }
+
+    group.title = req.body.title;
+    group.isPublic = req.body.isPublic;
+    group.allowOthersToUpdateCharacters = req.body.allowOthersToUpdateCharacters;
+
+    group.save((err, savedGroup) => {
+      if (err) {
+        return res.json({ success: false, message: 'There was a problem, please try again later' });
+      }
+
+      return res.json({ success: true, message: '', group: savedGroup });
+    });
   });
 });
 
@@ -100,7 +159,8 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
 
   Group.findOne({ _id: req.params.id }, (err, group) => {
     if (err) {
-      return res.json({ success: false, message: 'Error: ', err });
+      console.log(err);
+      return res.json({ success: false, message: 'There was a problem, please try again later' });
     }
     
     if (!group) {

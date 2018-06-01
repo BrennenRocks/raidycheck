@@ -27,7 +27,8 @@ const groupSchema = new Schema({
   owner: { type: String, required: true },
   favoritesCount: { type: Number, default: 0 },
   favoritedBy: { type: Array },
-  public: { type: Boolean, default: true },
+  isPublic: { type: Boolean, default: true },
+  allowOthersToUpdateCharacters: { type: Boolean, default: false },
   characters: [
     {
       type: mongoose.Schema.Types.ObjectId,
