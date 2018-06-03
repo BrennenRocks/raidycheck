@@ -13,7 +13,13 @@ const constants = require('../config/constants'),
   middleware = require('../middleware');
 
 /*=======================
-   Register a new group 
+   Register a new group
+
+   req.body {
+     *title: String,
+     isPublic: boolean,
+     allowOthersToUpdateCharacters: boolean
+   }
 =========================*/
 router.post('/groups/new', middleware.getAuthToken, (req, res) => {
   if (!req.body.title) {
@@ -59,7 +65,11 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
 });
 
 /*=====================
-   Get a single group 
+   Get a single group
+
+   req.params {
+     id - the Group ID
+   }
 =======================*/
 router.get('/groups/:id', (req, res) => {
   Group.findOne({ _id: req.params.id }).populate('characters').exec((err, group) => {
@@ -96,7 +106,17 @@ router.get('/groups', middleware.getAuthToken, (req, res) => {
 });
 
 /*=======================
-   Update a single group 
+   Update a single group
+
+   req.params {
+     id - the Group ID
+   }
+
+   req.body {
+     *title: String,
+     *isPublic: boolean,
+     *allowOthersToUpdateCharacters: boolean
+   }
 =========================*/
 router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
   if (!req.body.title) {
@@ -141,10 +161,14 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
 });
 
 /*=======================
-   Delete a single group 
+   Delete a single group
+
+   req.params {
+     id - the Group ID
+   }
 =========================*/
 router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
-  Groups.findOne({ _id: req.params.id }, (err, group) => {
+  Group.findOne({ _id: req.params.id }, (err, group) => {
     if (err) {
       console.log('/groups/delete/:id finding group', err);
       return res.json({ success: false, message: constants.errMsg });
@@ -160,7 +184,7 @@ router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGro
         return res.json({ success: false, message: constants.errMsg });
       }
 
-      return res.json({ success: true, message: '' });
+      return res.json({ success: true, message: 'Group successfully deleted' });
     });
   });
 });
@@ -169,6 +193,20 @@ router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGro
 // TODO: Move to characters.js route file
 /*==============================================================
    Add Characters from either DB or BlizzardAPI to your Group
+
+   req.params {
+     id - the Group ID
+   }
+
+   req.body {
+     *region: String,
+     *characters: [
+       {
+         *name: String,
+         *realm: String
+       }
+     ]
+   }
 ================================================================*/
 router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
   if (!req.body) {

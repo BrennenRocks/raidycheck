@@ -11,6 +11,11 @@ const middleware = require('../middleware'),
 
 /*============================================
    Get public user (used for public profile)
+
+   req.params {
+      battletag - user's Battle.net battletag
+        (Passed in with - instead of # Ex: uglyer-1378)
+   }
 ==============================================*/
 router.get('/users/:battletag', (req, res) => {
   User.findOne({ "bnet.battletag":  _.replace(_.toLower(req.params.battletag), '-', '#') }).populate('groups').exec((err, user) => {

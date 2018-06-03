@@ -15,7 +15,7 @@ middlewareObj.getAuthToken = (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      console.log('verifing jwt', err);
+      console.log('verifying jwt', err);
       return res.json({ success: false, message: 'Please log out and log back in' });
     }
 
