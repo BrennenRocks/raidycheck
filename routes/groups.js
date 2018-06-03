@@ -1,14 +1,16 @@
 const express = require('express'),
   mongoose = require('mongoose'),
-  middleware = require('../middleware'),
   axios = require('axios'),
   _ = require('lodash');
-
+  
 router = express.Router();
-
+  
 const User = require('../models/user'),
   Group = require('../models/group'),
   Character = require('../models/character');
+  
+const constants = require('../config/constants'),
+  middleware = require('../middleware');
 
 /*=======================
    Register a new group 
@@ -20,7 +22,8 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
   //Find out who is logged in so we can link the group to them
   User.findOne({ _id: req.decodedUser.id }, 'groups', (err, user) => {
     if (err) {
-      return res.json({ success: false, message: err });
+      console.log('/groups/new finding user', err);
+      return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!user) {
@@ -37,14 +40,16 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
         if (err.errors.title) {
           return res.json({ success: false, message: err.errors.title.message });
         }
-
-        return res.json({ success: false, message: 'Error: ', err });
+        
+        console.log('/groups/new saving group', err);
+        return res.json({ success: false, message: constants.errMsg });
       }
       //Attach the new group to the logged in user
       user.groups.personal.push(group._id);
       user.save((err) => {
         if (err) {
-          return res.json({ success: false, message: 'Error: ', err });
+          console.log('groups/new saving user', err);
+          return res.json({ success: false, message: constants.errMsg });
         }
 
         return res.json({ success: true, message: '', group: group });
@@ -59,7 +64,8 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
 router.get('/groups/:id', (req, res) => {
   Group.findOne({ _id: req.params.id }).populate('characters').exec((err, group) => {
     if (err) {
-      return res.json({ success: false, message: 'Error: ', err });
+      console.log('/groups/:id finding group', err)
+      return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!group) {
@@ -77,8 +83,8 @@ router.get('/groups', middleware.getAuthToken, (req, res) => {
   User.findOne({ _id: req.decodedUser.id }).populate({ path: 'groups.favorites groups.personal', populate: { path: 'characters' } })
     .exec((err, user) => {
       if (err) {
-        console.log(err);
-        return res.json({ success: false, message: 'Error: ', err });
+        console.log('/groups finding User', err);
+        return res.json({ success: false, message: constants.errMsg });
       }
       
       if (!user) {
@@ -107,8 +113,8 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
 
   Group.findOne({ _id: req.params.id }, (err, group) => {
     if (err) {
-      console.log(err);
-      return res.json({ success: false, message: 'There was a problem, please try again later' });
+      console.log('/groups/update/:id finding group', err);
+      return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!group) {
@@ -121,17 +127,44 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
 
     group.save((err, savedGroup) => {
       if (err) {
-        console.log(err); 
         if (err.errors.title) {
           return res.json({ success: false, message: err.errors.title.message });
         }
-        return res.json({ success: false, message: 'There was a problem, please try again later' });
+
+        console.log('/groups/update/:id saving group', err); 
+        return res.json({ success: false, message: constants.errMsg });
       }
 
       return res.json({ success: true, message: '', group: savedGroup });
     });
   });
 });
+
+/*=======================
+   Delete a single group 
+=========================*/
+router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
+  Groups.findOne({ _id: req.params.id }, (err, group) => {
+    if (err) {
+      console.log('/groups/delete/:id finding group', err);
+      return res.json({ success: false, message: constants.errMsg });
+    }
+
+    if (!group) {
+      return res.json({ success: false, message: 'Group not found' });
+    }
+
+    group.remove(err => {
+      if (err) {
+        console.log('/groups/delete/:id removing group', err);
+        return res.json({ success: false, message: constants.errMsg });
+      }
+
+      return res.json({ success: true, message: '' });
+    });
+  });
+});
+
 
 // TODO: Move to characters.js route file
 /*==============================================================
@@ -164,8 +197,8 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
 
   Group.findOne({ _id: req.params.id }, (err, group) => {
     if (err) {
-      console.log(err);
-      return res.json({ success: false, message: 'There was a problem, please try again later' });
+      console.log('/groups/:id/addCharacters finding group', err);
+      return res.json({ success: false, message: constants.errMsg });
     }
     
     if (!group) {
@@ -175,7 +208,8 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
     // Group found, find Characters
     Character.find({ cid: { $in: chars } }, (err, characters) => {
       if (err) {
-        return res.json({ success: false, message: 'Error: ', err });
+        console.log('/gruops/:id/addCharacters finding characters', err);
+        return res.json({ success: false, message: constants.errMsg });
       }
 
       if (characters) {
@@ -192,13 +226,15 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
         if (characters.length == chars.length) {
           group.save((err) => {
             if (err) {
-              return res.json({ success: false, message: 'Error saving group to database: ', err });
+              console.log('/groups/:id/addCharacters saving group', err);
+              return res.json({ success: false, message: constants.errMsg });
             }
 
             // Find the group again to populate the characters before sending back to Front End
             Group.findById(group._id).populate('characters').exec((err, retGroup) => {
               if (err) {
-                return res.json({ success: false, message: 'Error: ', err });
+                console.log('/groups/:id/addCharacters finding group', err);
+                return res.json({ success: false, message: constants.errMsg });
               }
 
               return res.json({ success: true, message: '', group: retGroup });
@@ -270,7 +306,8 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
 
           Character.create(newChars, (err, newCharacters) => {
             if (err) {
-              return res.json({ success: false, message: 'Error saving characters to database: ', err });
+              console.log('/groups/:id/addCharacters creating characters', err)
+              return res.json({ success: false, message: constants.errMsg });
             }
 
             newCharacters.map(char => {
@@ -279,13 +316,15 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
 
             group.save((err) => {
               if (err) {
-                return res.json({ success: false, message: 'Error saving group to database: ', err });
+                console.log('/groups/:id/addCharacters saving group', err)
+                return res.json({ success: false, message: constants.errMsg });
               }
 
               // Find the group again to populate the characters before sending back to Front End
               Group.findById(group._id).populate('characters').exec((err, retGroup) => {
                 if (err) {
-                  return res.json({ success: false, message: 'Error: ', err });
+                  console.log('/groups/:id/addCharacters finding group', err);
+                  return res.json({ success: false, message: constants.errMsg });
                 }
 
                 return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
@@ -294,7 +333,8 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
           });
         })
         .catch(error => {
-          return res.json({ success: false, message: 'Error: ', error });
+          console.log('Error with Axios get User characters', error);
+          return res.json({ success: false, message: constants.errMsg });
         });
     });
   });

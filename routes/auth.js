@@ -2,8 +2,9 @@ const express = require('express'),
   passport = require('passport');
 
 const router = express.Router()
-const config = require('../config/database');
-const middleware = require('../middleware');
+const config = require('../config/database'),
+  middleware = require('../middleware'),
+  constants = require('../config/constants');
 
 const User = require('../models/user');
 
@@ -13,7 +14,8 @@ const User = require('../models/user');
 router.get('/auth/bnet', (req, res, next) => {
   passport.authenticate('bnet-' + req.query.region, (err, user, info) => {
     if (err) {
-      return next(err)
+      console.log('/auth/bnet', err);
+      return next(constants.errMsg)
     }
   })(req, res, next);
 });
@@ -24,7 +26,8 @@ router.get('/auth/bnet', (req, res, next) => {
 router.get('/auth/bnet/callback', (req, res, next) => {
   passport.authenticate('bnet-' + req.query.region, { failureRedirect: process.env.DEVDOMAIN }, (err, user, info) => {
     if (err) {
-      return next(err);
+      console.log('/auth/bnet/callback', err);
+      return next(constants.errMsg);
     }
 
     console.log(user.jwt);

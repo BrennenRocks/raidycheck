@@ -6,6 +6,8 @@ const passport = require('passport'),
 
 const User = require('../models/user');
 
+const constants = require('./constants');
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -91,8 +93,8 @@ function passportCallback(req, accessToken, refreshToken, profile, done) {
           });
         })
         .catch(error => {
-          console.log(error);
-          return done('Error with Axios get User characters');
+          console.log('error with axios in passport.js', error);
+          return done(constants.errMsg);
         });
       }
     });

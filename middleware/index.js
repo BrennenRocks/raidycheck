@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const config = require('../config/database');
+const config = require('../config/database'),
+  constants = require('../config/constants');
 
 const User = require('../models/user'),
   Group = require('../models/group');
@@ -14,6 +15,7 @@ middlewareObj.getAuthToken = (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
+      console.log('verifing jwt', err);
       return res.json({ success: false, message: 'Please log out and log back in' });
     }
 
@@ -25,7 +27,8 @@ middlewareObj.getAuthToken = (req, res, next) => {
 middlewareObj.checkGroupOwnership = (req, res, next) => {
   User.findOne({ _id: req.decodedUser.id }, 'bnet', (err, user) => {
     if (err) {
-      return res.json({ success: false, message: err });
+      console.log('checkGroupOwnership finding user', err);
+      return res.json({ success: false, message: constants.errMsg });
     }
     
     if (!user) {
@@ -34,7 +37,12 @@ middlewareObj.checkGroupOwnership = (req, res, next) => {
 
     Group.findOne({ _id: req.params.id }, (err, group) => {
       if (err) {
-        return res.json({ success: false, message: 'Group not found' });
+        console.log('checkGroupOwnership finding group', err);
+        return res.json({ success: false, message: constants.errMsg });
+      }
+
+      if (!group) {
+        return res.json({ success: false, messaeg: 'Group not found' });
       }
 
       if (user.bnet.battletag !== group.owner) {

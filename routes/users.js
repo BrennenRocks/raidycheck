@@ -1,12 +1,13 @@
 const express = require('express'),
-  middleware = require('../middleware'),
+  mongoose = require('mongoose'),
   _ = require('lodash');
 
 router = express.Router();
 
 const User = require('../models/user');
 
-const mongoose = require('mongoose');
+const middleware = require('../middleware'),
+  constants = require('../config/constants');
 
 /*============================================
    Get public user (used for public profile)
@@ -14,8 +15,8 @@ const mongoose = require('mongoose');
 router.get('/users/:battletag', (req, res) => {
   User.findOne({ "bnet.battletag":  _.replace(_.toLower(req.params.battletag), '-', '#') }).populate('groups').exec((err, user) => {
     if (err) {
-      console.log(err);
-      return res.json({ success: false, message: 'There was a problem, please try again later' });
+      console.log('/users/:battletag finding user', err);
+      return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!user) {
