@@ -20,7 +20,9 @@ mongoose.connect(config.uri, (err) => {
 
 // Require Paths
 const auth = require('./routes/auth'),
-  groups = require('./routes/groups');
+  groups = require('./routes/groups'),
+  users = require('./routes/users');
+
 require('./config/passport');
 
 app.use(cors({ origin: '*' }));
@@ -39,6 +41,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.use('/api', auth);
 app.use('/api', groups);
+app.use('/api', users);
 
 //Entrance to the website
 // app.get('*', (req, res) => {

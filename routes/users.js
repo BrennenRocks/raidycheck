@@ -1,5 +1,6 @@
 const express = require('express'),
-  middleware = require('../middleware');
+  middleware = require('../middleware'),
+  _ = require('lodash');
 
 router = express.Router();
 
@@ -11,7 +12,7 @@ const mongoose = require('mongoose');
    Get public user (used for public profile)
 ==============================================*/
 router.get('/users/:battletag', (req, res) => {
-  User.findOne({ "bnet.battletag": req.params.battletag }).populate('groups').exec((err, user) => {
+  User.findOne({ "bnet.battletag":  _.replace(_.toLower(req.params.battletag), '-', '#') }).populate('groups').exec((err, user) => {
     if (err) {
       console.log(err);
       return res.json({ success: false, message: 'There was a problem, please try again later' });
@@ -25,3 +26,4 @@ router.get('/users/:battletag', (req, res) => {
   });
 });
 
+module.exports = router;

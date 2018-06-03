@@ -9,7 +9,7 @@ mongoose.Promise = global.Promise;
 const userSchema = new Schema({
   bnet: {
     id: { type: Number, required: true },
-    battletag: { type: String, required: true },
+    battletag: { type: String, lowercase: true, required: true },
     regions: [String],
     personalCharacters: [
       {

@@ -30,7 +30,8 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
     new Group({
       title: req.body.title,
       owner: req.decodedUser.bnet.battletag,
-      isPublic: req.body.isPublic
+      isPublic: req.body.isPublic,
+      allowOthersToUpdateCharacters: req.body.allowOthersToUpdateCharacters,
     }).save((err, group) => {
       if (err) {
         if (err.errors.title) {
@@ -120,6 +121,10 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
 
     group.save((err, savedGroup) => {
       if (err) {
+        console.log(err); 
+        if (err.errors.title) {
+          return res.json({ success: false, message: err.errors.title.message });
+        }
         return res.json({ success: false, message: 'There was a problem, please try again later' });
       }
 
@@ -151,7 +156,7 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
 
   const chars = [];
   req.body.characters.map(character => {
-    chars.push({ name: character.name, realm: character.realm, region: character.region });
+    chars.push({ name: character.name, realm: character.realm, region: req.body.region });
   });
 
   // Assume none of the characters passed in are in the DB
@@ -176,12 +181,12 @@ router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.che
       if (characters) {
         const dbChars = [];
         characters.map(character => {
-          dbChars.push({ name: character.cid.name, realm: character.cid.realm, region: character.cid.region });
+          dbChars.push({ name: character.cid.name, realm: character.cid.realm, region: req.body.region });
           group.characters.push(character._id);
         });
 
         // Separate the characters already in the DB from the characters we need to get info about
-        charactersNotInDB = _.filter(chars, (char) => !_.find(dbChars, char));
+        charactersNotInDB = _.differenceWith(chars, dbChars, _.isEqual);
 
         // If all characters were found in the DB, save group and return
         if (characters.length == chars.length) {

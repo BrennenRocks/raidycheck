@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const config = require('../config/database'),
-  Util = require('../config/util');
+const config = require('../config/database');
 
 const User = require('../models/user'),
   Group = require('../models/group');
@@ -38,7 +37,7 @@ middlewareObj.checkGroupOwnership = (req, res, next) => {
         return res.json({ success: false, message: 'Group not found' });
       }
 
-      if (!Util.isEqualString(user.bnet.battletag, group.owner)) {
+      if (user.bnet.battletag !== group.owner) {
         return res.json({ success: false, message: "You don't have permission to do that" });
       }
       

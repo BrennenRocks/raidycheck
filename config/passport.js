@@ -6,8 +6,6 @@ const passport = require('passport'),
 
 const User = require('../models/user');
 
-const Util = require('../config/util');
-
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
