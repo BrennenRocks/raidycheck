@@ -21,7 +21,8 @@ mongoose.connect(config.uri, (err) => {
 // Require Paths
 const auth = require('./routes/auth'),
   groups = require('./routes/groups'),
-  users = require('./routes/users');
+  users = require('./routes/users'),
+  characters = require('./routes/characters');
 
 require('./config/passport');
 
@@ -42,6 +43,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/api', auth);
 app.use('/api', groups);
 app.use('/api', users);
+app.use('/api', characters);
 
 //Entrance to the website
 // app.get('*', (req, res) => {

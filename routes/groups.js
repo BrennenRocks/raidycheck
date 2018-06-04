@@ -33,7 +33,7 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
     }
 
     if (!user) {
-      return res.json({ success: false, message: 'User not found' });
+      return res.json({ success: false, message: constants.userNotFound });
     }
 
     new Group({
@@ -68,18 +68,18 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
    Get a single group
 
    req.params {
-     id - the Group ID
+     groupId - the Group ID
    }
 =======================*/
-router.get('/groups/:id', (req, res) => {
-  Group.findOne({ _id: req.params.id }).populate('characters').exec((err, group) => {
+router.get('/groups/:groupId', (req, res) => {
+  Group.findOne({ _id: req.params.groupId }).populate('characters').exec((err, group) => {
     if (err) {
-      console.log('/groups/:id finding group', err)
+      console.log('/groups/:groupId finding group', err)
       return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!group) {
-      return res.json({ success: false, message: 'Group not found' });
+      return res.json({ success: false, message: constants.groupNotFound });
     }
 
     return res.json({ success: true, message: '', group: group });
@@ -98,7 +98,7 @@ router.get('/groups', middleware.getAuthToken, (req, res) => {
       }
       
       if (!user) {
-        return res.json({ success: false, message: 'User not found' });
+        return res.json({ success: false, message: constants.userNotFound });
       }
       
       return res.json({ success: true, groups: user.groups });
@@ -109,7 +109,7 @@ router.get('/groups', middleware.getAuthToken, (req, res) => {
    Update a single group
 
    req.params {
-     id - the Group ID
+     groupId - the Group ID
    }
 
    req.body {
@@ -118,7 +118,7 @@ router.get('/groups', middleware.getAuthToken, (req, res) => {
      *allowOthersToUpdateCharacters: boolean
    }
 =========================*/
-router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
+router.put('/groups/update/:groupId', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
   if (!req.body.title) {
     return res.json({ success: false, message: 'No title provided' });
   }
@@ -131,14 +131,14 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
     return res.json({ success: false, message: 'No option to allow others to update characters provided' });
   }
 
-  Group.findOne({ _id: req.params.id }, (err, group) => {
+  Group.findOne({ _id: req.params.groupId }, (err, group) => {
     if (err) {
-      console.log('/groups/update/:id finding group', err);
+      console.log('/groups/update/:groupId finding group', err);
       return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!group) {
-      return res.json({ success: false, message: 'Group not found' });
+      return res.json({ success: false, message: constants.groupNotFound });
     }
 
     group.title = req.body.title;
@@ -151,7 +151,7 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
           return res.json({ success: false, message: err.errors.title.message });
         }
 
-        console.log('/groups/update/:id saving group', err); 
+        console.log('/groups/update/:groupId saving group', err); 
         return res.json({ success: false, message: constants.errMsg });
       }
 
@@ -164,23 +164,23 @@ router.put('/groups/update/:id', middleware.getAuthToken, middleware.checkGroupO
    Delete a single group
 
    req.params {
-     id - the Group ID
+     groupId - the Group ID
    }
 =========================*/
-router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
-  Group.findOne({ _id: req.params.id }, (err, group) => {
+router.delete('/groups/delete/:groupId', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
+  Group.findOne({ _id: req.params.groupId }, (err, group) => {
     if (err) {
-      console.log('/groups/delete/:id finding group', err);
+      console.log('/groups/delete/:groupId finding group', err);
       return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!group) {
-      return res.json({ success: false, message: 'Group not found' });
+      return res.json({ success: false, message: constants.groupNotFound });
     }
 
     group.remove(err => {
       if (err) {
-        console.log('/groups/delete/:id removing group', err);
+        console.log('/groups/delete/:groupId removing group', err);
         return res.json({ success: false, message: constants.errMsg });
       }
 
@@ -193,35 +193,35 @@ router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGro
    Favorite or Unfavorite a single group
 
    req.params {
-     id - the Group ID
+     groupId - the Group ID
    }
 =========================================*/
-router.put('/groups/favorite/:id', middleware.getAuthToken, (req, res) => {
-  Group.findOne({ _id: req.params.id }, (err, group) => {
+router.put('/groups/favorite/:groupId', middleware.getAuthToken, (req, res) => {
+  Group.findOne({ _id: req.params.groupId }, (err, group) => {
     if (err) {
-      console.log('/groups/favorite/:id finding group', err);
+      console.log('/groups/favorite/:groupId finding group', err);
       return res.json({ success: false, message: constants.errMsg });
     }
 
     if (!group) {
-      return res.json({ success: false, message: 'Group not found' });
+      return res.json({ success: false, message: constants.groupNotFound });
     }
 
     User.findOne({ _id: req.decodedUser.id }, (err, user) => {
       if (err) {
-        console.log('/groups/favorite/:id finding user', err);
+        console.log('/groups/favorite/:groupId finding user', err);
         return res.json({ success: false, message: constants.errMsg });
       }
 
       if (!user) {
-        return res.json({ success: false, message: 'User not found' });
+        return res.json({ success: false, message: constants.userNotFound });
       }
 
       // If user has already favorited the group, decrement count and remove them
       if (_.includes(group.favoritedBy, user.bnet.battletag)) {
-        _.pull(user.groups.favorites, group._id);
+        user.groups.favorites.splice(user.groups.favorites.indexOf(group._id), 1);
         group.favoritesCount--;
-        _.pull(group.favoritedBy, user.bnet.battletag);
+        group.favoritedBy.splice(group.favoritedBy.indexOf(user.bnet.battletag), 1);
       } else {
         user.groups.favorites.push(group._id);
         group.favoritesCount++;
@@ -230,207 +230,18 @@ router.put('/groups/favorite/:id', middleware.getAuthToken, (req, res) => {
       
       group.save(err => {
         if (err) {
-          console.log('/groups/favorite/:id saving group', err);
+          console.log('/groups/favorite/:groupId saving group', err);
           return res.json({ success: false, message: constants.errMsg });
         }
         user.save(err => {
           if (err) {
-            console.log('/groups/favorite/:id saving user', err);
+            console.log('/groups/favorite/:groupId saving user', err);
             return res.json({ success: false, message: constants.errMsg });
           }
 
           return res.json({ success: true, message: '' });
         });
       });
-    });
-  });
-});
-
-
-// TODO: Move to characters.js route file
-/*==============================================================
-   Add Characters from either DB or BlizzardAPI to your Group
-
-   req.params {
-     id - the Group ID
-   }
-
-   req.body {
-     *region: String,
-     *characters: [
-       {
-         *name: String,
-         *realm: String
-       }
-     ]
-   }
-================================================================*/
-router.post('/groups/:id/addCharacters', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
-  if (!req.body) {
-    return res.json({ success: false, message: 'No characters provided' });
-  }
-
-  if (req.body.characters && !_.isArray(req.body.characters)) {
-    return res.json({ success: false, message: 'Must pass in an array' });
-  }
-
-  // if (req.body.characters.length > 3) {
-  //   return res.json({ success: false, message: 'Can not get more than 3 characters' });
-  // }
-
-  if(!req.body.region) {
-    return res.json({ success: false, message: 'No region provided' });
-  }
-
-  const chars = [];
-  req.body.characters.map(character => {
-    chars.push({ name: character.name, realm: character.realm, region: req.body.region });
-  });
-
-  // Assume none of the characters passed in are in the DB
-  let charactersNotInDB = chars;
-
-  Group.findOne({ _id: req.params.id }, (err, group) => {
-    if (err) {
-      console.log('/groups/:id/addCharacters finding group', err);
-      return res.json({ success: false, message: constants.errMsg });
-    }
-    
-    if (!group) {
-      return res.json({ success: false, message: 'Group not found' });
-    }
-
-    // Group found, find Characters
-    Character.find({ cid: { $in: chars } }, (err, characters) => {
-      if (err) {
-        console.log('/gruops/:id/addCharacters finding characters', err);
-        return res.json({ success: false, message: constants.errMsg });
-      }
-
-      if (characters) {
-        const dbChars = [];
-        characters.map(character => {
-          dbChars.push({ name: character.cid.name, realm: character.cid.realm, region: req.body.region });
-          group.characters.push(character._id);
-        });
-
-        // Separate the characters already in the DB from the characters we need to get info about
-        charactersNotInDB = _.differenceWith(chars, dbChars, _.isEqual);
-
-        // If all characters were found in the DB, save group and return
-        if (characters.length == chars.length) {
-          group.save((err) => {
-            if (err) {
-              console.log('/groups/:id/addCharacters saving group', err);
-              return res.json({ success: false, message: constants.errMsg });
-            }
-
-            // Find the group again to populate the characters before sending back to Front End
-            Group.findById(group._id).populate('characters').exec((err, retGroup) => {
-              if (err) {
-                console.log('/groups/:id/addCharacters finding group', err);
-                return res.json({ success: false, message: constants.errMsg });
-              }
-
-              return res.json({ success: true, message: '', group: retGroup });
-            });
-          });
-        }
-      }
-
-      // 1 or more characters not found in DB, add them to DB
-      let charURLs = [];
-      let charactersNotFoundInArmory = "";
-      for (let i = 0; i < charactersNotInDB.length; i++) {
-        charURLs.push({
-          url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
-            charactersNotInDB[i].realm + "/" + charactersNotInDB[i].name +
-            "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
-          name: charactersNotInDB[i].name,
-          realm: charactersNotInDB[i].realm
-        });
-      }
-
-      let promiseArray = charURLs.map(char => axios.get(char.url).catch(err => {
-        charactersNotFoundInArmory += char.name + ' - ' + char.realm + ' not found in WoW armory\n';
-        return null;
-      }));
-
-      const newChars = [];
-      axios.all(promiseArray)
-        .then(response => {
-          // Remove the nulls (errored out) responses
-          response = _.compact(response);
-          const resChars = response.map(r => r.data);
-          let items = [];
-          for (let i = 0; i < resChars.length; i++) {
-            for (let key in resChars[i].items) {
-              if (resChars[i].items.hasOwnProperty(key)) {
-                if (resChars[i].items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
-                  items.push(
-                    {
-                      slot: key.charAt(0).toUpperCase() + key.slice(1),
-                      id: resChars[i].items[key].id,
-                      name: resChars[i].items[key].name,
-                      icons: resChars[i].items[key].icon,
-                      iLvl: resChars[i].items[key].itemLevel,
-                      quality: resChars[i].items[key].quality,
-                      bonusLists: resChars[i].items[key].bonusLists,
-                      tooltipParams: resChars[i].items[key].tooltipParams,
-                    }
-                  );
-                }
-              }
-            }
-
-            newChars.push(new Character({
-              cid: {
-                name: resChars[i].name,
-                realm: resChars[i].realm,
-                region: req.body.region,
-              },
-              lastModified: resChars[i].lastModified,
-              iLvl: resChars[i].items.averageItemLevelEquipped,
-              class: resChars[i].class,
-              thumbnail: resChars[i].thumbnail,
-              lastUpdated: new Date(),
-              items: items
-            }));
-            items = [];
-          }
-
-          Character.create(newChars, (err, newCharacters) => {
-            if (err) {
-              console.log('/groups/:id/addCharacters creating characters', err)
-              return res.json({ success: false, message: constants.errMsg });
-            }
-
-            newCharacters.map(char => {
-              group.characters.push(char._id);
-            });
-
-            group.save((err) => {
-              if (err) {
-                console.log('/groups/:id/addCharacters saving group', err)
-                return res.json({ success: false, message: constants.errMsg });
-              }
-
-              // Find the group again to populate the characters before sending back to Front End
-              Group.findById(group._id).populate('characters').exec((err, retGroup) => {
-                if (err) {
-                  console.log('/groups/:id/addCharacters finding group', err);
-                  return res.json({ success: false, message: constants.errMsg });
-                }
-
-                return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
-              });
-            });
-          });
-        })
-        .catch(error => {
-          console.log('Error with Axios get User characters', error);
-          return res.json({ success: false, message: constants.errMsg });
-        });
     });
   });
 });

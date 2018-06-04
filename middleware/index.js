@@ -25,30 +25,32 @@ middlewareObj.getAuthToken = (req, res, next) => {
 };
 
 middlewareObj.checkGroupOwnership = (req, res, next) => {
-  User.findOne({ _id: req.decodedUser.id }, 'bnet', (err, user) => {
+  User.findOne({ _id: req.decodedUser.id }, (err, user) => {
     if (err) {
       console.log('checkGroupOwnership finding user', err);
       return res.json({ success: false, message: constants.errMsg });
     }
     
     if (!user) {
-      return res.json({ success: false, message: 'User not found' });
+      return res.json({ success: false, message: constants.userNotFound });
     }
 
-    Group.findOne({ _id: req.params.id }, (err, group) => {
+    Group.findOne({ _id: req.params.groupId }, (err, group) => {
       if (err) {
         console.log('checkGroupOwnership finding group', err);
         return res.json({ success: false, message: constants.errMsg });
       }
 
       if (!group) {
-        return res.json({ success: false, messaeg: 'Group not found' });
+        return res.json({ success: false, messaeg: constants.groupNotFound });
       }
 
       if (user.bnet.battletag !== group.owner) {
         return res.json({ success: false, message: "You don't have permission to do that" });
       }
       
+      req.rc_user = user;
+      req.rc_group = group;
       next();
     });
   });
