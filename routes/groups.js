@@ -189,6 +189,63 @@ router.delete('/groups/delete/:id', middleware.getAuthToken, middleware.checkGro
   });
 });
 
+/*=======================================
+   Favorite or Unfavorite a single group
+
+   req.params {
+     id - the Group ID
+   }
+=========================================*/
+router.put('/groups/favorite/:id', middleware.getAuthToken, (req, res) => {
+  Group.findOne({ _id: req.params.id }, (err, group) => {
+    if (err) {
+      console.log('/groups/favorite/:id finding group', err);
+      return res.json({ success: false, message: constants.errMsg });
+    }
+
+    if (!group) {
+      return res.json({ success: false, message: 'Group not found' });
+    }
+
+    User.findOne({ _id: req.decodedUser.id }, (err, user) => {
+      if (err) {
+        console.log('/groups/favorite/:id finding user', err);
+        return res.json({ success: false, message: constants.errMsg });
+      }
+
+      if (!user) {
+        return res.json({ success: false, message: 'User not found' });
+      }
+
+      // If user has already favorited the group, decrement count and remove them
+      if (_.includes(group.favoritedBy, user.bnet.battletag)) {
+        _.pull(user.groups.favorites, group._id);
+        group.favoritesCount--;
+        _.pull(group.favoritedBy, user.bnet.battletag);
+      } else {
+        user.groups.favorites.push(group._id);
+        group.favoritesCount++;
+        group.favoritedBy.push(user.bnet.battletag);
+      }
+      
+      group.save(err => {
+        if (err) {
+          console.log('/groups/favorite/:id saving group', err);
+          return res.json({ success: false, message: constants.errMsg });
+        }
+        user.save(err => {
+          if (err) {
+            console.log('/groups/favorite/:id saving user', err);
+            return res.json({ success: false, message: constants.errMsg });
+          }
+
+          return res.json({ success: true, message: '' });
+        });
+      });
+    });
+  });
+});
+
 
 // TODO: Move to characters.js route file
 /*==============================================================
