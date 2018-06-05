@@ -31,7 +31,7 @@ const constants = require('../config/constants'),
 
    returns the group
 ================================================================*/
-router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
+router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
   if (!req.body) {
     return res.json({ success: false, message: 'No characters provided' });
   }
@@ -56,9 +56,9 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
   // Assume none of the characters passed in are in the DB
   let charactersNotInDB = chars;
 
-  Group.findOne({ _id: req.params.id }, (err, group) => {
+  Group.findOne({ _id: req.params.groupId }, (err, group) => {
     if (err) {
-      console.log('/groups/:id/addCharacters finding group', err);
+      console.log('/groups/:groupId/addCharacters finding group', err);
       return res.json({ success: false, message: constants.errMsg });
     }
     
@@ -69,7 +69,7 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
     // Group found, find Characters
     Character.find({ cid: { $in: chars } }, (err, characters) => {
       if (err) {
-        console.log('/gruops/:id/addCharacters finding characters', err);
+        console.log('/groups/:groupId/addCharacters finding characters', err);
         return res.json({ success: false, message: constants.errMsg });
       }
 
@@ -87,14 +87,14 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
         if (characters.length == chars.length) {
           group.save((err) => {
             if (err) {
-              console.log('/groups/:id/addCharacters saving group', err);
+              console.log('/groups/:groupId/addCharacters saving group', err);
               return res.json({ success: false, message: constants.errMsg });
             }
 
             // Find the group again to populate the characters before sending back to Front End
             Group.findById(group._id).populate('characters').exec((err, retGroup) => {
               if (err) {
-                console.log('/groups/:id/addCharacters finding group', err);
+                console.log('/groups/:groupId/addCharacters finding group', err);
                 return res.json({ success: false, message: constants.errMsg });
               }
 
@@ -104,16 +104,16 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
         }
       }
 
-      // 1 or more characters not found in DB, add them to DB
+function callBlizzard(charactersNotInDbOrNotAlreadyInGroup) {
       let charURLs = [];
       let charactersNotFoundInArmory = "";
-      for (let i = 0; i < charactersNotInDB.length; i++) {
+  for (let i = 0; i < charactersNotInDbOrNotAlreadyInGroup.length; i++) {
         charURLs.push({
           url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
-            charactersNotInDB[i].realm + "/" + charactersNotInDB[i].name +
+        charactersNotInDbOrNotAlreadyInGroup[i].realm + "/" + charactersNotInDbOrNotAlreadyInGroup[i].name +
             "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
-          name: charactersNotInDB[i].name,
-          realm: charactersNotInDB[i].realm
+      name: charactersNotInDbOrNotAlreadyInGroup[i].name,
+      realm: charactersNotInDbOrNotAlreadyInGroup[i].realm
         });
       }
 
@@ -167,7 +167,7 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
 
           Character.create(newChars, (err, newCharacters) => {
             if (err) {
-              console.log('/groups/:id/addCharacters creating characters', err)
+          console.log('/groups/:groupId/addCharacters creating characters', err)
               return res.json({ success: false, message: constants.errMsg });
             }
 
@@ -177,14 +177,14 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
 
             group.save((err) => {
               if (err) {
-                console.log('/groups/:id/addCharacters saving group', err)
+            console.log('/groups/:groupId/addCharacters saving group', err)
                 return res.json({ success: false, message: constants.errMsg });
               }
 
               // Find the group again to populate the characters before sending back to Front End
               Group.findById(group._id).populate('characters').exec((err, retGroup) => {
                 if (err) {
-                  console.log('/groups/:id/addCharacters finding group', err);
+              console.log('/groups/:groupId/addCharacters finding group', err);
                   return res.json({ success: false, message: constants.errMsg });
                 }
 
@@ -197,9 +197,7 @@ router.post('/groups/:id/characters/add', middleware.getAuthToken, middleware.ch
           console.log('Error with Axios get User characters', error);
           return res.json({ success: false, message: constants.errMsg });
         });
-    });
-  });
-});
+}
 
 /*============================================
    Update a character from Blizzard API
@@ -243,29 +241,30 @@ router.put('/groups/:groupId/characters/update/:charId', middleware.getAuthToken
         "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
       })
       .then(response => {
+        const data = response.data;
         let items = [];
-        for (let key in response.items) {
-          if (response.items.hasOwnProperty(key)) {
-            if (response.items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
+        for (let key in data.items) {
+          if (data.items.hasOwnProperty(key)) {
+            if (data.items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
               items.push(
                 {
                   slot: key.charAt(0).toUpperCase() + key.slice(1),
-                  id: response.items[key].id,
-                  name: response.items[key].name,
-                  icons: response.items[key].icon,
-                  iLvl: response.items[key].itemLevel,
-                  quality: response.items[key].quality,
-                  bonusLists: response.items[key].bonusLists,
-                  tooltipParams: response.items[key].tooltipParams,
+                  id: data.items[key].id,
+                  name: data.items[key].name,
+                  icons: data.items[key].icon,
+                  iLvl: data.items[key].itemLevel,
+                  quality: data.items[key].quality,
+                  bonusLists: data.items[key].bonusLists,
+                  tooltipParams: data.items[key].tooltipParams,
                 }
               );
             }
           }
         }
         
-        char.lastModified = response.lastModified;
-        char.iLvl = response.items.averageItemLevelEquipped;
-        char.thumbnail = response.thumbnail;
+        char.lastModified = data.lastModified;
+        char.iLvl = data.items.averageItemLevelEquipped;
+        char.thumbnail = data.thumbnail;
         char.lastUpdated = new Date();
         char.items = items;
         
@@ -297,11 +296,17 @@ router.put('/groups/:groupId/characters/update/:charId', middleware.getAuthToken
    returns the group
 ===================================================*/
 router.put('/groups/:groupId/characters/remove/:charId', middleware.getAuthToken, middleware.checkGroupOwnership, (req, res) => {
-  if (!_.includes(req.rc_group.characters, req.params.charId)) {
+  let i = -1;
+  const inArray = req.rc_group.characters.some(char => {
+    i++;
+    return char.equals(req.params.charId);
+  });
+  console.log(inArray);
+  if (!inArray) {
     return res.json({ success: false, message: 'Character doesn\'t exist in that group' });
   }
 
-  req.rc_group.characters.splice(req.rc_group.characters.indexOf(req.params.charId), 1);
+  req.rc_group.characters.splice(i, 1);
 
   req.rc_group.save((err, retGroup) => {
     if (err) {
