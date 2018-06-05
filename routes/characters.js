@@ -104,16 +104,15 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
         }
       }
 
-function callBlizzard(charactersNotInDbOrNotAlreadyInGroup) {
       let charURLs = [];
       let charactersNotFoundInArmory = "";
-  for (let i = 0; i < charactersNotInDbOrNotAlreadyInGroup.length; i++) {
-        charURLs.push({
-          url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
-        charactersNotInDbOrNotAlreadyInGroup[i].realm + "/" + charactersNotInDbOrNotAlreadyInGroup[i].name +
-            "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
-      name: charactersNotInDbOrNotAlreadyInGroup[i].name,
-      realm: charactersNotInDbOrNotAlreadyInGroup[i].realm
+      for (let i = 0; i < charactersNotInDbOrNotAlreadyInGroup.length; i++) {
+          charURLs.push({
+            url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
+          charactersNotInDbOrNotAlreadyInGroup[i].realm + "/" + charactersNotInDbOrNotAlreadyInGroup[i].name +
+              "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
+          name: charactersNotInDbOrNotAlreadyInGroup[i].name,
+          realm: charactersNotInDbOrNotAlreadyInGroup[i].realm
         });
       }
 
@@ -197,7 +196,9 @@ function callBlizzard(charactersNotInDbOrNotAlreadyInGroup) {
           console.log('Error with Axios get User characters', error);
           return res.json({ success: false, message: constants.errMsg });
         });
-}
+      });
+    });
+  });
 
 /*============================================
    Update a character from Blizzard API
