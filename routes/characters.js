@@ -53,12 +53,9 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
     chars.push({ name: character.name, realm: character.realm, region: req.body.region });
   });
 
-  // Assume none of the characters passed in are in the DB
-  let charactersNotInDB = chars;
-
-  Group.findOne({ _id: req.params.groupId }, (err, group) => {
+  Group.findOne({ _id: req.params.groupId }).populate('characters').exec((err, group) => {
     if (err) {
-      console.log('/groups/:groupId/addCharacters finding group', err);
+      console.log('/groups/:groupId/characters/add finding group', err);
       return res.json({ success: false, message: constants.errMsg });
     }
     
@@ -66,10 +63,20 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
       return res.json({ success: false, message: constants.groupNotFound });
     }
 
+    const groupChars = [];
+    group.characters.map(char => {
+      groupChars.push({ name: char.cid.name, realm: char.cid.realm, region: char.cid.region });
+    });
+
+    // Remove characters already in the group
+    let searchableChars = _.differenceWith(chars, groupChars, _.isEqual);
+    let charsNotInDb = searchableChars;
+    let allCharsFound = false;
+
     // Group found, find Characters
-    Character.find({ cid: { $in: chars } }, (err, characters) => {
+    Character.find({ cid: { $in: searchableChars } }, (err, characters) => {
       if (err) {
-        console.log('/groups/:groupId/addCharacters finding characters', err);
+        console.log('/groups/:groupId/characters/add finding characters', err);
         return res.json({ success: false, message: constants.errMsg });
       }
 
@@ -81,20 +88,22 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
         });
 
         // Separate the characters already in the DB from the characters we need to get info about
-        charactersNotInDB = _.differenceWith(chars, dbChars, _.isEqual);
+        charsNotInDb = _.differenceWith(searchableChars, dbChars, _.isEqual);
 
         // If all characters were found in the DB, save group and return
-        if (characters.length == chars.length) {
+        if (characters.length == searchableChars.length) {
+          allCharsFound = true;
+
           group.save((err) => {
             if (err) {
-              console.log('/groups/:groupId/addCharacters saving group', err);
+              console.log('/groups/:groupId/characters/add saving group', err);
               return res.json({ success: false, message: constants.errMsg });
             }
 
             // Find the group again to populate the characters before sending back to Front End
             Group.findById(group._id).populate('characters').exec((err, retGroup) => {
               if (err) {
-                console.log('/groups/:groupId/addCharacters finding group', err);
+                console.log('/groups/:groupId/characters/add finding group', err);
                 return res.json({ success: false, message: constants.errMsg });
               }
 
@@ -104,101 +113,103 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
         }
       }
 
-      let charURLs = [];
-      let charactersNotFoundInArmory = "";
-      for (let i = 0; i < charactersNotInDbOrNotAlreadyInGroup.length; i++) {
-          charURLs.push({
-            url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
-          charactersNotInDbOrNotAlreadyInGroup[i].realm + "/" + charactersNotInDbOrNotAlreadyInGroup[i].name +
-              "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
-          name: charactersNotInDbOrNotAlreadyInGroup[i].name,
-          realm: charactersNotInDbOrNotAlreadyInGroup[i].realm
-        });
-      }
+      if (!allCharsFound) {
+        let charURLs = [];
+        let charactersNotFoundInArmory = "";
+        for (let i = 0; i < charsNotInDb.length; i++) {
+            charURLs.push({
+              url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
+              charsNotInDb[i].realm + "/" + charsNotInDb[i].name +
+                "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
+            name: charsNotInDb[i].name,
+            realm: charsNotInDb[i].realm
+          });
+        }
 
-      let promiseArray = charURLs.map(char => axios.get(char.url).catch(err => {
-        charactersNotFoundInArmory += char.name + ' - ' + char.realm + ' not found in WoW armory\n';
-        return null;
-      }));
+        let promiseArray = charURLs.map(char => axios.get(char.url).catch(err => {
+          charactersNotFoundInArmory += char.name + ' - ' + char.realm + ' not found in WoW armory\n';
+          return null;
+        }));
 
-      const newChars = [];
-      axios.all(promiseArray)
-        .then(response => {
-          // Remove the nulls (errored out) responses
-          response = _.compact(response);
-          const resChars = response.map(r => r.data);
-          let items = [];
-          for (let i = 0; i < resChars.length; i++) {
-            for (let key in resChars[i].items) {
-              if (resChars[i].items.hasOwnProperty(key)) {
-                if (resChars[i].items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
-                  items.push(
-                    {
-                      slot: key.charAt(0).toUpperCase() + key.slice(1),
-                      id: resChars[i].items[key].id,
-                      name: resChars[i].items[key].name,
-                      icons: resChars[i].items[key].icon,
-                      iLvl: resChars[i].items[key].itemLevel,
-                      quality: resChars[i].items[key].quality,
-                      bonusLists: resChars[i].items[key].bonusLists,
-                      tooltipParams: resChars[i].items[key].tooltipParams,
-                    }
-                  );
+        const newChars = [];
+        axios.all(promiseArray)
+          .then(response => {
+            // Remove the nulls (errored out) responses
+            response = _.compact(response);
+            const resChars = response.map(r => r.data);
+            let items = [];
+            for (let i = 0; i < resChars.length; i++) {
+              for (let key in resChars[i].items) {
+                if (resChars[i].items.hasOwnProperty(key)) {
+                  if (resChars[i].items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
+                    items.push(
+                      {
+                        slot: key.charAt(0).toUpperCase() + key.slice(1),
+                        id: resChars[i].items[key].id,
+                        name: resChars[i].items[key].name,
+                        icons: resChars[i].items[key].icon,
+                        iLvl: resChars[i].items[key].itemLevel,
+                        quality: resChars[i].items[key].quality,
+                        bonusLists: resChars[i].items[key].bonusLists,
+                        tooltipParams: resChars[i].items[key].tooltipParams,
+                      }
+                    );
+                  }
                 }
               }
+
+              newChars.push(new Character({
+                cid: {
+                  name: resChars[i].name,
+                  realm: resChars[i].realm,
+                  region: req.body.region,
+                },
+                lastModified: resChars[i].lastModified,
+                iLvl: resChars[i].items.averageItemLevelEquipped,
+                class: resChars[i].class,
+                thumbnail: resChars[i].thumbnail,
+                lastUpdated: new Date(),
+                items: items
+              }));
+              items = [];
             }
 
-            newChars.push(new Character({
-              cid: {
-                name: resChars[i].name,
-                realm: resChars[i].realm,
-                region: req.body.region,
-              },
-              lastModified: resChars[i].lastModified,
-              iLvl: resChars[i].items.averageItemLevelEquipped,
-              class: resChars[i].class,
-              thumbnail: resChars[i].thumbnail,
-              lastUpdated: new Date(),
-              items: items
-            }));
-            items = [];
-          }
-
-          Character.create(newChars, (err, newCharacters) => {
-            if (err) {
-          console.log('/groups/:groupId/addCharacters creating characters', err)
-              return res.json({ success: false, message: constants.errMsg });
-            }
-
-            newCharacters.map(char => {
-              group.characters.push(char._id);
-            });
-
-            group.save((err) => {
+            Character.create(newChars, (err, newCharacters) => {
               if (err) {
-            console.log('/groups/:groupId/addCharacters saving group', err)
+                console.log('/groups/:groupId/characters/add creating characters', err)
                 return res.json({ success: false, message: constants.errMsg });
               }
 
-              // Find the group again to populate the characters before sending back to Front End
-              Group.findById(group._id).populate('characters').exec((err, retGroup) => {
+              newCharacters.map(char => {
+                group.characters.push(char._id);
+              });
+
+              group.save((err) => {
                 if (err) {
-              console.log('/groups/:groupId/addCharacters finding group', err);
+                  console.log('/groups/:groupId/characters/add saving group', err)
                   return res.json({ success: false, message: constants.errMsg });
                 }
 
-                return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+                // Find the group again to populate the characters before sending back to Front End
+                Group.findById(group._id).populate('characters').exec((err, retGroup) => {
+                  if (err) {
+                    console.log('/groups/:groupId/characters/add finding group', err);
+                    return res.json({ success: false, message: constants.errMsg });
+                  }
+
+                  return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+                });
               });
             });
+          })
+          .catch(error => {
+            console.log('Error with Axios get User characters', error);
+            return res.json({ success: false, message: constants.errMsg });
           });
-        })
-        .catch(error => {
-          console.log('Error with Axios get User characters', error);
-          return res.json({ success: false, message: constants.errMsg });
-        });
-      });
+      }
     });
   });
+});
 
 /*============================================
    Update a character from Blizzard API
