@@ -9,7 +9,7 @@ let middlewareObj = {};
 
 middlewareObj.getAuthToken = (req, res, next) => {
   if (!req.headers.authorization) {
-    return res.json({ success: false, message: 'No Token provided' });
+    return res.json({ success: false, message: 'You must be logged in to do that' });
   }
 
   const token = req.headers.authorization.split(" ")[1];
