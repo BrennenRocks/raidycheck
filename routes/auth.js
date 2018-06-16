@@ -1,12 +1,9 @@
 const express = require('express'),
-  passport = require('passport');
+  passport = require('passport'),
+  querystring = require('querystring');
 
 const router = express.Router()
-const config = require('../config/database'),
-  middleware = require('../middleware'),
-  constants = require('../config/constants');
-
-const User = require('../models/user');
+const constants = require('../config/constants');
 
 /*=========================
    Bnet OAuth Navigate to
@@ -31,8 +28,11 @@ router.get('/auth/bnet/callback', (req, res, next) => {
     }
 
     console.log(user.jwt);
-    res.set('Authorization', 'Bearer ' + user.jwt);
-    res.redirect(process.env.DOMAIN + '/groups?new=' + user.isNewUser);
+    const body = {
+      'new': user.isNewUser,
+      'rc_token': user.jwt
+    }
+    res.redirect(process.env.DOMAIN + '/groups?' + querystring.stringify(body));
   })(req, res, next);
 });
 
