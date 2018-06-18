@@ -23,14 +23,12 @@
             <a class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect href="https://raidycheck.localtunnel.me/api/auth/bnet?region=us">Login With Bnet</a>
           </li>
           <li *ngIf="authService.loggedIn()" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
-            <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-                <div class="avatar">
-                    <img src="https://images.raidycheck.com/defaultUser.png" class="rounded-circle img-fluid">
-                </div>
-                Battletag<span class="caret"></span>
+              <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+                  <img src="https://images.raidycheck.com/defaultUser.png" class="rounded-circle img-fluid" style="width: 28px;">
+                  Battletag<span class="caret"></span>
             </a>
             <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-                <a *ngIf="authService.loggedIn()" class="dropdown-item waves-light" href="#" mdbWavesEffect>Profile</a>
+                <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Profile</a>
                 <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Settings</a>
                 <div class="divider dropdown-divider"></div>
                 <a class="dropdown-item waves-light" (click)="onLogoutClick()" mdbWavesEffect>Logout</a>
