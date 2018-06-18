@@ -6,6 +6,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ToastrModule } from 'ngx-toastr';
+import { ScrollToModule } from '@nicky-lenaers/ngx-scroll-to';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -35,6 +36,7 @@ import { GroupsComponent } from './components/groups/groups.component';
       }
     }),
     MDBBootstrapModule.forRoot(),
+    ScrollToModule.forRoot(),
     ToastrModule.forRoot({
       closeButton: true,
       timeOut: 5000,
