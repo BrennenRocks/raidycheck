@@ -13,6 +13,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { GroupsComponent } from './components/groups/groups.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { GroupsComponent } from './components/groups/groups.component';
     NavbarComponent,
     HomeComponent,
     FooterComponent,
-    GroupsComponent
+    GroupsComponent,
+    LoginComponent
   ],
   imports: [
     AppRoutingModule,

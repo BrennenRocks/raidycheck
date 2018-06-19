@@ -20,7 +20,7 @@
         </ul>
         <ul class="navbar-nav">
           <li *ngIf="!authService.loggedIn()" class="nav-item">
-            <a class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect href="https://raidycheck.localtunnel.me/api/auth/bnet?region=us">Login With Bnet</a>
+            <button class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect routerLink="/login">Login With Bnet</button>
           </li>
           <li *ngIf="authService.loggedIn()" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
               <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
