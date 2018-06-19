@@ -30,4 +30,8 @@ export class AuthService {
   getProfile(battletag) {
     return this.http.get(DOMAIN + '/api/users/' + battletag);
   }
+
+  // update User
+
+  // delete User
 }

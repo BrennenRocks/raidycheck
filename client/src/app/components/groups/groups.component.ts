@@ -18,10 +18,10 @@ export class GroupsComponent implements OnInit {
     private authService: AuthService) { }
 
   ngOnInit() {
-    if (!this.authService.loggedIn()) {
-      this.authService.storeToken(this.route.snapshot.queryParams.rc_token);
-      this.isNewUser = this.route.snapshot.queryParams.new;
-    }
+    // if (!this.authService.loggedIn()) {
+    //   this.authService.storeToken(this.route.snapshot.queryParams.rc_token);
+    //   this.isNewUser = this.route.snapshot.queryParams.new;
+    // }
   }
 
 }

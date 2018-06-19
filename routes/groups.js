@@ -1,13 +1,11 @@
 const express = require('express'),
   mongoose = require('mongoose'),
-  axios = require('axios'),
   _ = require('lodash');
   
 router = express.Router();
   
 const User = require('../models/user'),
   Group = require('../models/group'),
-  Character = require('../models/character');
   
 const constants = require('../config/constants'),
   middleware = require('../middleware');
