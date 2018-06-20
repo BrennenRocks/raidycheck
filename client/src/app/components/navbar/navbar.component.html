@@ -13,18 +13,18 @@
                 <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
                 Groups<span class="caret"></span></a>
                 <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-                    <a *ngIf="authService.loggedIn()" class="dropdown-item waves-light" routerLink="/groups" mdbWavesEffect>My Groups</a>
+                    <a *ngIf="isLoggedIn" class="dropdown-item waves-light" routerLink="/groups" mdbWavesEffect>My Groups</a>
                     <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Search Groups</a>
                 </div>
             </li>
         </ul>
         <ul class="navbar-nav">
-          <li *ngIf="!authService.loggedIn()" class="nav-item">
+          <li *ngIf="!isLoggedIn" class="nav-item">
             <button class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect routerLink="/login">Login With Bnet</button>
           </li>
-          <li *ngIf="authService.loggedIn()" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
+          <li *ngIf="isLoggedIn" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
               <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-                  <img src="https://images.raidycheck.com/defaultUser.png" class="rounded-circle img-fluid" style="width: 28px;">
+                  <img src="" class="rounded-circle img-fluid" style="width: 28px;">
                   Battletag<span class="caret"></span>
             </a>
             <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">

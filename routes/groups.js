@@ -5,7 +5,7 @@ const express = require('express'),
 router = express.Router();
   
 const User = require('../models/user'),
-  Group = require('../models/group'),
+  Group = require('../models/group');
   
 const constants = require('../config/constants'),
   middleware = require('../middleware');
