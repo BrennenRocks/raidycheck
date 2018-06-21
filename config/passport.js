@@ -95,7 +95,7 @@ function passportCallback(req, accessToken, refreshToken, profile, done) {
             }
   
             savedUser.jwt = savedUser.generateJwt();
-            savedUser.isNewUser = false;
+            savedUser.isNewUser = true;
             savedUser.newChars = true;
             return done(null, savedUser);
           });

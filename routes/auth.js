@@ -32,7 +32,7 @@ router.get('/auth/bnet/callback', (req, res, next) => {
       'new': user.isNewUser,
       'rc_token': user.jwt
     }
-    res.redirect(process.env.DOMAIN + '/groups?' + querystring.stringify(body));
+    res.redirect(process.env.DOMAIN + '/logging-in?' + querystring.stringify(body));
   })(req, res, next);
 });
 

@@ -14,6 +14,8 @@ import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { GroupsComponent } from './components/groups/groups.component';
 import { LoginComponent } from './components/login/login.component';
+import { LoggingInComponent } from './components/logging-in/logging-in.component';
+import { GetStartedComponent } from './components/get-started/get-started.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { LoginComponent } from './components/login/login.component';
     HomeComponent,
     FooterComponent,
     GroupsComponent,
-    LoginComponent
+    LoginComponent,
+    LoggingInComponent,
+    GetStartedComponent
   ],
   imports: [
     AppRoutingModule,

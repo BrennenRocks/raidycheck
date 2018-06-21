@@ -1,0 +1,100 @@
+<div class="container">
+  <div class="flex-center">
+    <div class="text-center">
+      <h2 class="h2-responsive">Choose Your Main</h2>
+      <h5 class="h5-responsive">Their icon will become your icon.</h5>
+      <p class="mt-3" style="font-size: 12px">This can be changed later.</p>
+    </div>
+  </div>
+
+  <!--Grid row-->
+  <div class="row">
+
+      <!--Grid column-->
+      <div class="col-xl-12 col-md-12 mb-r mb-2">
+
+          <!--Card-->
+          <div class="card card-cascade cascading-admin-card">
+
+              <!--Card Data-->
+              <div class="admin-up">
+                  <div class="float-left">
+                      <img src="https://render-us.worldofwarcraft.com/character/kiljaeden/147/174734227-avatar.jpg" alt="User image" class="img-fluid">
+                  </div>
+                  <div class="data float-left ml-5">
+                      <p class="text-left">Battletag</p>
+                      <h4>
+                          <strong>Group name</strong>
+                      </h4>
+                  </div>
+              </div>
+              <!--/.Card Data-->
+
+              <!--Card content-->
+              <div class="card-body">
+                  <div class="media">
+                      <img class="d-flex mr-3" src="https://placehold.it/64x64" alt="character image">
+                      <div class="media-body">
+                          <h5 class="mt-0" align="justify">Character Name - iLvl</h5>
+                          <div class="row">
+                              <div class="col-xl-12 col-md-6">
+                                  Head Neck Shoulders Back Chest Wrist Main-Hand Offhand
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-xl-12 col-md-6">
+                                  Hands Belt Pants Feet Ring1 Ring2 Trinket1 Trinket2
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!--/.Card content-->
+
+          </div>
+          <!--/.Card-->
+
+      </div>
+      <!--Grid column-->
+
+  </div>
+  <!--Grid row-->
+</div>
+
+<div class="character-container">
+  <section *ngIf="!isLoading" class="mt-lg-5">
+
+      <!--Grid row-->
+      <div *ngFor="let char of user.bnet.personalCharacters" class="row">
+          <div class="col-xl-3 col-md-6 mb-r mb-2">
+            <!--Grid column-->
+
+                  <!--Card-->
+                  <div (click)="onCharClick(char)" class="card card-cascade cascading-admin-card wow fadeInUp">
+
+                      <!--Card Data-->
+                      <div class="admin-up">
+                        <div class="float-left">
+                          <img src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}" alt="User image" class="img-fluid">
+                        </div>
+                        <div class="data float-left ml-3">
+                          <p class="text-left">{{char.guild}}</p>
+                          <h5>
+                            <strong>{{char.name}} - {{char.realm}}</strong>
+                          </h5>
+                        </div>
+                      </div>
+                      <!--/.Card Data-->
+
+                  </div>
+                  <!--/.Card-->
+
+              </div>
+            <!--Grid column-->
+        </div>
+      <!--Grid row-->
+
+  </section>
+</div>
+
+

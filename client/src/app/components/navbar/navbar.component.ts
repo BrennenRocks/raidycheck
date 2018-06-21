@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../services/auth.service';
 import { ServerResponse } from '../../interfaces/server-response';
 import { User } from '../../interfaces/user';
-
 
 @Component({
   selector: 'app-navbar',
@@ -38,23 +37,8 @@ export class NavbarComponent implements OnInit {
               this.toastr.error(data.message, "Error");
               this.isLoading = false;
             } else {
-              let image = "https://render-us.worldofwarcraft.com/character/";
-              for(let i = 0; i < data.user.bnet.personalCharacters.length; i++) {
-                if (data.user.bnet.personalCharacters[i].lastModified > 0) {
-                  image += data.user.bnet.personalCharacters[i].thumbnail;
-                  break;
-                }
-              }
-
-              this.authService.updateUser(data.user._id, image).subscribe((data: ServerResponse) => {
-                if (!data.success) {
-                  this.toastr.error(data.message, "Error");
-                  this.isLoading = false;
-                } else {
-                  this.user = data.user;
-                  this.isLoading = false;
-                }
-              });
+              this.user = data.user;
+              this.isLoading = false;
             }
           });
         }, 1000);

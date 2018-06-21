@@ -6,17 +6,7 @@ export interface User {
     id: number,
     battletag: string,
     regions: [string],
-    personalCharacters: [
-      {
-        name: string,
-        realm: string,
-        region: string,
-        thumbnail: string,
-        guild: string,
-        guildRealm: string,
-        lastModified: number
-      }
-    ]
+    personalCharacters: any[]
   },
   dateSignedUp: Date,
   image: string,
