@@ -59,7 +59,15 @@ function passportCallback(req, accessToken, refreshToken, profile, done) {
           const personalChars = [];
           if (response.data.characters.length > 0) {
             response.data.characters.map((character) => {
-              personalChars.push({ name: character.name, realm: character.realm, region: req.query.region, thumbnail: character.thumbnail });
+              personalChars.push({ 
+                name: character.name,
+                realm: character.realm,
+                region: req.query.region,
+                thumbnail: character.thumbnail,
+                guild: character.guild,
+                guildRealm: character.guildRealm,
+                lastModified: character.lastModified
+              });
             });
           }
           

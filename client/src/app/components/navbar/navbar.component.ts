@@ -17,7 +17,6 @@ export class NavbarComponent implements OnInit {
   isLoading: boolean = false;
   isLoggedIn: boolean = false;
   user: User;
-  initialAvatar: string;
 
   constructor(
     private authService: AuthService,
@@ -31,7 +30,7 @@ export class NavbarComponent implements OnInit {
       if (data !== null) {
         this.isLoggedIn = data;
       }
-
+      
       if (this.isLoggedIn) {
         setTimeout(() => {
           this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
@@ -39,8 +38,23 @@ export class NavbarComponent implements OnInit {
               this.toastr.error(data.message, "Error");
               this.isLoading = false;
             } else {
-              this.user = data.user;
-              this.isLoading = false;
+              let image = "https://render-us.worldofwarcraft.com/character/";
+              for(let i = 0; i < data.user.bnet.personalCharacters.length; i++) {
+                if (data.user.bnet.personalCharacters[i].lastModified > 0) {
+                  image += data.user.bnet.personalCharacters[i].thumbnail;
+                  break;
+                }
+              }
+
+              this.authService.updateUser(data.user._id, image).subscribe((data: ServerResponse) => {
+                if (!data.success) {
+                  this.toastr.error(data.message, "Error");
+                  this.isLoading = false;
+                } else {
+                  this.user = data.user;
+                  this.isLoading = false;
+                }
+              });
             }
           });
         }, 1000);

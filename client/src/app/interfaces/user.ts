@@ -11,7 +11,10 @@ export interface User {
         name: string,
         realm: string,
         region: string,
-        thumbnail: string
+        thumbnail: string,
+        guild: string,
+        guildRealm: string,
+        lastModified: number
       }
     ]
   },

@@ -17,6 +17,9 @@ const userSchema = new Schema({
         realm: { type: String, required: true },
         region: { type: String, required: true },
         thumbnail: { type: String },
+        guild: { type: String },
+        guildRealm: { type: String },
+        lastModified: { type: Number }
       }
     ]
   },

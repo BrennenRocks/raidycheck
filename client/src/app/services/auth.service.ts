@@ -14,8 +14,6 @@ export class AuthService {
   private isLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.loggedIn());
   public isLoggedInEmitter: Observable<boolean> = this.isLoggedIn.asObservable();
 
-  public isNewUser: boolean;
-
   constructor(
     private http: HttpClient,
     private jwtHelper: JwtHelperService
@@ -30,18 +28,18 @@ export class AuthService {
     localStorage.setItem('rc_token', token);
   }
 
-  public logout() {
+  public logout(): Observable<ServerResponse> {
     localStorage.clear();
     this.isLoggedIn.next(false);
-    return this.http.get(DOMAIN + '/api/auth/logout');
+    return this.http.get<ServerResponse>(DOMAIN + '/api/auth/logout');
   }
 
   public loggedIn(): boolean {
     return !this.jwtHelper.isTokenExpired();
   }
 
-  public getProfile(battletag: string) {
-    return this.http.get(DOMAIN + '/api/users/' + battletag);
+  public getProfile(battletag: string): Observable<ServerResponse> {
+    return this.http.get<ServerResponse>(DOMAIN + '/api/users/' + battletag);
   }
   
   public getLoggedInUser(): Observable<ServerResponse> {
@@ -49,7 +47,7 @@ export class AuthService {
   }
 
   public updateUser(userId: string, image: string): Observable<ServerResponse> {
-    return this.http.put<ServerResponse>(DOMAIN + '/api/users/update/' + userId, image, { headers: this.getAuthHeader() });
+    return this.http.put<ServerResponse>(DOMAIN + '/api/users/update/' + userId, { image }, { headers: this.getAuthHeader() });
   }
 
   // delete User
