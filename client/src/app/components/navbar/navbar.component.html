@@ -22,10 +22,10 @@
           <li *ngIf="!isLoggedIn" class="nav-item">
             <button class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect routerLink="/login">Login With Bnet</button>
           </li>
-          <li *ngIf="isLoggedIn" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
+          <li *ngIf="isLoggedIn && !isLoading" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
               <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-                  <img src="" class="rounded-circle img-fluid" style="width: 28px;">
-                  Battletag<span class="caret"></span>
+                  <img src="{{ user.image }}" class="rounded-circle img-fluid" style="width: 28px;">
+                  {{ user.bnet.battletag | titlecase }}<span class="caret"></span>
             </a>
             <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
                 <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Profile</a>

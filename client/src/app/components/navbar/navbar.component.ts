@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../services/auth.service';
+import { ServerResponse } from '../../interfaces/server-response';
+import { User } from '../../interfaces/user';
+
 
 @Component({
   selector: 'app-navbar',
@@ -11,9 +14,10 @@ import { AuthService } from '../../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
 
-  isLoading: Boolean = false;
-  isLoggedIn: Boolean = false;
-  user: any;
+  isLoading: boolean = false;
+  isLoggedIn: boolean = false;
+  user: User;
+  initialAvatar: string;
 
   constructor(
     private authService: AuthService,
@@ -22,17 +26,29 @@ export class NavbarComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.authService.isLoggedInEmitter.subscribe(data => {
-      this.isLoggedIn = data;
+    this.isLoading = true;
+    this.authService.isLoggedInEmitter.subscribe((data: boolean) => {
+      if (data !== null) {
+        this.isLoggedIn = data;
+      }
+
       if (this.isLoggedIn) {
-        this.authService.getLoggedInUser().subscribe((data: any) => {
-          
-        });
+        setTimeout(() => {
+          this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
+            if (!data.success) {
+              this.toastr.error(data.message, "Error");
+              this.isLoading = false;
+            } else {
+              this.user = data.user;
+              this.isLoading = false;
+            }
+          });
+        }, 1000);
       }
     });
    }
 
-  onLogoutClick() {
+  public onLogoutClick(): void {
     this.authService.logout();
     this.router.navigate(['/']);
     this.toastr.success("You have been logged out", "Logged out");

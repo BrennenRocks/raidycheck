@@ -9,6 +9,24 @@ const User = require('../models/user');
 const middleware = require('../middleware'),
   constants = require('../config/constants');
 
+/*========================
+   Get logged in user
+==========================*/
+router.get('/users/personal', middleware.getAuthToken, (req, res) => {
+  User.findOne({ _id: req.decodedUser.id }, (err, user) => {
+    if (err) {
+      console.log('/users/personal finding User', err);
+      return res.json({ success: false, message: constants.errMsg });
+    }
+
+    if (!user) {
+      return res.json({ success: false, message: constants.userNotFound });
+    }
+
+    return res.json({ success: true, message: '', user: user });
+  });
+});
+
 /*============================================
    Get public user (used for public profile)
 
@@ -26,24 +44,6 @@ router.get('/users/:battletag', (req, res) => {
 
     if (!user) {
       return res.json({ success: false, message: 'Battletag not found' });
-    }
-
-    return res.json({ success: true, message: '', user: user });
-  });
-});
-
-/*========================
-   Get logged in user
-==========================*/
-router.get('/users/personal', middleware.getAuthToken, (req, res) => {
-  User.findOne({ _id: req.decodedUser.id }, (err, user) => {
-    if (err) {
-      console.log('/users/personal finding User', err);
-      return res.json({ success: false, message: constants.errMsg });
-    }
-
-    if (!user) {
-      return res.json({ success: false, message: constants.userNotFound });
     }
 
     return res.json({ success: true, message: '', user: user });
