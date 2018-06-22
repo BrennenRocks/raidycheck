@@ -8,6 +8,9 @@
   </div>
 </div>
 <div class="character-container">
+    <div *ngIf="isProcessing" class="flex-center text-center">
+        <h2 class="wow pulse infinite">Setting up your account...</h2>
+    </div>
   <section *ngIf="!isLoading" class="mt-lg-5">
 
       <!--Grid row-->

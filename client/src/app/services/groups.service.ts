@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { DOMAIN } from '../constants/constants';
 import { Observable } from 'rxjs';
+import { ServerResponse } from '../interfaces/server-response';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,16 @@ export class GroupsService {
     private http: HttpClient
   ) { }
 
+  private getAuthHeader(): HttpHeaders {
+    return new HttpHeaders().set('Authorization', 'Bearer ' + localStorage.getItem('rc_token'));
+  }
+
   registerGroup(group) {
     return this.http.post(DOMAIN + '/api/groups/new', group);
   }
 
-  getGroups() {
-    return this.http.get(DOMAIN + '/api/groups');
+  public getGroups(): Observable<ServerResponse> {
+    return this.http.get<ServerResponse>(DOMAIN + '/api/groups', { headers: this.getAuthHeader() });
   }
 
   getSingleGroup(groupId) {

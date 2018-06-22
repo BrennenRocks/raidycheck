@@ -5,5 +5,5 @@ export interface ServerResponse {
   success: boolean,
   message: string,
   user: User,
-  group: Group
+  group: Group,
 }

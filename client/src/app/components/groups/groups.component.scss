@@ -1,3 +1,8 @@
+.card {
+  background-color: rgb(19, 9, 22);
+  color: rgba(255, 255, 255, 0.9)
+}
+
 .cascading-admin-card {
   margin-top: 20px; }
   .cascading-admin-card .admin-up {
@@ -36,3 +41,100 @@
   -webkit-box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
   box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
 }
+
+ul.gear {
+  list-style-type: none;
+}
+
+ul.gear li {
+  display: inline-block;
+  width: 48px;
+  margin: 0 2px;
+  position: relative;
+}
+
+.slot {
+  width: 48px;
+  height: 48px;
+  background: url("https://images.raidycheck.com/gear-slots.png")no-repeat center center;
+}
+
+ul.gear li.mainHand .slot {
+  background-position: 0 -611px;
+}
+
+ul.gear li.offHand {
+  margin-right: 51px;
+}
+
+ul.gear li.offHand:after {
+  content: '';
+  height: 65px;
+  width: 1px;
+  display: block;
+  background: rgba(255, 255, 255, 0.1);
+  position: absolute;
+  left: 75px;
+  top: -8px;
+}
+
+ul.gear li.offHand .slot {
+  background-position: 0 -658px;
+}
+
+ul.gear li.head .slot {
+  background-position: 0 0;
+}
+
+ul.gear li.neck .slot {
+  background-position: 0 -49px;
+}
+
+ul.gear li.shoulder .slot {
+  background-position: 0 -94px;
+}
+
+ul.gear li.back .slot {
+  background-position: 0 -141px;
+}
+
+ul.gear li.chest .slot {
+  background-position: 0 -141px;
+}
+
+ul.gear li.wrist .slot {
+  background-position: 0 -282px;
+}
+
+ul.gear li.hands .slot {
+  background-position: 0 -329px;
+}
+
+ul.gear li.waist .slot {
+  background-position: 0 -376px;
+}
+
+ul.gear li.legs .slot {
+  background-position: 0 -423px;
+}
+
+ul.gear li.feet .slot {
+  background-position: 0 -470px;
+}
+
+ul.gear li.finger1 .slot {
+  background-position: 0 -517px;
+}
+
+ul.gear li.finger2 .slot {
+  background-position: 0 -517px;
+}
+
+ul.gear li.trinket1 .slot {
+  background-position: 0 -564px;
+}
+
+ul.gear li.trinket2 .slot {
+  background-position: 0 -564px;
+}
+

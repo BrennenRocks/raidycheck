@@ -99,7 +99,7 @@ router.get('/groups', middleware.getAuthToken, (req, res) => {
         return res.json({ success: false, message: constants.userNotFound });
       }
       
-      return res.json({ success: true, groups: user.groups });
+      return res.json({ success: true, message: '', user: user });
     });
 });
 

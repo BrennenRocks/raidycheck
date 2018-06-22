@@ -15,7 +15,7 @@ export class NavbarComponent implements OnInit {
 
   isLoading: boolean = false;
   isLoggedIn: boolean = false;
-  updatedUser: boolean = false;
+  refreshUser: boolean = false;
   user: User;
 
   constructor(
@@ -30,27 +30,37 @@ export class NavbarComponent implements OnInit {
       if (data !== null) {
         this.isLoggedIn = data;
       }
-      this.authService.updatedUserEmitter.subscribe((data: boolean) => {
-        if (data !== null) {
-          this.updatedUser = data;
-        }
 
-        if (this.isLoggedIn || this.updatedUser) {
-          setTimeout(() => {
-            this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
-              if (!data.success) {
-                this.toastr.error(data.message, "Error");
-                this.isLoading = false;
-              } else {
-                this.user = data.user;
-                this.isLoading = false;
-              }
-            });
-          }, 1000);
-        }
-      }); 
+      if (this.isLoggedIn) {
+        this.getUser();
+      }
     });
-   }
+
+    this.authService.refreshUserEmitter.subscribe((data: boolean) => {
+      if (data !== null) {
+        this.refreshUser = data;
+      }
+
+      if (this.isLoggedIn && this.refreshUser) {
+        this.getUser();
+        this.authService.updateUserFinish();
+      }
+    }); 
+  }
+
+  private getUser() {
+    setTimeout(() => {
+      this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
+        if (!data.success) {
+          this.toastr.error(data.message, "Error");
+          this.isLoading = false;
+        } else {
+          this.user = data.user;
+          this.isLoading = false;
+        }
+      });
+    }, 1000);
+  }
 
   public onLogoutClick(): void {
     this.authService.logout();

@@ -4,10 +4,10 @@
         <section class="mt-lg-5">
 
             <!--Grid row-->
-            <div class="row">
+            <div *ngIf="!isLoading" class="row">
 
                 <!--Grid column-->
-                <div class="col-xl-12 col-md-12 mb-r mb-2">
+                <div *ngFor="let group of user.groups.personal" class="col-xl-12 mb-r mb-2">
 
                     <!--Card-->
                     <div class="card card-cascade cascading-admin-card">
@@ -15,12 +15,12 @@
                         <!--Card Data-->
                         <div class="admin-up">
                             <div class="float-left">
-                                <img src="https://render-us.worldofwarcraft.com/character/kiljaeden/147/174734227-inset.jpg" alt="User image" class="img-fluid" style="width: 200px">
+                                <img src={{user.image}} alt="User image" class="img-fluid">
                             </div>
                             <div class="data float-left ml-5">
-                                <p class="text-left">Battletag</p>
+                                <p class="text-left">{{user.bnet.battletag | titlecase }}</p>
                                 <h4>
-                                    <strong>Group name</strong>
+                                    <strong>{{user.groups.personal[0].title}}</strong>
                                 </h4>
                             </div>
                         </div>
@@ -28,18 +28,128 @@
 
                         <!--Card content-->
                         <div class="card-body">
-                            <div class="media">
-                                <img class="d-flex mr-3" src="https://placehold.it/64x64" alt="character image">
-                                <div class="media-body">
-                                    <h5 class="mt-0" align="justify">Character Name - iLvl</h5>
-                                    <div class="row">
-                                        <div class="col-xl-12 col-md-6">
-                                            Head Neck Shoulders Back Chest Wrist Main-Hand Offhand
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-12 col-md-6">
-                                            Hands Belt Pants Feet Ring1 Ring2 Trinket1 Trinket2
+                            <div *ngFor="let char of group.characters">
+                                <div class="media">
+                                    <img class="d-flex mr-3" src="https://placehold.it/64x64" alt="character image">
+                                    <div class="media-body">
+                                        <h5 class="mt-0" align="justify">{{char.cid.name}} - {{char.iLvl}}</h5>
+                                        <div class="row">
+                                            <div class="col-xl-12">
+                                                <ul class="gear">
+                                                    <li class="gear mainHand">
+                                                        <div class="slot" [ngClass]="isEmpty">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear offHand" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear head" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear neck" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear shoulder" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear back" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear chest" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear wrist" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear hands" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear waist" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear legs" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear feet" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear finger1" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear finger2" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear trinket1" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                    <li class="gear trinket2" [ngClass]="isEmpty">
+                                                        <div class="slot" [ngClass]="">
+                                                            <a href="">
+                                                                <img src="">
+                                                            </a>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

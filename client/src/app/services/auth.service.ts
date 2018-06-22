@@ -14,8 +14,8 @@ export class AuthService {
   private isLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.loggedIn());
   public isLoggedInEmitter: Observable<boolean> = this.isLoggedIn.asObservable();
 
-  private updatedUser: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.loggedIn());
-  public updatedUserEmitter: Observable<boolean> = this.updatedUser.asObservable();
+  private refreshUser: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public refreshUserEmitter: Observable<boolean> = this.refreshUser.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -50,8 +50,12 @@ export class AuthService {
   }
 
   public updateUser(userId: string, image: string): Observable<ServerResponse> {
-    this.updatedUser.next(true);
+    this.refreshUser.next(true);
     return this.http.put<ServerResponse>(DOMAIN + '/api/users/update/' + userId, { image }, { headers: this.getAuthHeader() });
+  }
+
+  public updateUserFinish(): void {
+    this.refreshUser.next(false);
   }
 
   // delete User
