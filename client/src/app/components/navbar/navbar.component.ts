@@ -15,6 +15,7 @@ export class NavbarComponent implements OnInit {
 
   isLoading: boolean = false;
   isLoggedIn: boolean = false;
+  updatedUser: boolean = false;
   user: User;
 
   constructor(
@@ -29,20 +30,25 @@ export class NavbarComponent implements OnInit {
       if (data !== null) {
         this.isLoggedIn = data;
       }
-      
-      if (this.isLoggedIn) {
-        setTimeout(() => {
-          this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
-            if (!data.success) {
-              this.toastr.error(data.message, "Error");
-              this.isLoading = false;
-            } else {
-              this.user = data.user;
-              this.isLoading = false;
-            }
-          });
-        }, 1000);
-      }
+      this.authService.updatedUserEmitter.subscribe((data: boolean) => {
+        if (data !== null) {
+          this.updatedUser = data;
+        }
+
+        if (this.isLoggedIn || this.updatedUser) {
+          setTimeout(() => {
+            this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
+              if (!data.success) {
+                this.toastr.error(data.message, "Error");
+                this.isLoading = false;
+              } else {
+                this.user = data.user;
+                this.isLoading = false;
+              }
+            });
+          }, 1000);
+        }
+      }); 
     });
    }
 

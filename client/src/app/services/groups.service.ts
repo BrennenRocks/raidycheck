@@ -29,8 +29,8 @@ export class GroupsService {
 
   // delete group
 
-  addCharactersToGroup(groupId, characters) {
-    return this.http.post(DOMAIN + '/api/groups/' + groupId + '/addCharacters', characters);
+  addCharactersToGroup(groupId, region, characters) {
+    return this.http.post(DOMAIN + '/api/groups/' + groupId + '/characters/add', { region, characters } );
   }
 
   updateCharacter(groupdId, charId): void {

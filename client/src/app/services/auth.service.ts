@@ -14,6 +14,9 @@ export class AuthService {
   private isLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.loggedIn());
   public isLoggedInEmitter: Observable<boolean> = this.isLoggedIn.asObservable();
 
+  private updatedUser: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.loggedIn());
+  public updatedUserEmitter: Observable<boolean> = this.updatedUser.asObservable();
+
   constructor(
     private http: HttpClient,
     private jwtHelper: JwtHelperService
@@ -47,6 +50,7 @@ export class AuthService {
   }
 
   public updateUser(userId: string, image: string): Observable<ServerResponse> {
+    this.updatedUser.next(true);
     return this.http.put<ServerResponse>(DOMAIN + '/api/users/update/' + userId, { image }, { headers: this.getAuthHeader() });
   }
 

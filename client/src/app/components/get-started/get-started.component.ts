@@ -17,6 +17,7 @@ export class GetStartedComponent implements OnInit {
 
   user: User;
   isLoading: boolean = true;
+  isProcessing: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -28,13 +29,16 @@ export class GetStartedComponent implements OnInit {
   ngOnInit() {
     this.authService.getLoggedInUser().subscribe((data: ServerResponse) => {
       if (!data.success) {
-        this.toastr.error(data.message, "Error");
+        this.toastr.error(data.message, 'Error');
         this.isLoading = false;
       } else {
         this.user = data.user;
         const avaiablePersonalChars = [];
         this.user.bnet.personalCharacters.map(char => {
           if (char.lastModified > 0) {
+            if (!char.guild) {
+              char.guild = 'No Guild';
+            }
             avaiablePersonalChars.push(char);
           }
         });
@@ -45,7 +49,42 @@ export class GetStartedComponent implements OnInit {
   }
 
   public onCharClick(char): void {
-    console.log(char);
+    this.isProcessing = true;
+    let image = "https://render-us.worldofwarcraft.com/character/" + char.thumbnail;
+    const newGroup = {
+      title: 'My first group',
+      isPublic: false,
+      allowOthersToUpdateCharacters: false
+    };
+    let chars = [];
+    this.user.bnet.personalCharacters.map(char => {
+      if (char.lastModified > 0) {
+        chars.push({ name: char.name, realm: char.realm });
+      }
+    });
+    this.authService.updateUser(this.user._id, image).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isProcessing = false;
+      } else {
+        this.groupsService.registerGroup(newGroup).subscribe((data: ServerResponse) => {
+          if (!data.success) {
+            this.toastr.error(data.message, 'Error');
+            this.isProcessing = false;
+          } else {
+            this.groupsService.addCharactersToGroup(data.group._id, this.user.bnet.personalCharacters[0].region, chars).subscribe((data: ServerResponse) => {
+              if (!data.success) {
+                this.toastr.error(data.message, 'Error');
+                this.isProcessing = false;
+              } else {
+                this.isProcessing = false;
+                this.router.navigate(['/groups']);
+              }
+            });
+          }
+        });
+      }
+    });
   }
 
 }
