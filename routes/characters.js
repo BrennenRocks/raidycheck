@@ -137,23 +137,13 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
             // Remove the nulls (errored out) responses
             response = _.compact(response);
             const resChars = response.map(r => r.data);
-            let items = [];
+            let items = {};
             for (let i = 0; i < resChars.length; i++) {
               for (let key in resChars[i].items) {
                 if (resChars[i].items.hasOwnProperty(key)) {
                   if (resChars[i].items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
-                    items.push(
-                      {
-                        slot: key.charAt(0).toUpperCase() + key.slice(1),
-                        id: resChars[i].items[key].id,
-                        name: resChars[i].items[key].name,
-                        icons: resChars[i].items[key].icon,
-                        iLvl: resChars[i].items[key].itemLevel,
-                        quality: resChars[i].items[key].quality,
-                        bonusLists: resChars[i].items[key].bonusLists,
-                        tooltipParams: resChars[i].items[key].tooltipParams,
-                      }
-                    );
+                    items[key] = resChars[i].items[key];
+                    items[key].icon = "https://render-us.worldofwarcraft.com/icons/56/" + items[key].icon + ".jpg";
                   }
                 }
               }
@@ -171,7 +161,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                 lastUpdated: new Date(),
                 items: items
               }));
-              items = [];
+              items = {};
             }
 
             Character.create(newChars, (err, newCharacters) => {

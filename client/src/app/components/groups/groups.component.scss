@@ -42,8 +42,18 @@
   box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
 }
 
+img {
+  vertical-align: baseline;
+}
+
+ul.gear li img {
+  width: 48px;
+  height: 48px;
+}
+
 ul.gear {
   list-style-type: none;
+  margin-bottom: .3rem;
 }
 
 ul.gear li {

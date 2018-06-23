@@ -16,6 +16,7 @@ import { GroupsComponent } from './components/groups/groups.component';
 import { LoginComponent } from './components/login/login.component';
 import { LoggingInComponent } from './components/logging-in/logging-in.component';
 import { GetStartedComponent } from './components/get-started/get-started.component';
+import { SeparateArrayPipe } from './pipes/separate-array.pipe';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { GetStartedComponent } from './components/get-started/get-started.compon
     GroupsComponent,
     LoginComponent,
     LoggingInComponent,
-    GetStartedComponent
+    GetStartedComponent,
+    SeparateArrayPipe
   ],
   imports: [
     AppRoutingModule,

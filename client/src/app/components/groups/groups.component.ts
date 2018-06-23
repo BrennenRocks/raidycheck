@@ -14,6 +14,7 @@ export class GroupsComponent implements OnInit {
 
   isLoading: boolean = true;
   user: User;
+  slots: string[] = ["mainHand", "offHand", "head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2"];
 
   constructor(
     private groupsService: GroupsService,
@@ -26,7 +27,7 @@ export class GroupsComponent implements OnInit {
         this.toastr.error(data.message, 'Error');
         this.isLoading = false;
       } else {
-        this.user = data.user,
+        this.user = data.user;
         this.isLoading = false;
       }
     });
