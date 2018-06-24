@@ -39,13 +39,13 @@
                                                 <div class="col-xl-12">
                                                     <ul class="gear">
                                                         <li *ngFor="let slot of slots" class="gear {{slot}}" [ngClass]="!char.items[slot]?.icon ? 'empty' : '' ">
-                                                            <div class="slot {{char.items[slot]?.quality}}">
-                                                                <!-- &amp;pcs={{char.items[slot].tooltipParams?.set | separateArray:':'}}&amp;bonus={{char.items[slot].bonusLists | separateArray:':'}} -->
-                                                                <a *ngIf="char.items[slot]?.icon" href="//www.wowhead.com/item={{char.items[slot].id}}/"  
-                                                                     data-wowhead="lvl={{char.level}}&amp;ench={{char.items[slot].tooltipParams.enchant}}&amp;gems={{char.items[slot].toolTipParams.gem0}}:{{char.items[slot].toolTipParams.gem1}}:{{char.items[slot].toolTipParams.gem2}}&amp;ilvl={{char.items[slot].itemLevel}}" target="_blank">
+                                                            <div class="slot q{{char.items[slot]?.quality}}">
+                                                                <a *ngIf="char.items[slot]?.icon" href="//www.wowhead.com/item={{char.items[slot].id}}/lvl={{char.level}}&amp;ench={{char.items[slot].tooltipParams.enchant}}&amp;gems={{char.items[slot].tooltipParams.gem0}}:{{char.items[slot].tooltipParams.gem1}}:{{char.items[slot].tooltipParams.gem2}}&amp;ilvl={{char.items[slot].itemLevel}}&amp;pcs={{char.items[slot].tooltipParams.set | separateArray:':'}}&amp;bonus={{char.items[slot].bonusLists | separateArray:':'}}"  
+                                                                    target="_blank">
                                                                     <img src="{{char.items[slot]?.icon}}">
                                                                 </a>
                                                             </div>
+                                                            <span *ngIf="char.items[slot]?.itemLevel" style="font-size: 10px">{{char.items[slot].itemLevel}}</span>
                                                         </li>
                                                     </ul>
                                                 </div>

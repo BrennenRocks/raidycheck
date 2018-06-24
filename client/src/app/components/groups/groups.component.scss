@@ -69,6 +69,11 @@ ul.gear li {
   background: url("https://images.raidycheck.com/gear-slots.png")no-repeat center center;
 }
 
+ul.gear li.empty {
+  position: relative;
+  top: -17px;
+}
+
 ul.gear li.mainHand .slot {
   background-position: 0 -611px;
 }
@@ -146,5 +151,33 @@ ul.gear li.trinket1 .slot {
 
 ul.gear li.trinket2 .slot {
   background-position: 0 -564px;
+}
+
+ul.gear li .slot.q0 {
+  box-shadow: 0 0 0 1px #9b9b9b, 0 0 2px #9b9b9b;
+}
+
+ul.gear li .slot.q1 {
+  box-shadow: 0 0 0 1px #fffef4, 0 0 2px #fffef4;
+}
+
+ul.gear li .slot.q2 {
+  box-shadow: 0 0 0 1px #11fc5f, 0 0 2px #11fc5f;
+}
+
+ul.gear li .slot.q3 {
+  box-shadow: 0 0 0 1px #0281ff, 0 0 2px #0281ff;
+}
+
+ul.gear li .slot.q4 {
+  box-shadow: 0 0 0 1px #c600ff, 0 0 4px #c600ff;
+}
+
+ul.gear li .slot.q5 {
+  box-shadow: 0 0 0 1px #ff8002, 0 0 12px #ff8002;
+}
+
+ul.gear li .slot.q6 {
+  box-shadow: 0 0 0 1px #e5cc80, 0 0 12px #e5cc80;
 }
 
