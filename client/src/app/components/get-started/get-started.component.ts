@@ -78,7 +78,7 @@ export class GetStartedComponent implements OnInit {
                 this.isProcessing = false;
               } else {
                 this.isProcessing = false;
-                this.router.navigate(['/groups']);
+                this.router.navigate(['/group', data.group._id]);
               }
             });
           }

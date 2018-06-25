@@ -84,12 +84,11 @@ router.get('/groups/:groupId', (req, res) => {
   });
 });
 
-/*===========================================
-   Get all groups with characters populated
-=============================================*/
+/*====================================
+   Get all groups of logged in User
+======================================*/
 router.get('/groups', middleware.getAuthToken, (req, res) => {
-  User.findOne({ _id: req.decodedUser.id }).populate({ path: 'groups.favorites groups.personal', populate: { path: 'characters' } })
-    .exec((err, user) => {
+  User.findOne({ _id: req.decodedUser.id }).populate({ path: 'groups' }).exec((err, user) => {
       if (err) {
         console.log('/groups finding User', err);
         return res.json({ success: false, message: constants.errMsg });

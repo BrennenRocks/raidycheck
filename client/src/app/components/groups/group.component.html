@@ -7,7 +7,7 @@
             <div *ngIf="!isLoading" class="row">
 
                 <!--Grid column-->
-                <div *ngFor="let group of user.groups.personal" class="col-xl-12 mb-r mb-2">
+                <div class="col-xl-12 mb-r mb-2">
 
                     <!--Card-->
                     <div class="card card-cascade cascading-admin-card">
@@ -18,10 +18,12 @@
                                 <!-- <img src={{user.image}} alt="User image" class="img-fluid"> -->
                                 <img src="https://render-us.worldofwarcraft.com/character/kiljaeden/147/174734227-inset.jpg" alt="User image" class="img-fluid rounded" style="width: 200px">
                             </div>
+                            <i *ngIf="!isFavorited" (click)="onFavoriteGroup()" class="fa fa-star-o mt-5 float-right" mdbTooltip="Favorite this Group" placement="top"></i>
+                            <i *ngIf="isFavorited" (click)="onFavoriteGroup()" class="fa fa-star mt-5 float-right" mdbTooltip="Unfavorite this Group" placement="top"></i>
                             <div class="data float-left ml-5">
                                 <p class="text-left">{{user.bnet.battletag | titlecase }}</p>
                                 <h4>
-                                    <strong>{{group.title}}</strong>
+                                    <strong>{{currentGroup.title}}</strong>
                                 </h4>
                             </div>
                         </div>
@@ -29,7 +31,7 @@
 
                         <!--Card content-->
                         <div class="card-body">
-                            <div *ngFor="let char of group.characters">
+                            <div *ngFor="let char of currentGroup.characters">
                                 <div class="media">
                                     <img class="d-flex rounded mr-3" src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}">
                                     <div class="media-body">

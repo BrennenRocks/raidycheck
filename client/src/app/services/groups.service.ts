@@ -34,6 +34,10 @@ export class GroupsService {
 
   // delete group
 
+  public favoriteGroup(groupId): Observable<ServerResponse> {
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader });
+  }
+
   addCharactersToGroup(groupId, region, characters) {
     return this.http.post(DOMAIN + '/api/groups/' + groupId + '/characters/add', { region, characters } );
   }
@@ -44,4 +48,5 @@ export class GroupsService {
   }
 
   // remove character from group
+  
 }

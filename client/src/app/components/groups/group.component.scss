@@ -10,12 +10,13 @@
     margin-right: 4%;
     margin-top: -20px; }
     .cascading-admin-card .admin-up .fa {
-      padding: 1.7rem;
+      margin-right: 1rem;
+      // background-color: rgba(196, 186, 186, 0.555);
+      // border-radius: 3px;
       font-size: 2rem;
       color: #fff;
       text-align: left;
-      margin-right: 1rem;
-      border-radius: 3px; }
+    }
     .cascading-admin-card .admin-up .data {
       margin-top: 2rem; }
       .cascading-admin-card .admin-up .data p {
@@ -36,10 +37,17 @@
     font-size: 3rem;
     opacity: 0.5; }
 
-  
-.cascading-admin-card .admin-up .fa {
-  -webkit-box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
-  box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
+
+// .cascading-admin-card .admin-up .fa {
+//   -webkit-box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
+//   box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2), 0 2px 13px 0 rgba(0, 0, 0, 0.19);
+// }
+.cascading-admin-card .admin-up .fa-star {
+  color: rgb(255, 255, 0);
+}
+
+.cascading-admin-card .admin-up .fa:hover {
+  color: rgb(255, 255, 0); 
 }
 
 img {

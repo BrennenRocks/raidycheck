@@ -12,7 +12,7 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { GroupsComponent } from './components/groups/groups.component';
+import { GroupComponent } from './components/groups/group.component';
 import { LoginComponent } from './components/login/login.component';
 import { LoggingInComponent } from './components/logging-in/logging-in.component';
 import { GetStartedComponent } from './components/get-started/get-started.component';
@@ -24,7 +24,7 @@ import { SeparateArrayPipe } from './pipes/separate-array.pipe';
     NavbarComponent,
     HomeComponent,
     FooterComponent,
-    GroupsComponent,
+    GroupComponent,
     LoginComponent,
     LoggingInComponent,
     GetStartedComponent,
