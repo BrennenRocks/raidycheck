@@ -88,7 +88,7 @@ router.get('/groups/:groupId', (req, res) => {
    Get all groups of logged in User
 ======================================*/
 router.get('/groups', middleware.getAuthToken, (req, res) => {
-  User.findOne({ _id: req.decodedUser.id }).populate({ path: 'groups' }).exec((err, user) => {
+  User.findOne({ _id: req.decodedUser.id }).populate('groups.personal groups.favorites').exec((err, user) => {
       if (err) {
         console.log('/groups finding User', err);
         return res.json({ success: false, message: constants.errMsg });

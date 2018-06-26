@@ -16,10 +16,11 @@ export class GroupComponent implements OnInit {
 
   isLoading: boolean = true;
   isProcessing: boolean = false;
+  isFavorited: boolean;
+  isSidebarClosed: boolean = false;
   user: User;
   slots: string[] = ["mainHand", "offHand", "head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2"];
   currentGroup: Group;
-  isFavorited: boolean;
   
   constructor(
     private groupsService: GroupsService,
@@ -68,5 +69,9 @@ export class GroupComponent implements OnInit {
         }
       });
     }
+  }
+
+  public onSidebarOpenClose(): void {
+    this.isSidebarClosed = !this.isSidebarClosed;
   }
 }
