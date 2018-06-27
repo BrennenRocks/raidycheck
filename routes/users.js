@@ -13,7 +13,7 @@ const middleware = require('../middleware'),
    Get logged in user
 ==========================*/
 router.get('/users/personal', middleware.getAuthToken, (req, res) => {
-  User.findOne({ _id: req.decodedUser.id }, (err, user) => {
+  User.findOne({ _id: req.decodedUser.id }).populate('groups.personal').exec((err, user) => {
     if (err) {
       console.log('/users/personal finding User', err);
       return res.json({ success: false, message: constants.errMsg });

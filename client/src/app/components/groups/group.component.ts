@@ -14,12 +14,12 @@ import { ActivatedRoute, Params } from '@angular/router';
 })
 export class GroupComponent implements OnInit {
 
+  slots: string[] = ["mainHand", "offHand", "head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2"];
   isLoading: boolean = true;
   isProcessing: boolean = false;
   isFavorited: boolean;
   isSidebarClosed: boolean = false;
   user: User;
-  slots: string[] = ["mainHand", "offHand", "head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2"];
   currentGroup: Group;
   
   constructor(
@@ -64,8 +64,16 @@ export class GroupComponent implements OnInit {
           this.toastr.error(data.message, 'Error');
           this.isProcessing = false;
         } else {
-          this.isFavorited = !this.isFavorited;
-          this.isProcessing = false;
+          this.groupsService.getGroups().subscribe((data: ServerResponse) => {
+            if (!data.success) {
+              this.toastr.error(data.message, 'Error');
+              this.isLoading = false;
+            } else {
+              this.user = data.user;
+            }
+            this.isFavorited = !this.isFavorited;
+            this.isProcessing = false;
+          });
         }
       });
     }

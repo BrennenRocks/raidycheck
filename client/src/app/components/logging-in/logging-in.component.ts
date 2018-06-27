@@ -27,7 +27,7 @@ export class LoggingInComponent implements OnInit {
         this.router.navigate(['/']);
         this.toastr.error(data.message, 'Error');
       } else {
-        this.route.snapshot.queryParams.new === 'true' ? this.router.navigate(['/get-started']) : this.router.navigate(['/group', data.group._id]);
+        this.route.snapshot.queryParams.new === 'true' ? this.router.navigate(['/get-started']) : this.router.navigate(['/group', data.user.groups.personal[0]._id]);
       }
     });   
   }

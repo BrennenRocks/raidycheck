@@ -8,7 +8,7 @@
                     <h5>The advanced ready check for your group</h5>
                     <br>
                     <button *ngIf="!authService.loggedIn()" class="btn primary-color-dark waves-light" routerLink="/login" mdbWavesEffect type="button">Login With Bnet</button>
-                    <button *ngIf="authService.loggedIn()" class="btn primary-color-dark waves-light" routerLink="/groups" mdbWavesEffect type="button">My Groups</button>
+                    <button *ngIf="authService.loggedIn()" class="btn primary-color-dark waves-light" (click)="onMyGroupsClick()" mdbWavesEffect type="button">My Groups</button>
                     <button class="btn btn-dark-green waves-light" mdbWavesEffect type="button" (click)="onScrollToAbout()">About</button>
                 </div>
             </div>

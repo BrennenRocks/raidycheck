@@ -64,7 +64,7 @@
                                 <!-- <img src={{user.image}} alt="User image" class="img-fluid"> -->
                                 <img src="https://render-us.worldofwarcraft.com/character/kiljaeden/147/174734227-inset.jpg" alt="User image" class="img-fluid rounded" style="width: 200px">
                             </div>
-                            <div class="row">
+                            <div class="row text-left">
                                 <div class="col-md-4">
                                     <p>{{user.bnet.battletag | titlecase }}</p>
                                 </div>
@@ -77,7 +77,7 @@
                             </div>
                             <i *ngIf="!isFavorited" (click)="onFavoriteGroup()" class="fa fa-star-o float-right" mdbTooltip="Favorite this Group" placement="top"></i>
                             <i *ngIf="isFavorited" (click)="onFavoriteGroup()" class="fa fa-star float-right" mdbTooltip="Unfavorite this Group" placement="top"></i>
-                            <div class="data float-left ml-5">
+                            <div class="data float-left ml-3">
                                 <h4>
                                     <strong>{{currentGroup.title}}</strong>
                                 </h4>

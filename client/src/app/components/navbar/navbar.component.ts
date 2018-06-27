@@ -13,7 +13,7 @@ import { User } from '../../interfaces/user';
 })
 export class NavbarComponent implements OnInit {
 
-  isLoading: boolean = false;
+  isLoading: boolean = true;
   isLoggedIn: boolean = false;
   refreshUser: boolean = false;
   user: User;
@@ -25,7 +25,6 @@ export class NavbarComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.isLoading = true;
     this.authService.isLoggedInEmitter.subscribe((data: boolean) => {
       if (data !== null) {
         this.isLoggedIn = data;

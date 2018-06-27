@@ -101,16 +101,13 @@
 }
     
 .cascading-admin-card .admin-up .fa {
-  margin-right: 1rem;
-  // background-color: rgba(196, 186, 186, 0.555);
-  // border-radius: 3px;
   font-size: 2rem;
   color: #fff;
   text-align: left;
 }
     
 .cascading-admin-card .admin-up .data {
-  margin-top: 2rem; 
+  // margin-top: 2rem; 
 }
       
 .cascading-admin-card .admin-up p {
@@ -141,6 +138,10 @@
 .classic-admin-card .card-body .float-right .fa {
   font-size: 3rem;
   opacity: 0.5; 
+}
+
+.card-body {
+  padding: 2rem 1.25rem 1.25rem 1.25rem;
 }
 
 .cascading-admin-card .admin-up .fa-star {
