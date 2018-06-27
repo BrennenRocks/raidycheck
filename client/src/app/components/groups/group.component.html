@@ -9,8 +9,8 @@
     </h3>
     <hr>
     <div class="list-group">
-        <div *ngIf="!isLoading" class="text-center list-group-flush">
-            <a *ngFor="let group of user.groups.personal" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action text-center waves-effect">
+        <div *ngIf="!isLoading" class="text-left list-group-flush">
+            <a *ngFor="let group of user.groups.personal" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
                 {{group.title}}
             </a>
         </div>
@@ -22,7 +22,7 @@
     <hr>
     <div class="list-group">
             <div *ngIf="!isLoading" class="list-group-flush">
-                <a *ngFor="let group of user.groups.favorites" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action text-center waves-effect">
+                <a *ngFor="let group of user.groups.favorites" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
                     {{group.title}}
                 </a>
             </div>
@@ -44,6 +44,11 @@
 
         <section class="mt-lg-5">
 
+            <div class="flex-center">
+                <div *ngIf="isLoading" class="text-center loader">
+            </div>
+
+            </div>
             <!--Grid row-->
             <div *ngIf="!isLoading" class="row">
 
@@ -59,10 +64,20 @@
                                 <!-- <img src={{user.image}} alt="User image" class="img-fluid"> -->
                                 <img src="https://render-us.worldofwarcraft.com/character/kiljaeden/147/174734227-inset.jpg" alt="User image" class="img-fluid rounded" style="width: 200px">
                             </div>
-                            <i *ngIf="!isFavorited" (click)="onFavoriteGroup()" class="fa fa-star-o mt-5 float-right" mdbTooltip="Favorite this Group" placement="top"></i>
-                            <i *ngIf="isFavorited" (click)="onFavoriteGroup()" class="fa fa-star mt-5 float-right" mdbTooltip="Unfavorite this Group" placement="top"></i>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p>{{user.bnet.battletag | titlecase }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p>This group is {{currentGroup.isPublic ? 'public' : 'private'}}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Other people {{currentGroup.allowOthersToUpdateCharacters ? 'can' : 'can\'t'}} update characters</p>
+                                </div>
+                            </div>
+                            <i *ngIf="!isFavorited" (click)="onFavoriteGroup()" class="fa fa-star-o float-right" mdbTooltip="Favorite this Group" placement="top"></i>
+                            <i *ngIf="isFavorited" (click)="onFavoriteGroup()" class="fa fa-star float-right" mdbTooltip="Unfavorite this Group" placement="top"></i>
                             <div class="data float-left ml-5">
-                                <p class="text-left">{{user.bnet.battletag | titlecase }}</p>
                                 <h4>
                                     <strong>{{currentGroup.title}}</strong>
                                 </h4>
