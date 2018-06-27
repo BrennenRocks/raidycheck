@@ -21,7 +21,7 @@
 .sidebar-hide {
   // display: none;
   width: 0;
-  padding: 0;
+  padding: 1.5rem 0 0 0;
   transition: 0.5s;
 }
 
@@ -29,25 +29,37 @@
   padding-left: 0;
 }
 
+.title {
+  white-space: pre;
+}
+
 .sidebar-hide .title {
-  width: 0;
-  height: 0;
-  margin: 0;
+  text-indent: -270px;
   opacity: 0;
   transition: 0.5s;
 }
 
 .sidebar-hide .list-group-item {
   padding: 0;
+  white-space: pre;
+  transition: 0.5s;
+}
+
+.sidebar-hide .list-group {
+  text-indent: -270px;
   transition: 0.5s;
 }
 
 .sidebar .list-group-item {
+  white-space: pre;
   width: 80%;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .sidebar-hide .close {
-  display: none;
+  visibility: hidden;
+  transition: 0.5s;
 }
 
 .sidebar .list-group .active {
@@ -58,8 +70,6 @@
 }
 
 @media (min-width: 768px) {
-  .navbar,
-  footer,
   main {
     padding-left: 280px;
     transition: 0.5s;

@@ -4,15 +4,29 @@
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <h3 class="mt-2 text-center title">
+    <h3 class="text-center title mt-2">
         Your Groups
     </h3>
     <hr>
-    <div *ngIf="!isLoading" class="list-group list-group-flush mt-4">
-        <a *ngFor="let group of user.groups.personal" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
-            {{group.title}}
-        </a>
+    <div class="list-group">
+        <div *ngIf="!isLoading" class="text-center list-group-flush">
+            <a *ngFor="let group of user.groups.personal" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action text-center waves-effect">
+                {{group.title}}
+            </a>
+        </div>
     </div>
+
+    <h3 class="text-center title mt-5">
+        Favorite Groups
+    </h3>
+    <hr>
+    <div class="list-group">
+            <div *ngIf="!isLoading" class="list-group-flush">
+                <a *ngFor="let group of user.groups.favorites" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action text-center waves-effect">
+                    {{group.title}}
+                </a>
+            </div>
+        </div>
 
 </div>
 
