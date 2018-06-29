@@ -1,6 +1,7 @@
 const express = require('express'),
   mongoose = require('mongoose'),
   _ = require('lodash'),
+  fs = require('fs'),
   axios = require('axios');
 
 router = express.Router();
@@ -81,14 +82,16 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
     axios.get(req.body.image, {
       responseType: 'arraybuffer'
     }).then(response => {
-      user.avatar = Buffer.from(response.data, 'binary').toString('base64');
-      user.save((err, savedUser) => {
-        if (err) {
-          console.log('/users/update/:userId saving User', err);
-          return res.json({ success: false, message: constants.errMsg });
-        }
-  
-        return res.json({ success: true, message: '', user: savedUser });
+      fs.writeFile('./images/uglyer.jpg', Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
+        user.avatar = '../images/uglyer.jpg';
+        user.save((err, savedUser) => {
+          if (err) {
+            console.log('/users/update/:userId saving User', err);
+            return res.json({ success: false, message: constants.errMsg });
+          }
+    
+          return res.json({ success: true, message: '', user: savedUser });
+        });
       });
     })
     .catch(err => {
