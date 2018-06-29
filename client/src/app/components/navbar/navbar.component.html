@@ -24,7 +24,7 @@
             </li>
             <li *ngIf="isLoggedIn && !isLoading" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
                 <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-                    <img src="{{ user.image }}" class="rounded-circle img-fluid" style="width: 28px;">
+                    <img src="data:image/jpeg;base64,{{user.avatar}}" class="rounded-circle img-fluid" style="width: 28px;">
                     {{ user.bnet.battletag | titlecase }}<span class="caret"></span>
                 </a>
                 <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">

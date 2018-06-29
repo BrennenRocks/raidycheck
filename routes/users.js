@@ -1,6 +1,7 @@
 const express = require('express'),
   mongoose = require('mongoose'),
-  _ = require('lodash');
+  _ = require('lodash'),
+  axios = require('axios');
 
 router = express.Router();
 
@@ -76,15 +77,23 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
       return res.json({ success: false, message: constants.userNotFound });
     }
 
-    user.image = req.body.image;
-
-    user.save((err, savedUser) => {
-      if (err) {
-        console.log('/users/update/:userId saving User', err);
-        return res.json({ success: false, message: constants.errMsg });
-      }
-
-      return res.json({ success: true, message: '', user: savedUser });
+    // Convert image to base64
+    axios.get(req.body.image, {
+      responseType: 'arraybuffer'
+    }).then(response => {
+      user.avatar = Buffer.from(response.data, 'binary').toString('base64');
+      user.save((err, savedUser) => {
+        if (err) {
+          console.log('/users/update/:userId saving User', err);
+          return res.json({ success: false, message: constants.errMsg });
+        }
+  
+        return res.json({ success: true, message: '', user: savedUser });
+      });
+    })
+    .catch(err => {
+      console.log('/users/update/:userId getting and converting image to base64', err);
+      return res.json({ success: false, message: contants.errMsg });
     });
   });
 });
