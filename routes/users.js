@@ -78,12 +78,12 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
       return res.json({ success: false, message: constants.userNotFound });
     }
 
-    // Convert image to base64
     axios.get(req.body.image, {
       responseType: 'arraybuffer'
     }).then(response => {
-      fs.writeFile('./images/uglyer.jpg', Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
-        user.avatar = '../images/uglyer.jpg';
+      let image = './images/characters/' +  _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
+      fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
+        user.avatar = 'assets/images/' + _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
         user.save((err, savedUser) => {
           if (err) {
             console.log('/users/update/:userId saving User', err);
@@ -95,7 +95,7 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
       });
     })
     .catch(err => {
-      console.log('/users/update/:userId getting and converting image to base64', err);
+      console.log('/users/update/:userId saving image', err);
       return res.json({ success: false, message: contants.errMsg });
     });
   });
