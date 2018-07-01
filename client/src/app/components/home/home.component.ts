@@ -18,8 +18,8 @@ export class HomeComponent implements OnInit {
   user: User;
 
   constructor(
+    public authService: AuthService,
     private scrollToService: ScrollToService,
-    private authService: AuthService,
     private router: Router,
     private toastr: ToastrService,
   ) { }

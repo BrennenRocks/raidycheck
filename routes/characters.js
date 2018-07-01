@@ -1,6 +1,7 @@
 const express = require('express'),
   mongoose = require('mongoose'),
   axios = require('axios'),
+  fs = require('fs'),
   _ = require('lodash');
   
 router = express.Router();
@@ -143,7 +144,25 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                 if (resChars[i].items.hasOwnProperty(key)) {
                   if (resChars[i].items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
                     items[key] = resChars[i].items[key];
-                    items[key].icon = "https://render-us.worldofwarcraft.com/icons/56/" + items[key].icon + ".jpg";
+
+                    let image = './images/items/' + items[key].icon + '.jpg';
+                    if (!fs.existsSync(image)) {
+                      axios.get('https://render-us.worldofwarcraft.com/icons/56/' +  items[key].icon + '.jpg', {
+                        responseType: 'arraybuffer'
+                      }).then(response => {
+                        fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
+                          if (err) {
+                            console.log('/users/update/:userId downloading image', err);
+                            return res.json({ success: false, message: constants.errMsg });
+                          }
+                        });
+                      }).catch(err => {
+                        console.log('/users/update/:userId saving image', err);
+                        return res.json({ success: false, message: contants.errMsg });
+                      });
+                    }
+
+                    items[key].icon = image;
                   }
                 }
               }

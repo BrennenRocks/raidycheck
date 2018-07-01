@@ -83,7 +83,12 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
     }).then(response => {
       let image = './images/characters/' +  _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
       fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
-        user.avatar = 'assets/images/' + _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
+        if (err) {
+          console.log('/users/update/:userId downloading image', err);
+          return res.json({ success: false, message: constants.errMsg });
+        }
+
+        user.avatar = image;
         user.save((err, savedUser) => {
           if (err) {
             console.log('/users/update/:userId saving User', err);

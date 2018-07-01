@@ -39,6 +39,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
+app.use('/images/characters', express.static(__dirname + '/images/characters'));
+app.use('/images/items', express.static(__dirname + '/images/items'));
 
 app.use('/api', auth);
 app.use('/api', groups);

@@ -82,4 +82,8 @@ export class GroupComponent implements OnInit {
   public onSidebarOpenClose(): void {
     this.isSidebarClosed = !this.isSidebarClosed;
   }
+
+  public onAddNewGroup(): void {
+    // nothing yet
+  }
 }

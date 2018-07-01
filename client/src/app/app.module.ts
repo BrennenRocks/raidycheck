@@ -18,6 +18,10 @@ import { LoggingInComponent } from './components/logging-in/logging-in.component
 import { GetStartedComponent } from './components/get-started/get-started.component';
 import { SeparateArrayPipe } from './pipes/separate-array.pipe';
 
+export function jwtTokenGetter() {
+  return localStorage.getItem('rc_token');
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,9 +41,7 @@ import { SeparateArrayPipe } from './pipes/separate-array.pipe';
     HttpClientModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: () => {
-          return localStorage.getItem('rc_token');
-        },
+        tokenGetter: jwtTokenGetter,
         whitelistedDomains: ['localhost:8080']
       }
     }),
