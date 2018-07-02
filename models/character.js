@@ -34,6 +34,7 @@ const characterSchema = new Schema({
       trinket1: { type: Object, default: {} },
       trinket2: { type: Object, default: {} },
     },
+    raids: { type: Array, default: [] }
 });
 
 module.exports = mongoose.model('Character', characterSchema);

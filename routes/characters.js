@@ -116,48 +116,50 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
 
       if (!allCharsFound) {
         let charURLs = [];
-        let charactersNotFoundInArmory = "";
+        let charactersNotFoundInArmory = '';
         for (let i = 0; i < charsNotInDb.length; i++) {
-            charURLs.push({
-              url: "https://" + req.body.region + ".api.battle.net/wow/character/" +
-              charsNotInDb[i].realm + "/" + charsNotInDb[i].name +
-                "?fields=items&locale=en_US&apikey=" + process.env.BLIZZAPIKEY,
+          charURLs.push({
+            url: 'https://' + req.body.region + '.api.battle.net/wow/character/' +
+            charsNotInDb[i].realm + '/' + charsNotInDb[i].name +
+              '?fields=items&locale=en_US&apikey=' + process.env.BLIZZAPIKEY,
             name: charsNotInDb[i].name,
             realm: charsNotInDb[i].realm
           });
         }
 
-        let promiseArray = charURLs.map(char => axios.get(char.url).catch(err => {
+        let promiseCharsArray = charURLs.map(char => axios.get(char.url).catch(err => {
           charactersNotFoundInArmory += char.name + ' - ' + char.realm + ' not found in WoW armory\n';
           return null;
         }));
 
         const newChars = [];
-        axios.all(promiseArray)
-          .then(response => {
+        axios.all(promiseCharsArray)
+          .then(charsResponse => {
             // Remove the nulls (errored out) responses
-            response = _.compact(response);
-            const resChars = response.map(r => r.data);
+            charsResponse = _.compact(charsResponse);
+            const resChars = charsResponse.map(r => r.data);
             let items = {};
+            let raids = [];
+
             for (let i = 0; i < resChars.length; i++) {
               for (let key in resChars[i].items) {
                 if (resChars[i].items.hasOwnProperty(key)) {
-                  if (resChars[i].items[key].name !== undefined && key !== "tabard" && key !== "shirt") {
+                  if (resChars[i].items[key].name !== undefined && key !== 'tabard' && key !== 'shirt') {
                     items[key] = resChars[i].items[key];
 
                     let image = './images/items/' + items[key].icon + '.jpg';
                     if (!fs.existsSync(image)) {
                       axios.get('https://render-us.worldofwarcraft.com/icons/56/' +  items[key].icon + '.jpg', {
                         responseType: 'arraybuffer'
-                      }).then(response => {
-                        fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
+                      }).then(imageResponse => {
+                        fs.writeFile(image, Buffer.from(imageResponse.data, 'binary').toString('base64'), 'base64', (err) => {
                           if (err) {
-                            console.log('/users/update/:userId downloading image', err);
+                            console.log('/groups/:groupId/characters/add downloading image', err);
                             return res.json({ success: false, message: constants.errMsg });
                           }
                         });
                       }).catch(err => {
-                        console.log('/users/update/:userId saving image', err);
+                        console.log('/groups/:groupId/characters/add saving image', err);
                         return res.json({ success: false, message: contants.errMsg });
                       });
                     }
@@ -167,20 +169,37 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                 }
               }
 
-              newChars.push(new Character({
-                cid: {
-                  name: resChars[i].name,
-                  realm: resChars[i].realm,
-                  region: req.body.region,
-                },
-                lastModified: resChars[i].lastModified,
-                iLvl: resChars[i].items.averageItemLevelEquipped,
-                class: resChars[i].class,
-                thumbnail: resChars[i].thumbnail,
-                lastUpdated: new Date(),
-                items: items
-              }));
-              items = {};
+              axios.get('https://' + req.body.region + 'api.battle.net/wow/character/' + 
+              resChars[i].realm  + '/' + resChars[i].name  + 
+              '?fields=progression&locale=en_US&apikey=' + process.env.BLIZZAPIKEY)
+              .then(raidResponse => {
+                raidResponse.data.progression.raids.map(raid => {
+                  if (constants.raid.indexOf(raid.name) != -1) {
+                    raids.push(raid);
+                  }
+
+                  newChars.push(new Character({
+                    cid: {
+                      name: resChars[i].name,
+                      realm: resChars[i].realm,
+                      region: req.body.region,
+                    },
+                    lastModified: resChars[i].lastModified,
+                    iLvl: resChars[i].items.averageItemLevelEquipped,
+                    class: resChars[i].class,
+                    thumbnail: resChars[i].thumbnail,
+                    lastUpdated: new Date(),
+                    items: items,
+                    raids: raids
+                  }));
+                  items = {};
+                  raids = [];
+                });
+              })
+              .catch(err => {
+                console.log('/groups/:groupId/characters/add getting raids', err);
+                return res.json({ success: false, message: contants.errMsg });
+              });
             }
 
             Character.create(newChars, (err, newCharacters) => {
@@ -220,6 +239,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
   });
 });
 
+// TODO: Update icon paths and raid progression
 /*============================================
    Update a character from Blizzard API
 

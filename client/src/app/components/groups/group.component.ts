@@ -70,8 +70,8 @@ export class GroupComponent implements OnInit {
               this.isLoading = false;
             } else {
               this.user = data.user;
+              this.isFavorited = !this.isFavorited;
             }
-            this.isFavorited = !this.isFavorited;
             this.isProcessing = false;
           });
         }
