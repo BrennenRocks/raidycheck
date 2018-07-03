@@ -140,7 +140,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
             const resChars = charsResponse.map(r => r.data);
             let items = {};
             let raids = [];
-
+            let charCount = 0;
             for (let i = 0; i < resChars.length; i++) {
               for (let key in resChars[i].items) {
                 if (resChars[i].items.hasOwnProperty(key)) {
@@ -169,7 +169,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                 }
               }
 
-              axios.get('https://' + req.body.region + 'api.battle.net/wow/character/' + 
+              axios.get('https://' + req.body.region + '.api.battle.net/wow/character/' + 
               resChars[i].realm  + '/' + resChars[i].name  + 
               '?fields=progression&locale=en_US&apikey=' + process.env.BLIZZAPIKEY)
               .then(raidResponse => {
@@ -194,41 +194,44 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                   }));
                   items = {};
                   raids = [];
+                  charCount++;
                 });
               })
               .catch(err => {
                 console.log('/groups/:groupId/characters/add getting raids', err);
                 return res.json({ success: false, message: contants.errMsg });
               });
-            }
 
-            Character.create(newChars, (err, newCharacters) => {
-              if (err) {
-                console.log('/groups/:groupId/characters/add creating characters', err)
-                return res.json({ success: false, message: constants.errMsg });
-              }
-
-              newCharacters.map(char => {
-                group.characters.push(char._id);
-              });
-
-              group.save((err) => {
-                if (err) {
-                  console.log('/groups/:groupId/characters/add saving group', err)
-                  return res.json({ success: false, message: constants.errMsg });
-                }
-
-                // Find the group again to populate the characters before sending back to Front End
-                Group.findById(group._id).populate('characters').exec((err, retGroup) => {
+              if (charCount == resChars.length) {
+                Character.create(newChars, (err, newCharacters) => {
                   if (err) {
-                    console.log('/groups/:groupId/characters/add finding group', err);
+                    console.log('/groups/:groupId/characters/add creating characters', err)
                     return res.json({ success: false, message: constants.errMsg });
                   }
-
-                  return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+    
+                  newCharacters.map(char => {
+                    group.characters.push(char._id);
+                  });
+    
+                  group.save((err) => {
+                    if (err) {
+                      console.log('/groups/:groupId/characters/add saving group', err)
+                      return res.json({ success: false, message: constants.errMsg });
+                    }
+    
+                    // Find the group again to populate the characters before sending back to Front End
+                    Group.findById(group._id).populate('characters').exec((err, retGroup) => {
+                      if (err) {
+                        console.log('/groups/:groupId/characters/add finding group', err);
+                        return res.json({ success: false, message: constants.errMsg });
+                      }
+    
+                      return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+                    });
+                  });
                 });
-              });
-            });
+              }
+            }
           })
           .catch(error => {
             console.log('Error with Axios get User characters', error);
