@@ -138,45 +138,55 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
             // Remove the nulls (errored out) responses
             charsResponse = _.compact(charsResponse);
             const resChars = charsResponse.map(r => r.data);
-            let items = {};
-            let raids = [];
-            let charCount = 0;
-            for (let i = 0; i < resChars.length; i++) {
-              for (let key in resChars[i].items) {
-                if (resChars[i].items.hasOwnProperty(key)) {
-                  if (resChars[i].items[key].name !== undefined && key !== 'tabard' && key !== 'shirt') {
-                    items[key] = resChars[i].items[key];
 
-                    let image = './images/items/' + items[key].icon + '.jpg';
-                    if (!fs.existsSync(image)) {
-                      axios.get('https://render-us.worldofwarcraft.com/icons/56/' +  items[key].icon + '.jpg', {
-                        responseType: 'arraybuffer'
-                      }).then(imageResponse => {
-                        fs.writeFile(image, Buffer.from(imageResponse.data, 'binary').toString('base64'), 'base64', (err) => {
-                          if (err) {
-                            console.log('/groups/:groupId/characters/add downloading image', err);
-                            return res.json({ success: false, message: constants.errMsg });
-                          }
-                        });
-                      }).catch(err => {
-                        console.log('/groups/:groupId/characters/add saving image', err);
-                        return res.json({ success: false, message: contants.errMsg });
-                      });
-                    }
-
-                    items[key].icon = image;
-                  }
-                }
-              }
-
-              axios.get('https://' + req.body.region + '.api.battle.net/wow/character/' + 
+            let progressionURLs = [];
+            for(let i = 0; i < resChars.length; i++) {
+              progressionURLs.push('https://' + req.body.region + '.api.battle.net/wow/character/' + 
               resChars[i].realm  + '/' + resChars[i].name  + 
-              '?fields=progression&locale=en_US&apikey=' + process.env.BLIZZAPIKEY)
-              .then(raidResponse => {
-                raidResponse.data.progression.raids.map(raid => {
-                  if (constants.raid.indexOf(raid.name) != -1) {
-                    raids.push(raid);
+              '?fields=progression&locale=en_US&apikey=' + process.env.BLIZZAPIKEY);
+            }
+
+            let promiseProgressionArray = progressionURLs.map(raid => axios.get(raid));
+
+            axios.all(promiseProgressionArray)
+              .then(progressionResponse => {
+                const resProgression = progressionResponse.map(r => r.data);
+                console.log(resProgression);
+                let items = {};
+                let raids = [];
+                for (let i = 0; i < resChars.length; i++) {
+                  for (let key in resChars[i].items) {
+                    if (resChars[i].items.hasOwnProperty(key)) {
+                      if (resChars[i].items[key].name !== undefined && key !== 'tabard' && key !== 'shirt') {
+                        items[key] = resChars[i].items[key];
+    
+                        let image = './images/items/' + items[key].icon + '.jpg';
+                        if (!fs.existsSync(image)) {
+                          axios.get('https://render-us.worldofwarcraft.com/icons/56/' +  items[key].icon + '.jpg', {
+                            responseType: 'arraybuffer'
+                          }).then(imageResponse => {
+                            fs.writeFile(image, Buffer.from(imageResponse.data, 'binary').toString('base64'), 'base64', (err) => {
+                              if (err) {
+                                console.log('/groups/:groupId/characters/add downloading image', err);
+                                return res.json({ success: false, message: constants.errMsg });
+                              }
+                            });
+                          }).catch(err => {
+                            console.log('/groups/:groupId/characters/add saving image', err);
+                            return res.json({ success: false, message: contants.errMsg });
+                          });
+                        }
+    
+                        items[key].icon = image;
+                      }
+                    }
                   }
+                  
+                  resProgression[i].progression.raids.map(raid => {
+                    if (constants.raids.indexOf(raid.name) != -1) {
+                      raids.push(raid);
+                    }
+                  });
 
                   newChars.push(new Character({
                     cid: {
@@ -194,44 +204,36 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                   }));
                   items = {};
                   raids = [];
-                  charCount++;
-                });
-              })
-              .catch(err => {
-                console.log('/groups/:groupId/characters/add getting raids', err);
-                return res.json({ success: false, message: contants.errMsg });
-              });
-
-              if (charCount == resChars.length) {
-                Character.create(newChars, (err, newCharacters) => {
-                  if (err) {
-                    console.log('/groups/:groupId/characters/add creating characters', err)
-                    return res.json({ success: false, message: constants.errMsg });
-                  }
+                }
     
-                  newCharacters.map(char => {
-                    group.characters.push(char._id);
-                  });
-    
-                  group.save((err) => {
+                  Character.create(newChars, (err, newCharacters) => {
                     if (err) {
-                      console.log('/groups/:groupId/characters/add saving group', err)
+                      console.log('/groups/:groupId/characters/add creating characters', err)
                       return res.json({ success: false, message: constants.errMsg });
                     }
     
-                    // Find the group again to populate the characters before sending back to Front End
-                    Group.findById(group._id).populate('characters').exec((err, retGroup) => {
+                    newCharacters.map(char => {
+                      group.characters.push(char._id);
+                    });
+    
+                    group.save((err) => {
                       if (err) {
-                        console.log('/groups/:groupId/characters/add finding group', err);
+                        console.log('/groups/:groupId/characters/add saving group', err)
                         return res.json({ success: false, message: constants.errMsg });
                       }
     
-                      return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+                      // Find the group again to populate the characters before sending back to Front End
+                      Group.findById(group._id).populate('characters').exec((err, retGroup) => {
+                        if (err) {
+                          console.log('/groups/:groupId/characters/add finding group', err);
+                          return res.json({ success: false, message: constants.errMsg });
+                        }
+    
+                        return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+                      });
                     });
                   });
-                });
-              }
-            }
+              }); 
           })
           .catch(error => {
             console.log('Error with Axios get User characters', error);

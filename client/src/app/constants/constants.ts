@@ -30,17 +30,6 @@ export const SLOTS: Array<String> = [
   "Head", "Neck", "Shoulder", "Back", "Chest", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger1", "Finger2", "Trinket1", "Trinket2", "MainHand", "OffHand"
 ];
 
-export const ITEM_QUALITIES = {
-  "0": "poor",
-  "1": "common",
-  "2": "uncommon",
-  "3": "rare",
-  "4": "epic",
-  "5": "legendary",
-  "6": "artifact",
-  "7": "heirloom"
-};
-
 export const REGIONS = [
   'EU',
   'US'
