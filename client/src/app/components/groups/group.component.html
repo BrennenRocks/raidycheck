@@ -1,3 +1,4 @@
+<!-- Sidemenu -->
 <div class="sidebar position-fixed" [ngClass]="isSidebarClosed ? 'sidebar-hide' : ''">
 
     <button (click)="onSidebarOpenClose()" type="button" class="close mt-2 float-right" aria-label="Close">
@@ -29,8 +30,10 @@
         </div>
 
 </div>
+<!-- end Sidemenu -->
 
 <main class="text-center py-5 mt-3" [ngClass]="isSidebarClosed ? 'main-sidebar-hide' : ''">
+    
     <div class="group-container">
 
         <div class="row">
@@ -88,21 +91,30 @@
                         <!--Card content-->
                         <div class="card-body">
                                 <div class="row">
-                                        <div class="col-xl-9 col-md-6">
+                                        <div class="col-xl-9 col-md-8">
                                             Group average iLvl and iLvl requirement
                                         </div>
-                                        <div class="col-xl-3 col-md-6">
-                                            <div>Raid dropdown</div>
+                                        <div class="col-xl-3 col-md-4 mb-2" style="display: inline">
+                                            <ng-select class="custom"
+                                                [items]="raids"
+                                                placeholder="Select a raid"
+                                                [(ngModel)]="selectedRaid">
+                                            </ng-select>
+                                            <ng-select class="custom"
+                                                [items]="difficulties"
+                                                placeholder="Select a difficultiy"
+                                                [(ngModel)]="selectedDifficulty">
+                                            </ng-select>
                                         </div>
                                     </div>
-                            <div *ngFor="let char of currentGroup.characters">
+                            <div *ngFor="let char of currentGroup.characters; let i = index;">
                                 <div class="media">
                                     <img class="d-flex rounded mr-3" src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}">
                                     <div class="media-body">
                                         <h5 class="mt-0" align="justify">{{char.cid.name}} - {{char.iLvl}}</h5>
                                         <div class="slots-container">
                                             <div class="row">
-                                                <div class="col-xl-9 col-md-6">
+                                                <div class="col-xl-9 col-md-8">
                                                     <ul class="gear">
                                                         <li *ngFor="let slot of slots" class="gear {{slot}}" [ngClass]="!char.items[slot]?.icon ? 'empty' : '' ">
                                                             <div class="slot q{{char.items[slot]?.quality}}">
@@ -115,8 +127,14 @@
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <div class="col-xl-3 col-md-6">
-                                                    <div>Progress bar of bosses killed</div>
+                                                <div class="col-xl-3 col-md-4">
+                                                    <div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 84%" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <!--Text-->
+                                                        <p># out of # defeated</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

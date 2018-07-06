@@ -6,6 +6,7 @@ import { ServerResponse } from '../../interfaces/server-response';
 import { User } from '../../interfaces/user';
 import { Group } from '../../interfaces/group';
 import { ActivatedRoute, Params } from '@angular/router';
+import { SLOTS, RAIDS, DIFFICULTIES } from '../../constants/constants';
 
 @Component({
   selector: 'app-groups',
@@ -14,13 +15,19 @@ import { ActivatedRoute, Params } from '@angular/router';
 })
 export class GroupComponent implements OnInit {
 
-  slots: string[] = ["mainHand", "offHand", "head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet", "finger1", "finger2", "trinket1", "trinket2"];
   isLoading: boolean = true;
   isProcessing: boolean = false;
   isFavorited: boolean;
   isSidebarClosed: boolean = false;
+
+  slots: string[] = SLOTS;
+  raids: string[] = RAIDS;
+  difficulties: string[] = DIFFICULTIES;
   user: User;
   currentGroup: Group;
+
+  selectedRaid: string = this.raids[0];
+  selectedDifficulty: string = this.difficulties[0];
   
   constructor(
     private groupsService: GroupsService,
@@ -77,6 +84,11 @@ export class GroupComponent implements OnInit {
         }
       });
     }
+  }
+
+  public numberOfBossesDefeated(index: number): void {
+    let currChar = this.currentGroup.characters[index];
+    // map over raids to find the name of the selectedRaid
   }
 
   public onSidebarOpenClose(): void {

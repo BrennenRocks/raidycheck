@@ -151,7 +151,6 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
             axios.all(promiseProgressionArray)
               .then(progressionResponse => {
                 const resProgression = progressionResponse.map(r => r.data);
-                console.log(resProgression);
                 let items = {};
                 let raids = [];
                 for (let i = 0; i < resChars.length; i++) {

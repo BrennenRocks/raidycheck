@@ -21,5 +21,6 @@ export interface Character {
       bonusLists: [number],
       tooltipParams: object
     }
-  ]
+  ],
+  raids: [Object]
 }

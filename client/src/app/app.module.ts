@@ -10,6 +10,8 @@ import { ScrollToModule } from '@nicky-lenaers/ngx-scroll-to';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { GroupComponent } from './components/groups/group.component';
@@ -38,6 +40,7 @@ export function jwtTokenGetter() {
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
     HttpClientModule,
     JwtModule.forRoot({
       config: {
@@ -46,6 +49,7 @@ export function jwtTokenGetter() {
       }
     }),
     MDBBootstrapModule.forRoot(),
+    NgSelectModule,
     ScrollToModule.forRoot(),
     ToastrModule.forRoot({
       closeButton: true,
