@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 
 import { GroupsService } from '../../services/groups.service';
 import { ServerResponse } from '../../interfaces/server-response';
@@ -21,18 +22,22 @@ export class GroupComponent implements OnInit {
   isSidebarClosed: boolean = false;
 
   slots: string[] = SLOTS;
-  raids: string[] = RAIDS;
+  raids: {id: number, name: string}[] = RAIDS;
   difficulties: string[] = DIFFICULTIES;
   user: User;
   currentGroup: Group;
 
-  selectedRaid: string = this.raids[0];
+  selectedRaid: {id: number, name: string} = this.raids[0];
   selectedDifficulty: string = this.difficulties[0];
+  numberOfBosses: number;
+  averageGroupIlvl: number = 0;
+  iLvlRequirement: number = 0;
   
   constructor(
     private groupsService: GroupsService,
     private toastr: ToastrService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit() {
@@ -49,11 +54,16 @@ export class GroupComponent implements OnInit {
               this.isLoading = false;
             } else {
               this.currentGroup = data.group;
+              this.setNumberOfBosses();
               if (this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) == -1) {
                 this.isFavorited = false;
               } else {
                 this.isFavorited = true;
               }
+              for (let i = 0; i < this.currentGroup.characters.length; i++) {
+                this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
+              }
+              this.averageGroupIlvl /= this.currentGroup.characters.length;
               this.isLoading = false;
             }
           })
@@ -86,9 +96,19 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  public numberOfBossesDefeated(index: number): void {
-    let currChar = this.currentGroup.characters[index];
-    // map over raids to find the name of the selectedRaid
+  public setNumberOfBosses(): void {
+    this.numberOfBosses = this.currentGroup.characters[0].raids[this.selectedRaid.id].bosses.length;
+  }
+
+  public setNumberOfBossesDefeated(index: number): number {
+    let numOfBossesDefeated = 0;
+    let currRaid = this.currentGroup.characters[index].raids[this.selectedRaid.id];
+    currRaid.bosses.map(boss => {
+      if (boss[this.selectedDifficulty + 'Kills'] > 0) {
+        numOfBossesDefeated++;
+      }
+    })
+    return numOfBossesDefeated;
   }
 
   public onSidebarOpenClose(): void {

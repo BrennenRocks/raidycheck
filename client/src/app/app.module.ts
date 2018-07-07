@@ -7,11 +7,11 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ToastrModule } from 'ngx-toastr';
 import { ScrollToModule } from '@nicky-lenaers/ngx-scroll-to';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { GroupComponent } from './components/groups/group.component';
@@ -50,6 +50,7 @@ export function jwtTokenGetter() {
     }),
     MDBBootstrapModule.forRoot(),
     NgSelectModule,
+    ReactiveFormsModule,
     ScrollToModule.forRoot(),
     ToastrModule.forRoot({
       closeButton: true,

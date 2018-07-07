@@ -181,11 +181,26 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                     }
                   }
                   
+                  const difficulties = ['lfr', 'normal', 'heroic', 'mythic'];
                   resProgression[i].progression.raids.map(raid => {
                     if (constants.raids.indexOf(raid.name) != -1) {
+                      raid.lfrProgress = 0;
+                      raid.normalProgress = 0;
+                      raid.heroicProgress = 0;
+                      raid.mythicProgress = 0;
+                      raid.bosses.map(boss => {
+                        let numOfBossesDefeated = 0;
+                        difficulties.map(difficulty => {
+                          if (boss[difficulty + 'Kills'] > 0) {
+                            raid[difficulty + 'Progress']++;
+                          }
+                        });
+                      });
                       raids.push(raid);
                     }
                   });
+
+
 
                   newChars.push(new Character({
                     cid: {

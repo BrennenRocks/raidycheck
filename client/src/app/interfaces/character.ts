@@ -22,5 +22,23 @@ export interface Character {
       tooltipParams: object
     }
   ],
-  raids: [Object]
+  raids: [{
+    name: string,
+    lfr: number,
+    normal: number,
+    heroic: number,
+    mythic: number,
+    id: number,
+    bosses: [{
+      id: number,
+      lfrKills: number,
+      lfrTimestamp: number,
+      normalKills: number,
+      normalTimestamp: number,
+      heroicKills: number,
+      heroicTimestamp: number,
+      mythicKills: number,
+      mythicTimestamp: number
+    }]
+  }]
 }

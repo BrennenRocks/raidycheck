@@ -33,6 +33,7 @@ export const REGIONS: Array<string> = [
   'US'
 ];
 
-export const RAIDS: Array<string> = ['The Emerald Nightmare', 'Trial of Valor', 'The Nighthold', 'Tomb of Sargeras', 'Antorus, the Burning Throne'];
+export const RAIDS: Array<{id: number, name: string}> = [{ id: 0, name: 'The Emerald Nightmare' }, { id: 1, name: 'Trial of Valor' }, { id: 2, name: 'The Nighthold' }, { id: 3, name: 'Tomb of Sargeras' }, 
+  { id: 4, name: 'Antorus, the Burning Throne' }];
 
 export const DIFFICULTIES: Array<string> = ['lfr', 'normal', 'heroic', 'mythic'];

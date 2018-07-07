@@ -92,11 +92,19 @@
                         <div class="card-body">
                                 <div class="row">
                                         <div class="col-xl-9 col-md-8">
-                                            Group average iLvl and iLvl requirement
+                                            <div class="float-left">
+                                                Group average iLvl <strong [style.color]="averageGroupIlvl >= iLvlRequirement ? '#689f38' : '#d50000'" style="font-size: 20px">{{averageGroupIlvl | number}}</strong>
+                                            </div>
+                                            <div class="md-form float-right iLvl-form">
+                                                <input mdbInputDirective type="text" name="iLvlRequirement" data-error="" data-success="" [(ngModel)]="iLvlRequirement" id="form1" class="form-control">
+                                                <label for="form1" class="">Required iLvl</label>
+                                            </div>
                                         </div>
                                         <div class="col-xl-3 col-md-4 mb-2" style="display: inline">
                                             <ng-select class="custom"
                                                 [items]="raids"
+                                                bindLabel="name"
+                                                (change)="setNumberOfBosses()"
                                                 placeholder="Select a raid"
                                                 [(ngModel)]="selectedRaid">
                                             </ng-select>
@@ -111,7 +119,7 @@
                                 <div class="media">
                                     <img class="d-flex rounded mr-3" src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}">
                                     <div class="media-body">
-                                        <h5 class="mt-0" align="justify">{{char.cid.name}} - {{char.iLvl}}</h5>
+                                        <h5 class="mt-0" align="justify">{{char.cid.name}} - <span [style.color]="char.iLvl >= iLvlRequirement ? '#689f38' : '#d50000'">{{char.iLvl}}</span></h5>
                                         <div class="slots-container">
                                             <div class="row">
                                                 <div class="col-xl-9 col-md-8">
@@ -123,17 +131,19 @@
                                                                     <img src="http://localhost:8080/{{char.items[slot]?.icon}}">
                                                                 </a>
                                                             </div>
-                                                            <span *ngIf="char.items[slot]?.itemLevel" style="font-size: 10px">{{char.items[slot].itemLevel}}</span>
+                                                            <span *ngIf="char.items[slot]?.itemLevel" [style.color]="char.items[slot].itemLevel >= iLvlRequirement ? '#689f38' : '#d50000'"
+                                                                style="font-size: 10px">{{char.items[slot].itemLevel}}</span>
                                                         </li>
                                                     </ul>
                                                 </div>
                                                 <div class="col-xl-3 col-md-4">
-                                                    <div>
+                                                    <div *ngIf="selectedRaid && selectedDifficulty">
                                                         <div class="progress">
-                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 84%" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar" [ngClass]="((char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100) > 50 ? 'light-green darken-2' : 'red accent-4'" role="progressbar" [style.width.%]="(char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100"
+                                                            aria-valuenow="{{(char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100}}" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <!--Text-->
-                                                        <p># out of # defeated</p>
+                                                        <p>{{char.raids[selectedRaid.id][selectedDifficulty + 'Progress']}} out of {{numberOfBosses}} defeated</p>
                                                     </div>
                                                 </div>
                                             </div>

@@ -1,5 +1,5 @@
 .group-container {
-  padding: 0 20px 20px 20px;
+  padding: 0 60px 20px 60px;
 }
 
 .slots-container {
@@ -14,6 +14,14 @@
 .progress {
   margin: 0;
   opacity: 0.7; 
+}
+
+.iLvl-form {
+  margin: 0;
+}
+
+.md-form .inputVal {
+  display: none !important;
 }
 
 .sidebar {
