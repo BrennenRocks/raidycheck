@@ -70,14 +70,12 @@ export class GroupComponent implements OnInit {
                 this.isFavorited = true;
               }
 
+              this.averageGroupIlvl = 0;
               if (this.currentGroup.characters[0]) {
-                this.averageGroupIlvl = 0;
                 for (let i = 0; i < this.currentGroup.characters.length; i++) {
                   this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
                 }
                 this.averageGroupIlvl /= this.currentGroup.characters.length;
-              } else {
-                this.averageGroupIlvl = 0;
               }
               this.createNewGroupForm();
               this.isLoading = false;
