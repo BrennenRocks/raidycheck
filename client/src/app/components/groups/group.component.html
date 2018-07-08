@@ -47,19 +47,19 @@
                 </div>
                 <!--Body-->
                 <div class="modal-body mb-0">
-                    <form [formGroup]="newGroupForm"></form>
+                    <form [formGroup]="newGroupForm">
                     <div class="md-form form-sm">
                         <i class="fa fa-envelope prefix"></i>
-                        <input mdbInputDirective type="text" id="name" formControlGroup="name" autofocus class="form-control">
+                        <input mdbInputDirective type="text" id="name" formControlName="name" autofocus class="form-control">
                         <label for="name">Name</label>
                     </div>
     
                     <div class="md-form form-sm">
                         <div class="btn-group">
-                            <label class="btn btn-primary waves-light" formControlGroup="public" mdbRadio="true" mdbWavesEffect>
+                            <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="true" mdbWavesEffect>
                                 Public
                             </label>
-                            <label class="btn btn-primary waves-light" formControlGroup="public" mdbRadio="false" mdbWavesEffect>
+                            <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="false" mdbWavesEffect>
                                 Private
                             </label>
                         </div>
@@ -67,19 +67,19 @@
     
                     <div class="md-form form-sm">
                         <div class="btn-group">
-                            <label class="btn btn-primary waves-light" formControlGroup="allowOthersToUpdateCharacters" mdbRadio="true" mdbWavesEffect>
+                            <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="true" mdbWavesEffect>
                                 Yes
                             </label>
-                            <label class="btn btn-primary waves-light" formControlGroup="allowOthersToUpdateCharacters" mdbRadio="false" mdbWavesEffect>
+                            <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="false" mdbWavesEffect>
                                 No
                             </label>
                         </div>
                     </div>
     
                     <div class="text-center mt-1-half">
-                        <button (click)="onAddNewGroup()" class="btn btn-info mb-2 waves-light" mdbWavesEffect>Send <i class="fa fa-send ml-1"></i></button>
+                        <button [ngClass]="newGroupForm.controls.name.errors ? 'disabled' : ''" (click)="onAddNewGroup()" class="btn btn-info mb-2 waves-light" mdbWavesEffect>Send <i class="fa fa-send ml-1"></i></button>
                     </div>
-    
+                </form>
                 </div>
             </div>
             <!--/.Content-->
@@ -157,8 +157,8 @@
                                                 Group average iLvl <strong [style.color]="averageGroupIlvl >= iLvlRequirement ? '#689f38' : '#d50000'" style="font-size: 20px">{{averageGroupIlvl | number}}</strong>
                                             </div>
                                             <div class="md-form float-right iLvl-form">
-                                                <input mdbInputDirective type="text" name="iLvlRequirement" data-error="" data-success="" [(ngModel)]="iLvlRequirement" id="form1" class="form-control">
-                                                <label for="form1" class="">Required iLvl</label>
+                                                <input mdbInputDirective [mdbValidate]="false" type="text" name="iLvlRequirement" [(ngModel)]="iLvlRequirement" id="iLvlRequirement" class="form-control">
+                                                <label for="iLvlRequirement" class="">Required iLvl</label>
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-md-4 mb-2" style="display: inline">

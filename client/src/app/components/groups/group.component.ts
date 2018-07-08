@@ -69,10 +69,14 @@ export class GroupComponent implements OnInit {
                 this.isFavorited = true;
               }
 
-              for (let i = 0; i < this.currentGroup.characters.length; i++) {
-                this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
+              if (this.currentGroup.characters[0]) {
+                for (let i = 0; i < this.currentGroup.characters.length; i++) {
+                  this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
+                }
+                this.averageGroupIlvl /= this.currentGroup.characters.length;
+              } else {
+                this.averageGroupIlvl = 0;
               }
-              this.averageGroupIlvl /= this.currentGroup.characters.length;
               this.createNewGroupForm();
               this.isLoading = false;
             }
@@ -106,7 +110,12 @@ export class GroupComponent implements OnInit {
   }
 
   public setNumberOfBosses(): void {
-    this.numberOfBosses = this.currentGroup.characters[0].raids[this.selectedRaid.id].bosses.length;
+    if (!this.currentGroup.characters[0]) {
+      this.numberOfBosses = 0;
+    } else {
+      this.numberOfBosses = this.currentGroup.characters[0].raids[this.selectedRaid.id].bosses.length;
+    }
+      
   }
 
   public setNumberOfBossesDefeated(index: number): number {
@@ -135,11 +144,6 @@ export class GroupComponent implements OnInit {
   public onAddNewGroup(): void {
     this.isProcessing = true;
     this.disableNewGroupForm();
-
-    console.log(this.newGroupForm);
-    console.log(this.newGroupForm.get('name').value);
-    console.log(this.newGroupForm.get('public').value);
-    console.log(this.newGroupForm.get('allowOthersToUpdateCharacters').value);
 
     const newGroup = {
       title: this.newGroupForm.get('name').value,
