@@ -25,6 +25,7 @@ const userSchema = new Schema({
   },
   dateSignedUp: { type: Date, default: Date.now() },
   avatar: { type: String, default: 'https://images.raidycheck.com/defaultUser.png' },
+  inset: { type: String, default: 'https://images.raidycheck.com/defaultUser.png'},
   groups: {
     personal: [
       {

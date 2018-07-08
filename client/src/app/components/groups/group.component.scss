@@ -7,6 +7,10 @@
   margin: 0 20px;
 }
 
+.btn-excel:hover {
+  cursor: not-allowed;
+}
+
 .ng-select.custom {
   text-align: initial !important;
 }
@@ -198,7 +202,7 @@ ul.gear {
 ul.gear li {
   display: inline-block;
   width: 48px;
-  margin: 0 2px;
+  margin: 0 2.5px;
   position: relative;
 }
 

@@ -200,8 +200,6 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                     }
                   });
 
-
-
                   newChars.push(new Character({
                     cid: {
                       name: resChars[i].name,

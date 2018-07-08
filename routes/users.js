@@ -78,29 +78,47 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
       return res.json({ success: false, message: constants.userNotFound });
     }
 
-    axios.get(req.body.image, {
+    let inset = _.replace(req.body.image, 'avatar', 'inset');
+    axios.get('https://render-us.worldofwarcraft.com/character/' + inset, {
       responseType: 'arraybuffer'
-    }).then(response => {
-      let image = './images/characters/' +  _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
-      fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
+    }).then(insetResponse => {
+      let image = './images/characters/' + _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-inset.jpg';
+      fs.writeFile(image, Buffer.from(insetResponse.data, 'binary').toString('base64'), 'base64', (err) => {
         if (err) {
-          console.log('/users/update/:userId downloading image', err);
-          return res.json({ success: false, message: constants.errMsg });
+          console.log('/users/update/:userId downloading inset image')
         }
 
-        user.avatar = image;
-        user.save((err, savedUser) => {
+        user.inset = image;
+      });
+
+      axios.get('https://render-us.worldofwarcraft.com/character/' + req.body.image, {
+        responseType: 'arraybuffer'
+      }).then(response => {
+        image = './images/characters/' +  _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
+        fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
           if (err) {
-            console.log('/users/update/:userId saving User', err);
+            console.log('/users/update/:userId downloading avatar image', err);
             return res.json({ success: false, message: constants.errMsg });
           }
-    
-          return res.json({ success: true, message: '', user: savedUser });
+  
+          user.avatar = image;
+          user.save((err, savedUser) => {
+            if (err) {
+              console.log('/users/update/:userId saving User', err);
+              return res.json({ success: false, message: constants.errMsg });
+            }
+      
+            return res.json({ success: true, message: '', user: savedUser });
+          });
         });
+      })
+      .catch(err => {
+        console.log('/users/update/:userId saving avatar image', err);
+        return res.json({ success: false, message: contants.errMsg });
       });
     })
     .catch(err => {
-      console.log('/users/update/:userId saving image', err);
+      console.log('/users/update/:userId saving isnet image', err);
       return res.json({ success: false, message: contants.errMsg });
     });
   });

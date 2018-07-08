@@ -50,7 +50,7 @@ export class GetStartedComponent implements OnInit {
 
   public onCharClick(char): void {
     this.isProcessing = true;
-    let image = "https://render-us.worldofwarcraft.com/character/" + char.thumbnail;
+    let image = char.thumbnail;
     const newGroup = {
       title: 'My first group',
       isPublic: false,
@@ -67,7 +67,7 @@ export class GetStartedComponent implements OnInit {
         this.toastr.error(data.message, 'Error');
         this.isProcessing = false;
       } else {
-        this.groupsService.registerGroup(newGroup).subscribe((data: ServerResponse) => {
+        this.groupsService.addNewGroup(newGroup).subscribe((data: ServerResponse) => {
           if (!data.success) {
             this.toastr.error(data.message, 'Error');
             this.isProcessing = false;

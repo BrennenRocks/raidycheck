@@ -55,7 +55,7 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
           console.log('groups/new saving user', err);
           return res.json({ success: false, message: constants.errMsg });
         }
-
+        
         return res.json({ success: true, message: '', group: group });
       });
     });

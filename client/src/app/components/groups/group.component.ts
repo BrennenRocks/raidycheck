@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 
+import { AuthService } from '../../services/auth.service';
 import { GroupsService } from '../../services/groups.service';
 import { ServerResponse } from '../../interfaces/server-response';
 import { User } from '../../interfaces/user';
 import { Group } from '../../interfaces/group';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { SLOTS, RAIDS, DIFFICULTIES } from '../../constants/constants';
+import { ModalDirective } from '../../../../node_modules/angular-bootstrap-md';
 
 @Component({
   selector: 'app-groups',
@@ -15,6 +17,8 @@ import { SLOTS, RAIDS, DIFFICULTIES } from '../../constants/constants';
   styleUrls: ['./group.component.scss']
 })
 export class GroupComponent implements OnInit {
+
+  @ViewChild('modalNewGroup') public modalNewGroup: ModalDirective
 
   isLoading: boolean = true;
   isProcessing: boolean = false;
@@ -32,16 +36,20 @@ export class GroupComponent implements OnInit {
   numberOfBosses: number;
   averageGroupIlvl: number = 0;
   iLvlRequirement: number = 0;
+
+  newGroupForm: FormGroup;
   
   constructor(
+    public authService: AuthService,
     private groupsService: GroupsService,
     private toastr: ToastrService,
-    private router: ActivatedRoute,
+    private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder
   ) { }
 
   ngOnInit() {
-    this.router.params.subscribe((params: Params) => {
+    this.route.params.subscribe((params: Params) => {
       this.groupsService.getGroups().subscribe((data: ServerResponse) => {
         if (!data.success) {
           this.toastr.error(data.message, 'Error');
@@ -60,16 +68,17 @@ export class GroupComponent implements OnInit {
               } else {
                 this.isFavorited = true;
               }
+
               for (let i = 0; i < this.currentGroup.characters.length; i++) {
                 this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
               }
               this.averageGroupIlvl /= this.currentGroup.characters.length;
+              this.createNewGroupForm();
               this.isLoading = false;
             }
           })
         }
       });
-
     });
   }
 
@@ -115,7 +124,69 @@ export class GroupComponent implements OnInit {
     this.isSidebarClosed = !this.isSidebarClosed;
   }
 
+  public onModalNewGroupOpen(): void {
+    this.modalNewGroup.show();
+  }
+
+  public onModalNewGroupClose(): void {
+    this.modalNewGroup.hide()
+  }
+
   public onAddNewGroup(): void {
+    this.isProcessing = true;
+    this.disableNewGroupForm();
+
+    console.log(this.newGroupForm);
+    console.log(this.newGroupForm.get('name').value);
+    console.log(this.newGroupForm.get('public').value);
+    console.log(this.newGroupForm.get('allowOthersToUpdateCharacters').value);
+
+    const newGroup = {
+      title: this.newGroupForm.get('name').value,
+      public: this.newGroupForm.get('public').value,
+      allowOthersToUpdateCharacters: this.newGroupForm.get('allowOthersToUpdateCharacters').value
+    }
+
+    this.groupsService.addNewGroup(newGroup).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.enableNewGroupForm();
+        this.isProcessing = false;
+      } else {
+        this.newGroupForm.reset();
+        this.router.navigate(['/group', data.group._id]);
+        this.modalNewGroup.hide();
+        this.isProcessing = false;
+        this.enableNewGroupForm();
+      }
+    });
+  }
+
+  public onAddNewCharacters(): void {
     // nothing yet
+  }
+
+  private createNewGroupForm(): void {
+    this.newGroupForm = this.fb.group({
+      name: ['', Validators.compose([
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(20),
+      ])],
+      public: new FormControl(true),
+      allowOthersToUpdateCharacters: new FormControl(false)
+    });
+  }
+
+  private disableNewGroupForm(): void {
+    this.newGroupForm.controls['name'].disable();
+    this.newGroupForm.controls['public'].disable();
+    this.newGroupForm.controls['allowOthersToUpdateCharacters'].disable();
+  }
+
+  private enableNewGroupForm(): void {
+    this.newGroupForm.controls['name'].enable();
+    this.newGroupForm.controls['public'].enable();
+    this.newGroupForm.controls['allowOthersToUpdateCharacters'].enable();
   }
 }

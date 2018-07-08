@@ -18,7 +18,7 @@ export class GroupsService {
     return new HttpHeaders().set('Authorization', 'Bearer ' + localStorage.getItem('rc_token'));
   }
 
-  registerGroup(group) {
+  addNewGroup(group) {
     return this.http.post(DOMAIN + '/api/groups/new', group);
   }
 
