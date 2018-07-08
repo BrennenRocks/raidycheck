@@ -10,6 +10,7 @@ import { Group } from '../../interfaces/group';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { SLOTS, RAIDS, DIFFICULTIES } from '../../constants/constants';
 import { ModalDirective } from '../../../../node_modules/angular-bootstrap-md';
+import { group } from '../../../../node_modules/@angular/animations';
 
 @Component({
   selector: 'app-groups',
@@ -70,6 +71,7 @@ export class GroupComponent implements OnInit {
               }
 
               if (this.currentGroup.characters[0]) {
+                this.averageGroupIlvl = 0;
                 for (let i = 0; i < this.currentGroup.characters.length; i++) {
                   this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
                 }
@@ -160,6 +162,7 @@ export class GroupComponent implements OnInit {
         this.newGroupForm.reset();
         this.router.navigate(['/group', data.group._id]);
         this.modalNewGroup.hide();
+        this.toastr.success('Add some characters', data.group.title + ' created');
         this.isProcessing = false;
         this.enableNewGroupForm();
       }
@@ -172,7 +175,7 @@ export class GroupComponent implements OnInit {
 
   private createNewGroupForm(): void {
     this.newGroupForm = this.fb.group({
-      name: ['', Validators.compose([
+      name: [null, Validators.compose([
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(20),

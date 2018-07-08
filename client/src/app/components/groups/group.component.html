@@ -49,12 +49,15 @@
                 <div class="modal-body mb-0">
                     <form [formGroup]="newGroupForm">
                     <div class="md-form form-sm">
-                        <i class="fa fa-envelope prefix"></i>
-                        <input mdbInputDirective type="text" id="name" formControlName="name" autofocus class="form-control">
+                        <i class="fa fa-group prefix"></i>
+                        <input mdbInputDirective [mdbValidate]="false" [ngClass]="newGroupForm.controls.name.errors ? 'counter-danger' : 'counter-success'" type="text" id="name" 
+                            data-error="Must be between 3 and 20 characters" data-success="Valid" formControlName="name" autofocus class="form-control">
                         <label for="name">Name</label>
+                        <span [ngClass]="newGroupForm.controls.name.errors ? 'text-danger' : 'text-success'" class="inputVal">{{newGroupForm.controls.name.errors ? 'Must be between 3 and 20 characters' : 'Valid'}}</span>
                     </div>
     
-                    <div class="md-form form-sm">
+                    <div class="form-sm pt-3 pb-2">
+                        <h5>Allow others to see this group</h5>
                         <div class="btn-group">
                             <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="true" mdbWavesEffect>
                                 Public
@@ -65,7 +68,8 @@
                         </div>
                     </div>
     
-                    <div class="md-form form-sm">
+                    <div class="form-sm pt-2 pb-2">
+                        <h5>Allow others to update characters</h5>
                         <div class="btn-group">
                             <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="true" mdbWavesEffect>
                                 Yes
@@ -77,7 +81,7 @@
                     </div>
     
                     <div class="text-center mt-1-half">
-                        <button [ngClass]="newGroupForm.controls.name.errors ? 'disabled' : ''" (click)="onAddNewGroup()" class="btn btn-info mb-2 waves-light" mdbWavesEffect>Send <i class="fa fa-send ml-1"></i></button>
+                        <button [ngClass]="newGroupForm.controls.name.errors || isProcessing ? 'disabled' : ''" (click)="onAddNewGroup()" class="btn btn-info mb-2 waves-light" mdbWavesEffect>Send <i class="fa fa-send ml-1"></i></button>
                     </div>
                 </form>
                 </div>
