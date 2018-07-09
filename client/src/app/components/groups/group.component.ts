@@ -19,7 +19,8 @@ import { group } from '../../../../node_modules/@angular/animations';
 })
 export class GroupComponent implements OnInit {
 
-  @ViewChild('modalNewGroup') public modalNewGroup: ModalDirective
+  @ViewChild('modalNewGroup') public modalNewGroup: ModalDirective;
+  @ViewChild('modalAddChars') public modalAddChars: ModalDirective;
 
   isLoading: boolean = true;
   isProcessing: boolean = false;
@@ -30,6 +31,7 @@ export class GroupComponent implements OnInit {
   raids: {id: number, name: string}[] = RAIDS;
   difficulties: string[] = DIFFICULTIES;
   user: User;
+  shouldGetUser: boolean = true;
   currentGroup: Group;
 
   selectedRaid: {id: number, name: string} = this.raids[0];
@@ -39,6 +41,7 @@ export class GroupComponent implements OnInit {
   iLvlRequirement: number = 0;
 
   newGroupForm: FormGroup;
+  addCharacterForm: FormGroup;
   
   constructor(
     public authService: AuthService,
@@ -51,36 +54,42 @@ export class GroupComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      this.groupsService.getGroups().subscribe((data: ServerResponse) => {
+      if (this.shouldGetUser) {
+        this.groupsService.getGroups().subscribe((data: ServerResponse) => {
+          if (!data.success) {
+            this.toastr.error(data.message, 'Error');
+            this.isLoading = false;
+          } else {
+            this.user = data.user;
+            this.shouldGetUser = false;
+          }
+        });
+      }
+
+      this.groupsService.getSingleGroup(params.id).subscribe((data: ServerResponse) => {
         if (!data.success) {
           this.toastr.error(data.message, 'Error');
           this.isLoading = false;
         } else {
-          this.user = data.user;
-          this.groupsService.getSingleGroup(params.id).subscribe((data: ServerResponse) => {
-            if (!data.success) {
-              this.toastr.error(data.message, 'Error');
-              this.isLoading = false;
-            } else {
-              this.currentGroup = data.group;
-              this.setNumberOfBosses();
-              if (this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) == -1) {
-                this.isFavorited = false;
-              } else {
-                this.isFavorited = true;
-              }
+          this.currentGroup = data.group;
+          this.setNumberOfBosses();
+          if (this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) == -1) {
+            this.isFavorited = false;
+          } else {
+            this.isFavorited = true;
+          }
 
-              this.averageGroupIlvl = 0;
-              if (this.currentGroup.characters[0]) {
-                for (let i = 0; i < this.currentGroup.characters.length; i++) {
-                  this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
-                }
-                this.averageGroupIlvl /= this.currentGroup.characters.length;
-              }
-              this.createNewGroupForm();
-              this.isLoading = false;
+          this.averageGroupIlvl = 0;
+          if (this.currentGroup.characters[0]) {
+            for (let i = 0; i < this.currentGroup.characters.length; i++) {
+              this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
             }
-          })
+            this.averageGroupIlvl /= this.currentGroup.characters.length;
+          }
+
+          this.createNewGroupForm();
+          this.createAddCharacterForm();
+          this.isLoading = false;
         }
       });
     });
@@ -133,6 +142,10 @@ export class GroupComponent implements OnInit {
     this.isSidebarClosed = !this.isSidebarClosed;
   }
 
+  public onSidemenuGroupClick() {
+    this.shouldGetUser = false;
+  }
+
   public onModalNewGroupOpen(): void {
     this.modalNewGroup.show();
   }
@@ -157,18 +170,15 @@ export class GroupComponent implements OnInit {
         this.enableNewGroupForm();
         this.isProcessing = false;
       } else {
-        this.newGroupForm.reset();
+        this.shouldGetUser = true;
         this.router.navigate(['/group', data.group._id]);
         this.modalNewGroup.hide();
+        this.newGroupForm.reset();
         this.toastr.success('Add some characters', data.group.title + ' created');
         this.isProcessing = false;
         this.enableNewGroupForm();
       }
     });
-  }
-
-  public onAddNewCharacters(): void {
-    // nothing yet
   }
 
   private createNewGroupForm(): void {
@@ -194,4 +204,21 @@ export class GroupComponent implements OnInit {
     this.newGroupForm.controls['public'].enable();
     this.newGroupForm.controls['allowOthersToUpdateCharacters'].enable();
   }
+  
+  public onModalAddCharsOpen(): void {
+    this.modalAddChars.show();
+  }
+
+  public onModalAddCharsClose(): void {
+    this.modalAddChars.hide();
+  }
+
+  public onAddNewCharacters(): void {
+    // nothing yet
+  }
+
+  private createAddCharacterForm(): void {
+
+  }
+
 }

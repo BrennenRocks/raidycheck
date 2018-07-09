@@ -11,7 +11,7 @@
     <hr>
     <div class="list-group">
         <div *ngIf="!isLoading" class="text-left list-group-flush">
-            <a *ngFor="let group of user.groups.personal" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
+            <a *ngFor="let group of user.groups.personal" (click)="onSidemenuGroupClick(group._id)" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
                 {{group.title}}
             </a>
         </div>
@@ -23,7 +23,7 @@
     <hr>
     <div class="list-group">
             <div *ngIf="!isLoading" class="list-group-flush">
-                <a *ngFor="let group of user.groups.favorites" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
+                <a *ngFor="let group of user.groups.favorites" (click)="onSidemenuGroupClick(group._id)" routerLink="/group/{{group._id}}" [routerLinkActive]="['active']" class="list-group-item list-group-item-action waves-effect">
                     {{group.title}}
                 </a>
             </div>
@@ -32,64 +32,91 @@
 </div>
 <!-- end Sidemenu -->
 
-<!--Modal: Contact form-->
+<!--Modal: Create New Group Form-->
 <div *ngIf="!isLoading" mdbModal #modalNewGroup="mdb-modal" class="modal fade" id="modalNewGroup" tabindex="-1" role="dialog" aria-labelledby="NewGroupModal" aria-hidden="true">
-        <div class="modal-dialog cascading-modal" role="document">
-            <!--Content-->
-            <div class="modal-content">
-    
-                <!--Header-->
-                <div class="modal-header success-color white-text">
-                    <h4 class="title"><i class="fa fa-group"></i> Create A New Group</h4>
-                    <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close" (click)="onModalNewGroupClose()">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <!--Body-->
-                <div class="modal-body mb-0">
-                    <form [formGroup]="newGroupForm">
-                    <div class="md-form form-sm">
-                        <i class="fa fa-group prefix"></i>
-                        <input mdbInputDirective [mdbValidate]="false" [ngClass]="newGroupForm.controls.name.errors ? 'counter-danger' : 'counter-success'" type="text" id="name" 
-                            data-error="Must be between 3 and 20 characters" data-success="Valid" formControlName="name" autofocus class="form-control">
-                        <label for="name">Name</label>
-                        <span [ngClass]="newGroupForm.controls.name.errors ? 'text-danger' : 'text-success'" class="inputVal">{{newGroupForm.controls.name.errors ? 'Must be between 3 and 20 characters' : 'Valid'}}</span>
-                    </div>
-    
-                    <div class="form-sm pt-3 pb-2">
-                        <h5>Allow others to see this group</h5>
-                        <div class="btn-group">
-                            <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="true" mdbWavesEffect>
-                                Public
-                            </label>
-                            <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="false" mdbWavesEffect>
-                                Private
-                            </label>
-                        </div>
-                    </div>
-    
-                    <div class="form-sm pt-2 pb-2">
-                        <h5>Allow others to update characters</h5>
-                        <div class="btn-group">
-                            <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="true" mdbWavesEffect>
-                                Yes
-                            </label>
-                            <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="false" mdbWavesEffect>
-                                No
-                            </label>
-                        </div>
-                    </div>
-    
-                    <div class="text-center mt-1-half">
-                        <button [ngClass]="newGroupForm.controls.name.errors || isProcessing ? 'disabled' : ''" (click)="onAddNewGroup()" class="btn btn-info mb-2 waves-light" mdbWavesEffect>Send <i class="fa fa-send ml-1"></i></button>
-                    </div>
-                </form>
-                </div>
+    <div class="modal-dialog cascading-modal" role="document">
+        <!--Content-->
+        <div class="modal-content">
+
+            <!--Header-->
+            <div class="modal-header success-color white-text">
+                <h4 class="title"><i class="fa fa-group"></i> Create A New Group</h4>
+                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close" (click)="onModalNewGroupClose()">
+                    <span aria-hidden="true">×</span>
+                </button>
             </div>
-            <!--/.Content-->
+            <!--Body-->
+            <div class="modal-body mb-0">
+                <form [formGroup]="newGroupForm">
+                <div class="md-form form-sm">
+                    <i class="fa fa-group prefix"></i>
+                    <input mdbInputDirective [mdbValidate]="false" [ngClass]="newGroupForm.controls.name.errors ? 'counter-danger' : 'counter-success'" type="text" id="name" 
+                        data-error="Must be between 3 and 20 characters" data-success="Valid" formControlName="name" autofocus class="form-control">
+                    <label for="name">Name</label>
+                    <span [ngClass]="newGroupForm.controls.name.errors ? 'text-danger' : 'text-success'" class="inputVal">{{newGroupForm.controls.name.errors ? 'Must be between 3 and 20 characters' : 'Valid'}}</span>
+                </div>
+
+                <div class="form-sm pt-3 pb-2">
+                    <h5>Allow others to see this group <span style="font-size: 10px">(Default: Public)</span></h5>
+                    <div class="btn-group">
+                        <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="true" mdbWavesEffect>
+                            Public
+                        </label>
+                        <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="false" mdbWavesEffect>
+                            Private
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-sm pt-2 pb-2">
+                    <h5>Allow others to update characters <span style="font-size: 10px">(Default: No)</span></h5>
+                    <div class="btn-group">
+                        <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="true" mdbWavesEffect>
+                            Yes
+                        </label>
+                        <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="false" mdbWavesEffect>
+                            No
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-center mt-1-half">
+                    <button [ngClass]="newGroupForm.controls.name.errors || isProcessing ? 'disabled' : ''" (click)="onAddNewGroup()" class="btn btn-info mb-2 waves-light" mdbWavesEffect>Create Group <i class="fa fa-send ml-1"></i></button>
+                </div>
+            </form>
+            </div>
+        </div>
+        <!--/.Content-->
+    </div>
+</div>
+<!--Modal: Create New Group Form-->
+
+<!-- Modal: Add New Chars -->
+<div mdbModal #modalAddChars="mdb-modal" class="modal fade right" id="fullHeightModalRight" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog pb-5 modal-full-height modal-right" role="document">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header deep-orange white-text">
+                <h4 class="modal-title w-100" id="myModalLabel"><i class="fa fa-user-plus"></i> Add Characters</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddChars.hide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <!-- Header -->
+
+            <div class="modal-body">
+                <form [formGroup]="addCharacterForm">
+
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary waves-light" data-dismiss="modal" (click)="modalAddChars.hide()" mdbWavesEffect>Close</button>
+                <button type="button" class="btn btn-primary waves-light" mdbWavesEffect>Save changes</button>
+            </div>
         </div>
     </div>
-    <!--Modal: Contact form-->
+</div>
+<!-- Modal: Add New Chars -->
 
 <main class="text-center py-5 mt-3" [ngClass]="isSidebarClosed ? 'main-sidebar-hide' : ''">
     
@@ -100,7 +127,7 @@
                 <div class="float-left">
                     <button (click)="onSidebarOpenClose()" type="button" class="btn btn-sm btn-default waves-light" mdbWavesEffect><i class="fa fa-bars mr-1"></i>{{isSidebarClosed ? 'Show Groups' : 'Hide Groups'}}</button>
                     <button *ngIf="!isLoading && authService.loggedIn()" (click)="onModalNewGroupOpen()" type="button" class="btn btn-sm btn-success waves-light" mdbWavesEffect><i class="fa fa-group mr-1"></i>Create New Group</button>
-                    <button *ngIf="!isLoading && authService.loggedIn() && user.bnet.battletag === currentGroup.owner" (click)="onAddNewCharacters()" type="button" class="btn btn-sm btn-deep-orange waves-light" mdbWavesEffect>
+                    <button *ngIf="!isLoading && authService.loggedIn() && user.bnet.battletag === currentGroup.owner" (click)="onModalAddCharsOpen()" type="button" class="btn btn-sm btn-deep-orange waves-light" mdbWavesEffect>
                         <i class="fa fa-user-plus mr-1"></i>Add Characters To Group
                     </button>
                 </div>
