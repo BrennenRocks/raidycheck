@@ -18,16 +18,16 @@ export class GroupsService {
     return new HttpHeaders().set('Authorization', 'Bearer ' + localStorage.getItem('rc_token'));
   }
 
-  addNewGroup(group) {
-    return this.http.post(DOMAIN + '/api/groups/new', group);
+  public addNewGroup(group): Observable<ServerResponse> {
+    return this.http.post<ServerResponse>(DOMAIN + '/api/groups/new', group);
   }
 
   public getGroups(): Observable<ServerResponse> {
     return this.http.get<ServerResponse>(DOMAIN + '/api/groups', { headers: this.getAuthHeader() });
   }
 
-  getSingleGroup(groupId) {
-    return this.http.get(DOMAIN + '/api/groups/' + groupId);
+  public getSingleGroup(groupId): Observable<ServerResponse> {
+    return this.http.get<ServerResponse>(DOMAIN + '/api/groups/' + groupId);
   }
 
   // update group
@@ -38,8 +38,8 @@ export class GroupsService {
     return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader });
   }
 
-  addCharactersToGroup(groupId, region, characters) {
-    return this.http.post(DOMAIN + '/api/groups/' + groupId + '/characters/add', { region, characters } );
+  public addCharactersToGroup(groupId, region, characters): Observable<ServerResponse> {
+    return this.http.post<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/add', { region, characters } );
   }
 
   updateCharacter(groupdId, charId): void {

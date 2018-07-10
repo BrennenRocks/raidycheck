@@ -41,9 +41,9 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
     return res.json({ success: false, message: 'Must pass in an array' });
   }
 
-  // if (req.body.characters.length > 3) {
-  //   return res.json({ success: false, message: 'Can not get more than 3 characters' });
-  // }
+  if (req.body.characters.length > 25) {
+    return res.json({ success: false, message: 'Can not get more than 25 characters' });
+  }
 
   if(!req.body.region) {
     return res.json({ success: false, message: 'No region provided' });

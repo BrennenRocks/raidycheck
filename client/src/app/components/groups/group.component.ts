@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
 import { GroupsService } from '../../services/groups.service';
@@ -8,9 +8,8 @@ import { ServerResponse } from '../../interfaces/server-response';
 import { User } from '../../interfaces/user';
 import { Group } from '../../interfaces/group';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { SLOTS, RAIDS, DIFFICULTIES } from '../../constants/constants';
+import { SLOTS, REALMS, REGIONS, RAIDS, DIFFICULTIES } from '../../constants/constants';
 import { ModalDirective } from '../../../../node_modules/angular-bootstrap-md';
-import { group } from '../../../../node_modules/@angular/animations';
 
 @Component({
   selector: 'app-groups',
@@ -28,6 +27,8 @@ export class GroupComponent implements OnInit {
   isSidebarClosed: boolean = false;
 
   slots: string[] = SLOTS;
+  realms: {id: number, realm: string}[] = REALMS;
+  regions: string[] = REGIONS;
   raids: {id: number, name: string}[] = RAIDS;
   difficulties: string[] = DIFFICULTIES;
   user: User;
@@ -42,6 +43,8 @@ export class GroupComponent implements OnInit {
 
   newGroupForm: FormGroup;
   addCharacterForm: FormGroup;
+  counterAddCharacterForm: number = 1;
+  maxAddCharacterForm: number = 25;
   
   constructor(
     public authService: AuthService,
@@ -214,11 +217,81 @@ export class GroupComponent implements OnInit {
   }
 
   public onAddNewCharacters(): void {
-    // nothing yet
+    this.isProcessing = true;
+    this.disableAddCharacterForm();
+
+    const chars = [];
+    this.characterForms.controls.map(char => {
+      chars.push({
+        name: char.value['name'],
+        realm: char.value['realm'].realm
+      });
+    });
+
+    const region = this.addCharacterForm.controls['region'].value;
+    console.log(chars);
+    console.log(region);
+
+    this.groupsService.addCharactersToGroup(this.currentGroup._id, region, chars).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isProcessing = false;
+        this.addCharacterForm.reset();
+        this.enableAddCharacterForm();
+      } else {
+        this.toastr.warning(data.message, 'Characters Not Found');
+        this.currentGroup = data.group;
+        this.modalAddChars.hide();
+        this.isProcessing = false;
+        this.addCharacterForm.reset();
+        this.enableAddCharacterForm();
+      }
+    })
   }
 
   private createAddCharacterForm(): void {
-
+    this.addCharacterForm = this.fb.group({
+      region: [new FormControl('us'), Validators.required],
+      characters: this.fb.array([
+        this.initChar()
+      ])
+    })
   }
 
+  private initChar(): FormGroup {
+    return this.fb.group({
+      name: ['', Validators.compose([
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(12)
+      ])],
+      realm: ['', Validators.required]
+    });
+  }
+
+  public onAddCharacterToForm(): void {
+    if (this.counterAddCharacterForm < this.maxAddCharacterForm) {
+      this.counterAddCharacterForm++;
+      const control = <FormArray>this.addCharacterForm.controls['characters'];
+      control.push(this.initChar());
+    }
+  }
+
+  public onRemoveCharacterFromForm(i: number): void {
+    this.counterAddCharacterForm--;
+    const control = <FormArray>this.addCharacterForm.controls['characters'];
+    control.removeAt(i);
+  }
+
+  get characterForms(): FormArray {
+    return <FormArray>this.addCharacterForm.get('characters');
+  }
+
+  private enableAddCharacterForm(): void {
+    this.addCharacterForm.enable();
+  }
+
+  private disableAddCharacterForm(): void {
+    this.addCharacterForm.disable();
+  }
 }
