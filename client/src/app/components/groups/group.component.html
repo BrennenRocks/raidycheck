@@ -107,7 +107,7 @@
             <div class="modal-body">
                 <!-- Form -->
                 <form [formGroup]="addCharacterForm">
-                    <div class="form-sm pt-3 pb-2">
+                    <div class="form-sm pt-3 pb-2 text-center">
                         <div class="btn-group">
                             <label class="btn btn-primary waves-light" formControlName="region" mdbRadio="us" mdbWavesEffect>
                                 US
@@ -116,28 +116,36 @@
                                 EU
                             </label>
                         </div>
+                        <button [ngClass]="{ 'd-none': counterAddCharacterForm >= maxAddCharacterForm }" class="btn btn-success btn-sm float-right waves-light" (click)="onAddCharacterToForm()" type="button" mdbWavesEffect>
+                            <i class="fa fa-plus"></i>
+                        </button>
                     </div>
 
-                    <button [ngClass]="{ 'd-none': counterAddCharacterForm >= maxAddCharacterForm }" class="btn btn-success btn-sm waves-light" (click)="onAddCharacterToForm()" type="button" mdbWavesEffect>
-                        <i class="fa fa-plus"></i>
-                    </button>
-                    <div class="md-form form-sm input-group">
+                    <div class="md-form form-sm input-group ml-3">
                         <div formArrayName="characters">
-                            <div *ngFor="let form of addCharacterForm.controls.characters.controls; let i=index">
-                                <div [formGroupName]="i">
-                                    <i class="fa fa-user prefix grey-text"></i>
-                                    <input type="text" id="name" formControlName="name" class="form-control" autofocus mdbInputDirective>
-                                    <label for="name">Character Name</label>
-                                    <ng-select class="custom"
-                                        [items]="realms"
-                                        bindLabel="realm"
-                                        placeholder="Character Realm"
-                                        formControlName="realm">
-                                    </ng-select>
+                            <div *ngFor="let form of addCharacterForm.controls.characters.controls; let i=index" class="mb-1">
+                                <div [formGroupName]="i" class="row">
+                                    <div class="col-md-10">
+                                        <div class="row mb-2">
+                                            <i class="fa fa-user prefix grey-text"></i>
+                                            <input type="text" id="name" [mdbValidate]="false" formControlName="name" class="form-control" autofocus mdbInputDirective>
+                                            <label for="name">Character Name</label>
+                                        </div>
+                                        <div class="row">
+                                            <ng-select class="select-chars"
+                                                [items]="realms"
+                                                bindLabel="realm"
+                                                placeholder="Character Realm"
+                                                formControlName="realm">
+                                            </ng-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-secondary btn-sm waves-light" (click)="onRemoveCharacterFromForm(i)" type="button" mdbWavesEffect>
+                                            <i class="fa fa-trash-o"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button class="btn btn-secondary btn-sm waves-light" (click)="onRemoveCharacterFromForm(i)" type="button" mdbWavesEffect>
-                                    <i class="fa fa-minus"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
