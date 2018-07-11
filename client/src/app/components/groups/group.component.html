@@ -107,7 +107,8 @@
             <div class="modal-body">
                 <!-- Form -->
                 <form [formGroup]="addCharacterForm">
-                    <div class="form-sm pt-3 pb-2 text-center">
+                    <div class="form-sm pb-2 text-center">
+                        <h5 class="text-center title mb-2">Select a Region</h5>
                         <div class="btn-group">
                             <label class="btn btn-primary waves-light" formControlName="region" mdbRadio="us" mdbWavesEffect>
                                 US
@@ -123,10 +124,10 @@
 
                     <div class="md-form form-sm input-group ml-3">
                         <div formArrayName="characters">
-                            <div *ngFor="let form of addCharacterForm.controls.characters.controls; let i=index" class="mb-1">
+                            <div *ngFor="let form of addCharacterForm.controls.characters.controls; let i=index">
                                 <div [formGroupName]="i" class="row">
                                     <div class="col-md-10">
-                                        <div class="row mb-2">
+                                        <div class="row">
                                             <i class="fa fa-user prefix grey-text"></i>
                                             <input type="text" id="name" [mdbValidate]="false" formControlName="name" class="form-control" autofocus mdbInputDirective>
                                             <label for="name">Character Name</label>
@@ -135,6 +136,7 @@
                                             <ng-select class="select-chars"
                                                 [items]="realms"
                                                 bindLabel="realm"
+                                                bindValue="id"
                                                 placeholder="Character Realm"
                                                 formControlName="realm">
                                             </ng-select>
@@ -154,7 +156,7 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary waves-light" data-dismiss="modal" (click)="onModalAddCharsClose" mdbWavesEffect>Close</button>
-                <button [ngClass]="addCharacterForm.controls.region.errors || addCharacterForm.controls.characters.errors || isProcessing ? 'disabled' : ''" (click)="onAddNewCharacters()" type="button" class="btn btn-primary waves-light" mdbWavesEffect>Add Characters<i class="fa fa-send ml-1"></i></button>
+                <button [ngClass]="addCharacterForm.controls.region.errors || isProcessing ? 'disabled' : ''" (click)="onAddNewCharacters()" type="button" class="btn btn-primary waves-light" mdbWavesEffect>Add Characters<i class="fa fa-send ml-1"></i></button>
             </div>
         </div>
     </div>

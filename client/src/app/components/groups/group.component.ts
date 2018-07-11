@@ -44,7 +44,7 @@ export class GroupComponent implements OnInit {
   newGroupForm: FormGroup;
   addCharacterForm: FormGroup;
   counterAddCharacterForm: number = 1;
-  maxAddCharacterForm: number = 25;
+  maxAddCharacterForm: number = 5;
   
   constructor(
     public authService: AuthService,
@@ -219,18 +219,29 @@ export class GroupComponent implements OnInit {
   public onAddNewCharacters(): void {
     this.isProcessing = true;
     this.disableAddCharacterForm();
+    let validForm = true;
 
     const chars = [];
     this.characterForms.controls.map(char => {
+      if (!char.value['name'] || char.value['name'].length < 2 || char.value['name'].length > 12 || !char.value['realm'].realm) {
+        validForm = false;
+        return;
+      }
+
       chars.push({
         name: char.value['name'],
         realm: char.value['realm'].realm
       });
     });
 
+    if (!validForm) {
+      this.toastr.error('Make sure all fields are filled out properly', 'Error');
+      this.isProcessing = false;
+      this.enableAddCharacterForm();
+      return;
+    }
+
     const region = this.addCharacterForm.controls['region'].value;
-    console.log(chars);
-    console.log(region);
 
     this.groupsService.addCharactersToGroup(this.currentGroup._id, region, chars).subscribe((data: ServerResponse) => {
       if (!data.success) {
@@ -239,23 +250,27 @@ export class GroupComponent implements OnInit {
         this.addCharacterForm.reset();
         this.enableAddCharacterForm();
       } else {
-        this.toastr.warning(data.message, 'Characters Not Found');
+        if (data.message) {
+          this.toastr.warning(data.message, 'Characters Not Found');
+        }
+
         this.currentGroup = data.group;
         this.modalAddChars.hide();
         this.isProcessing = false;
         this.addCharacterForm.reset();
         this.enableAddCharacterForm();
       }
-    })
+    });
   }
 
   private createAddCharacterForm(): void {
     this.addCharacterForm = this.fb.group({
-      region: [new FormControl('us'), Validators.required],
+      region: new FormControl(null, Validators.required),
       characters: this.fb.array([
         this.initChar()
       ])
-    })
+    });
+    console.log(this.addCharacterForm);
   }
 
   private initChar(): FormGroup {
@@ -265,7 +280,7 @@ export class GroupComponent implements OnInit {
         Validators.minLength(2),
         Validators.maxLength(12)
       ])],
-      realm: ['', Validators.required]
+      realm: [null, Validators.required]
     });
   }
 
