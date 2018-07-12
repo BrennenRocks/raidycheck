@@ -24,7 +24,7 @@ export class GroupComponent implements OnInit {
   isLoading: boolean = true;
   isProcessing: boolean = false;
   isFavorited: boolean;
-  isSidebarClosed: boolean = false;
+  isSidebarClosed: boolean;
 
   slots: string[] = SLOTS;
   realms: {id: number, realm: string}[] = REALMS;
@@ -56,8 +56,9 @@ export class GroupComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isSidebarClosed = !this.authService.loggedIn();
     this.route.params.subscribe((params: Params) => {
-      if (this.shouldGetUser) {
+      if (this.authService.loggedIn() && this.shouldGetUser) {
         this.groupsService.getGroups().subscribe((data: ServerResponse) => {
           if (!data.success) {
             this.toastr.error(data.message, 'Error');
@@ -76,10 +77,10 @@ export class GroupComponent implements OnInit {
         } else {
           this.currentGroup = data.group;
           this.setNumberOfBosses();
-          if (this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) == -1) {
-            this.isFavorited = false;
-          } else {
+          if (this.authService.loggedIn() && this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) > -1) {
             this.isFavorited = true;
+          } else {
+            this.isFavorited = false;
           }
 
           this.averageGroupIlvl = 0;
@@ -99,6 +100,11 @@ export class GroupComponent implements OnInit {
   }
 
   public onFavoriteGroup(): void {
+    if (!this.authService.loggedIn()) {
+      this.toastr.error('You must be logged in to do that', 'Error');
+      return;
+    }
+
     if (!this.isProcessing) {
       this.isProcessing = true;
       this.groupsService.favoriteGroup(this.currentGroup._id).subscribe((data: ServerResponse) => {
@@ -121,13 +127,20 @@ export class GroupComponent implements OnInit {
     }
   }
 
+  public onUpdateCharacter(id: string): void {
+    // update
+  }
+
+  public onRemoveCharacter(id: string): void {
+    // remove
+  }
+
   public setNumberOfBosses(): void {
     if (!this.currentGroup.characters[0]) {
       this.numberOfBosses = 0;
     } else {
       this.numberOfBosses = this.currentGroup.characters[0].raids[this.selectedRaid.id].bosses.length;
     }
-      
   }
 
   public setNumberOfBossesDefeated(index: number): number {
@@ -137,7 +150,7 @@ export class GroupComponent implements OnInit {
       if (boss[this.selectedDifficulty + 'Kills'] > 0) {
         numOfBossesDefeated++;
       }
-    })
+    });
     return numOfBossesDefeated;
   }
 
@@ -235,6 +248,7 @@ export class GroupComponent implements OnInit {
     });
 
     if (!validForm) {
+      validForm = true;
       this.toastr.error('Make sure all fields are filled out properly', 'Error');
       this.isProcessing = false;
       this.enableAddCharacterForm();
@@ -253,7 +267,14 @@ export class GroupComponent implements OnInit {
         if (data.message) {
           this.toastr.warning(data.message, 'Characters Not Found');
         }
-
+        this.averageGroupIlvl = 0;
+        if (this.currentGroup.characters[0]) {
+          for (let i = 0; i < this.currentGroup.characters.length; i++) {
+            this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
+          }
+          this.averageGroupIlvl /= this.currentGroup.characters.length;
+        }
+        
         this.currentGroup = data.group;
         this.modalAddChars.hide();
         this.isProcessing = false;
@@ -270,7 +291,6 @@ export class GroupComponent implements OnInit {
         this.initChar()
       ])
     });
-    console.log(this.addCharacterForm);
   }
 
   private initChar(): FormGroup {

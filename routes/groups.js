@@ -24,7 +24,7 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
     return res.json({ success: false, message: 'No title was provided' });
   }
   //Find out who is logged in so we can link the group to them
-  User.findOne({ _id: req.decodedUser.id }, 'groups', (err, user) => {
+  User.findOne({ _id: req.decodedUser.id }, 'groups inset', (err, user) => {
     if (err) {
       console.log('/groups/new finding user', err);
       return res.json({ success: false, message: constants.errMsg });
@@ -37,6 +37,7 @@ router.post('/groups/new', middleware.getAuthToken, (req, res) => {
     new Group({
       title: req.body.title,
       owner: req.decodedUser.bnet.battletag,
+      image: user.inset,
       isPublic: req.body.isPublic,
       allowOthersToUpdateCharacters: req.body.allowOthersToUpdateCharacters,
     }).save((err, group) => {

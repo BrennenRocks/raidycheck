@@ -17,6 +17,10 @@ html, body {
   border-bottom: 1px solid white;
 }
 
+.ng-select.custom .ng-select-container .ng-value-container .ng-input input {
+  color: white;
+}
+
 .ng-select.custom .ng-clear {
   color: white;
 }

@@ -25,6 +25,7 @@ const titleValidators = [
 const groupSchema = new Schema({
   title: { type: String, required: true, validate: titleValidators },
   owner: { type: String, required: true },
+  image: { type: String },
   favoritesCount: { type: Number, default: 0 },
   favoritedBy: { type: Array },
   isPublic: { type: Boolean, default: true },

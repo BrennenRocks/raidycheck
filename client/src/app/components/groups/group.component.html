@@ -33,7 +33,7 @@
 <!-- end Sidemenu -->
 
 <!--Modal: Create New Group Form-->
-<div *ngIf="!isLoading" mdbModal #modalNewGroup="mdb-modal" class="modal fade" id="modalNewGroup" tabindex="-1" role="dialog" aria-labelledby="NewGroupModal" aria-hidden="true">
+<div *ngIf="!isLoading && authService.loggedIn()" mdbModal #modalNewGroup="mdb-modal" class="modal fade" id="modalNewGroup" tabindex="-1" role="dialog" aria-labelledby="NewGroupModal" aria-hidden="true">
     <div class="modal-dialog cascading-modal" role="document">
         <!--Content-->
         <div class="modal-content">
@@ -92,7 +92,7 @@
 <!--Modal: Create New Group Form-->
 
 <!-- Modal: Add New Chars -->
-<div *ngIf="!isLoading" mdbModal #modalAddChars="mdb-modal" class="modal fade right" id="fullHeightModalRight" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div *ngIf="!isLoading && authService.loggedIn()" mdbModal #modalAddChars="mdb-modal" class="modal fade right" id="fullHeightModalRight" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog pb-5 modal-full-height modal-right" role="document">
         <div class="modal-content">
             <!-- Header -->
@@ -117,7 +117,8 @@
                                 EU
                             </label>
                         </div>
-                        <button [ngClass]="{ 'd-none': counterAddCharacterForm >= maxAddCharacterForm }" class="btn btn-success btn-sm float-right waves-light" (click)="onAddCharacterToForm()" type="button" mdbWavesEffect>
+                        <button [ngClass]="{ 'd-none': counterAddCharacterForm >= maxAddCharacterForm }" class="btn btn-success btn-sm float-right waves-light" 
+                            mdbTooltip="Add More Characters" placement="top" (click)="onAddCharacterToForm()" type="button" mdbWavesEffect>
                             <i class="fa fa-plus"></i>
                         </button>
                     </div>
@@ -136,7 +137,6 @@
                                             <ng-select class="select-chars"
                                                 [items]="realms"
                                                 bindLabel="realm"
-                                                bindValue="id"
                                                 placeholder="Character Realm"
                                                 formControlName="realm">
                                             </ng-select>
@@ -170,7 +170,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="float-left">
-                    <button (click)="onSidebarOpenClose()" type="button" class="btn btn-sm btn-default waves-light" mdbWavesEffect><i class="fa fa-bars mr-1"></i>{{isSidebarClosed ? 'Show Groups' : 'Hide Groups'}}</button>
+                    <button *ngIf="authService.loggedIn()" (click)="onSidebarOpenClose()" type="button" class="btn btn-sm btn-default waves-light" mdbWavesEffect><i class="fa fa-bars mr-1"></i>{{isSidebarClosed ? 'Show Groups' : 'Hide Groups'}}</button>
                     <button *ngIf="!isLoading && authService.loggedIn()" (click)="onModalNewGroupOpen()" type="button" class="btn btn-sm btn-success waves-light" mdbWavesEffect><i class="fa fa-group mr-1"></i>Create New Group</button>
                     <button *ngIf="!isLoading && authService.loggedIn() && user.bnet.battletag === currentGroup.owner" (click)="onModalAddCharsOpen()" type="button" class="btn btn-sm btn-deep-orange waves-light" mdbWavesEffect>
                         <i class="fa fa-user-plus mr-1"></i>Add Characters To Group
@@ -201,12 +201,11 @@
                         <!--Card Data-->
                         <div class="admin-up">
                             <div class="float-left">
-                                <!-- <img src={{user.image}} alt="User image" class="img-fluid"> -->
-                                <img src="http://localhost:8080/{{user.inset}}" alt="User image" class="img-fluid rounded" style="width: 200px">
+                                <img src="http://localhost:8080/{{currentGroup.image}}" alt="User image" class="img-fluid rounded" style="width: 200px">
                             </div>
                             <div class="row text-left">
                                 <div class="col-md-4">
-                                    <p>{{user.bnet.battletag | titlecase }}</p>
+                                    <p>{{currentGroup.owner | titlecase }}</p>
                                 </div>
                                 <div class="col-md-4">
                                     <p>This group is {{currentGroup.isPublic ? 'public' : 'private'}}</p>
@@ -227,8 +226,9 @@
 
                         <!--Card content-->
                         <div class="card-body">
+                                <!-- Group avgIlvl row -->
                                 <div class="row">
-                                        <div class="col-xl-9 col-md-8">
+                                        <div class="col-xl-7 col-md-6">
                                             <div class="float-left">
                                                 Group average iLvl <strong [style.color]="averageGroupIlvl >= iLvlRequirement ? '#689f38' : '#d50000'" style="font-size: 20px">{{averageGroupIlvl | number}}</strong>
                                             </div>
@@ -237,6 +237,10 @@
                                                 <label for="iLvlRequirement" class="">Required iLvl</label>
                                             </div>
                                         </div>
+                                        <div class="col-xl-2">
+                                        </div>
+
+                                        <!-- Raid Dropdowns -->
                                         <div class="col-xl-3 col-md-4 mb-2" style="display: inline">
                                             <ng-select class="custom"
                                                 [items]="raids"
@@ -251,7 +255,12 @@
                                                 [(ngModel)]="selectedDifficulty">
                                             </ng-select>
                                         </div>
+                                        <!-- Raid Dropdowns -->
+
                                     </div>
+                            <!-- Group avgIlvl row -->
+                            
+                            <!-- Character -->
                             <div *ngFor="let char of currentGroup.characters; let i = index;">
                                 <div class="media">
                                     <img class="d-flex rounded mr-3" src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}">
@@ -259,7 +268,7 @@
                                         <h5 class="mt-0" align="justify">{{char.cid.name}} - <span [style.color]="char.iLvl >= iLvlRequirement ? '#689f38' : '#d50000'">{{char.iLvl}}</span></h5>
                                         <div class="slots-container">
                                             <div class="row">
-                                                <div class="col-xl-9 col-md-8">
+                                                <div class="col-xl-9 col-md-6">
                                                     <ul class="gear">
                                                         <li *ngFor="let slot of slots" class="gear {{slot}}" [ngClass]="!char.items[slot]?.icon ? 'empty' : '' ">
                                                             <div class="slot q{{char.items[slot]?.quality}}">
@@ -273,14 +282,16 @@
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <div class="col-xl-3 col-md-4">
-                                                    <ng-template #popTemplate>
+
+                                                <!-- Progression -->
+                                                <div class="col-xl-2 col-md-3">
+                                                    <ng-template #popBossKillCount>
                                                         <div class="p-2">
                                                             <div class="text-left">
                                                                 <h5>{{char.raids[selectedRaid.id].name}}</h5>
                                                                 <h6>{{char.cid.name}} - {{selectedDifficulty | titlecase}}</h6>
                                                             </div>
-                                                            <hr>
+                                                            <hr style="border-bottom: 1px solid white;">
                                                             <div *ngFor="let boss of char.raids[selectedRaid.id].bosses">
                                                                 <p class="text-left" [style.color]="boss[selectedDifficulty + 'Kills'] > 0 ? '#689f38' : '#d50000'" style="font-size: 10px">
                                                                     {{boss[selectedDifficulty + 'Kills']}} x - {{boss.name}}
@@ -288,7 +299,7 @@
                                                             </div>
                                                         </div>
                                                     </ng-template>
-                                                    <div *ngIf="selectedRaid && selectedDifficulty" [mdbTooltip]="popTemplate" placement="top">
+                                                    <div *ngIf="selectedRaid && selectedDifficulty" [mdbTooltip]="popBossKillCount" placement="top">
                                                         <div class="progress">
                                                             <div class="progress-bar" [ngClass]="((char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100) > 50 ? 'light-green darken-2' : 'red accent-4'" role="progressbar" [style.width.%]="(char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100"
                                                             aria-valuenow="{{(char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100}}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -297,11 +308,25 @@
                                                         <p>{{char.raids[selectedRaid.id][selectedDifficulty + 'Progress']}} out of {{numberOfBosses}} defeated</p>
                                                     </div>
                                                 </div>
+                                                <!-- Progression -->
+
+                                                <!-- Update and Remove buttons -->
+                                                <div class="col-xl-1">
+                                                    <button *ngIf="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner" class="btn btn-secondary btn-sm waves-light" mdbTooltip="Update Character" placement="top" (click)="onUpdateCharacter(char._id)" type="button" mdbWavesEffect>
+                                                        <i class="fa fa-trash-o"></i>
+                                                    </button>
+                                                    <button *ngIf="user?.bnet.battletag == currentGroup.owner" class="btn btn-danger btn-sm waves-light" mdbTooltip="Remove from Group" placement="top" (click)="onRemoveCharacter(char._id)" type="button" mdbWavesEffect>
+                                                        <i class="fa fa-remove"></i>
+                                                    </button>
+                                                </div>
+                                                <!-- Update and Remove buttons -->
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <!-- Character -->
+
                         </div>
                         <!--/.Card content-->
 
