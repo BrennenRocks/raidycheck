@@ -8,42 +8,40 @@
   </div>
 </div>
 <div class="character-container">
-    <div *ngIf="isProcessing" class="flex-center text-center">
-        <h2 class="wow pulse infinite">Setting up your account...</h2>
-    </div>
+  <div *ngIf="isProcessing" class="flex-center text-center">
+    <h2 class="wow pulse infinite">Setting up your account...</h2>
+  </div>
   <section *ngIf="!isLoading" class="mt-lg-5">
 
-      <!--Grid row-->
-      <div class="row">
-        <div *ngFor="let char of user.bnet.personalCharacters; let i=index" class="col-xl-3 col-md-6 mb-r mb-2">
-            <!--Grid column-->
+    <!--Grid row-->
+    <div class="row">
+      <div *ngFor="let char of user.bnet.personalCharacters; let i=index" class="col-xl-3 col-md-6 mb-r mb-2">
+        <!--Grid column-->
 
-                <!--Card-->
-                <div (click)="onCharClick(char)" class="card card-cascade cascading-admin-card wow fadeInUp">
+        <!--Card-->
+        <div (click)="onCharClick(char)" class="card card-cascade cascading-admin-card wow fadeInUp">
 
-                    <!--Card Data-->
-                    <div class="admin-up">
-                        <div class="float-left">
-                            <img src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}" alt="User image" class="img-fluid">
-                        </div>
-                        <div class="data float-left ml-3">
-                        <p class="text-left">{{char.guild}}</p>
-                        <h5>
-                            <strong>{{char.name}} - {{char.realm}}</strong>
-                        </h5>
-                        </div>
-                    </div>
-                    <!--/.Card Data-->
-
-                </div>
-                <!--/.Card-->
-
+          <!--Card Data-->
+          <div class="admin-up">
+            <div class="float-left">
+              <img src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}" alt="User image" class="img-fluid">
             </div>
-            <!--Grid column-->
+            <div class="data float-left ml-3">
+              <p class="text-left">{{char.guild}}</p>
+              <h5>
+                <strong>{{char.name}} - {{char.realm}}</strong>
+              </h5>
+            </div>
+          </div>
+          <!--/.Card Data-->
+
         </div>
-      <!--Grid row-->
+        <!--/.Card-->
+
+      </div>
+      <!--Grid column-->
+    </div>
+    <!--Grid row-->
 
   </section>
 </div>
-
-

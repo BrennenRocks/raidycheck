@@ -1,40 +1,44 @@
 <header>
-    <mdb-navbar SideClass="navbar navbar-expand-lg navbar-dark yellow darken-4 fixed-top scrolling-navbar">
-        <logo>
-            <a class="navbar-brand" routerLink="/">RaidyCheck
-            </a>
-        </logo>
-        <links>
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-                    <a class="nav-link waves-light" routerLink="/" mdbWavesEffect>Home</a>
-                </li>
-                <li class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
-                    <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-                    Groups<span class="caret"></span></a>
-                    <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-                        <a *ngIf="isLoggedIn && !isLoading && user.groups.personal[0]" class="dropdown-item waves-light" [routerLink]="['/group', user.groups.personal[0]._id]" mdbWavesEffect>My Groups</a>
-                        <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Search Groups</a>
-                    </div>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
-            <li *ngIf="!isLoggedIn" class="nav-item">
-                <button class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect routerLink="/login">Login With Bnet</button>
-            </li>
-            <li *ngIf="isLoggedIn && !isLoading" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
-                <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-                    <img src="http://localhost:8080/{{user.avatar}}" class="rounded-circle img-fluid" style="width: 28px;">
-                    {{ user.bnet.battletag | titlecase }}<span class="caret"></span>
-                </a>
-                <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-                    <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Profile</a>
-                    <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Settings</a>
-                    <div class="divider dropdown-divider"></div>
-                    <a class="dropdown-item waves-light" (click)="onLogoutClick()" mdbWavesEffect>Logout</a>
-                </div>
-                </li>
-            </ul>
-        </links>
-    </mdb-navbar>
+  <mdb-navbar SideClass="navbar navbar-expand-lg navbar-dark yellow darken-4 fixed-top scrolling-navbar">
+    <logo>
+      <a class="navbar-brand" routerLink="/">RaidyCheck
+      </a>
+    </logo>
+    <links>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
+          <a class="nav-link waves-light" routerLink="/" mdbWavesEffect>Home</a>
+        </li>
+        <li class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
+          <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+            Groups
+            <span class="caret"></span>
+          </a>
+          <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
+            <a *ngIf="isLoggedIn && !isLoading && user.groups.personal[0]" class="dropdown-item waves-light" [routerLink]="['/group', user.groups.personal[0]._id]"
+              mdbWavesEffect>My Groups</a>
+            <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Search Groups</a>
+          </div>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li *ngIf="!isLoggedIn" class="nav-item">
+          <button class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect routerLink="/login">Login With Bnet</button>
+        </li>
+        <li *ngIf="isLoggedIn && !isLoading" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"
+          dropdown>
+          <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+            <img src="http://localhost:8080/{{user.avatar}}" class="rounded-circle img-fluid" style="width: 28px;"> {{ user.bnet.battletag | titlecase }}
+            <span class="caret"></span>
+          </a>
+          <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
+            <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Profile</a>
+            <a class="dropdown-item waves-light" href="#" mdbWavesEffect>Settings</a>
+            <div class="divider dropdown-divider"></div>
+            <a class="dropdown-item waves-light" (click)="onLogoutClick()" mdbWavesEffect>Logout</a>
+          </div>
+        </li>
+      </ul>
+    </links>
+  </mdb-navbar>
 </header>
