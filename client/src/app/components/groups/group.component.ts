@@ -72,8 +72,6 @@ export class GroupComponent implements OnInit {
       } else {
         this.getGroupInfo(params);
       }
-
-
     });
   }
 
@@ -95,6 +93,30 @@ export class GroupComponent implements OnInit {
         this.createNewGroupForm();
         this.createAddCharacterForm();
         this.isLoading = false;
+      }
+    });
+  }
+
+  public onDeleteGroup(): void {
+    if (this.user.groups.personal.length == 1) {
+      this.toastr.error('This is your last group! You can\'t delete it', 'Unable to Delete Group');
+      return;
+    }
+
+    this.isProcessing = true;
+    this.groupsService.deleteGroup(this.currentGroup._id).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isProcessing = false;
+      } else {
+        this.toastr.success(data.message, 'Group ' + this.currentGroup.title + ' Deleted');
+        let index = 0;
+        if (this.user.groups.personal[index]._id === this.currentGroup._id) {
+          index = 1;
+        }
+
+        this.shouldGetUser = true;
+        this.router.navigate(['/group', this.user.groups.personal[index]._id]);
       }
     });
   }
@@ -280,7 +302,7 @@ export class GroupComponent implements OnInit {
 
     if (!validForm) {
       validForm = true;
-      this.toastr.error('Make sure all fields are filled out properly', 'Error');
+      this.toastr.error('Make sure all fields are filled out properly, there can\'t be any blank feilds', 'Error');
       this.isProcessing = false;
       this.enableAddCharacterForm();
       return;

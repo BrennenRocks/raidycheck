@@ -34,7 +34,9 @@ export class GroupsService {
 
   // update group
 
-  // delete group
+  public deleteGroup(groupId: string): Observable<ServerResponse> {
+    return this.http.delete<ServerResponse>(DOMAIN + '/api/groups/delete/' + groupId)
+  }
 
   public favoriteGroup(groupId: string): Observable<ServerResponse> {
     return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader });

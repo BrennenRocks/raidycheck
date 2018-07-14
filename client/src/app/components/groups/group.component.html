@@ -208,9 +208,14 @@
             mdbWavesEffect>
             <i class="fa fa-group mr-1"></i>Create New Group
           </button>
-          <button *ngIf="!isLoading && authService.loggedIn() && user.bnet.battletag === currentGroup.owner" (click)="onModalAddCharsOpen()"
+          <button *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" (click)="onModalAddCharsOpen()"
             type="button" class="btn btn-sm btn-deep-orange waves-light" mdbWavesEffect>
             <i class="fa fa-user-plus mr-1"></i>Add Characters To Group
+          </button>
+        </div>
+        <div *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" class="float-right">
+          <button (click)="onDeleteGroup()" type="button" class="btn btn-sm danger-color-dark waves-light" mdbWavesEffect>
+            <i class="fa fa-trash-o mr-1"></i>Delete Group
           </button>
         </div>
         <div class="float-right btn-excel">
@@ -312,8 +317,7 @@
                   <img class="d-flex rounded f{{char.faction}} mr-3" src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}">
                   <div class="media-body">
                     <h5 class="mt-0" align="justify">
-                      <span style="font-size: 12px">({{char.cid.region | uppercase}})</span>
-                      {{char.cid.name}} - {{char.cid.realm}}
+                      {{char.cid.name}} - {{char.cid.realm}} <span style="font-size: 12px">({{char.cid.region | uppercase}})</span>
                       <span [style.color]="char.iLvl >= iLvlRequirement ? '#689f38' : '#d50000'"> {{char.iLvl}}</span>
                       <span style="font-size: 10px" class="ml-4">Last Updated - {{char.lastUpdated | date: 'long'}}</span>
                     </h5>
