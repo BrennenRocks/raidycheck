@@ -311,7 +311,9 @@
                 <div class="media">
                   <img class="d-flex rounded f{{char.faction}} mr-3" src="https://render-us.worldofwarcraft.com/character/{{char.thumbnail}}">
                   <div class="media-body">
-                    <h5 class="mt-0" align="justify">{{char.cid.name}} - {{char.cid.realm}}
+                    <h5 class="mt-0" align="justify">
+                      <span style="font-size: 12px">({{char.cid.region | uppercase}})</span>
+                      {{char.cid.name}} - {{char.cid.realm}}
                       <span [style.color]="char.iLvl >= iLvlRequirement ? '#689f38' : '#d50000'"> {{char.iLvl}}</span>
                       <span style="font-size: 10px" class="ml-4">Last Updated - {{char.lastUpdated | date: 'long'}}</span>
                     </h5>
@@ -348,7 +350,7 @@
                               </div>
                             </div>
                           </ng-template>
-                          <div *ngIf="selectedRaid && selectedDifficulty" [mdbTooltip]="popBossKillCount" placement="top">
+                          <div *ngIf="selectedRaid && selectedDifficulty && char" [mdbTooltip]="popBossKillCount" placement="top">
                             <div class="progress">
                               <div class="progress-bar" [ngClass]="((char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100) > 50 ? 'light-green darken-2' : 'red accent-4'"
                                 role="progressbar" [style.width.%]="(char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100"

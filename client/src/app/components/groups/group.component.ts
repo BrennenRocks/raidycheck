@@ -58,9 +58,7 @@ export class GroupComponent implements OnInit {
   ngOnInit() {
     this.isSidebarClosed = !this.authService.loggedIn();
     this.route.params.subscribe((params: Params) => {
-      let timeout = 0;
       if (this.authService.loggedIn() && this.shouldGetUser) {
-        timeout = 2000;
         this.groupsService.getGroups().subscribe((data: ServerResponse) => {
           if (!data.success) {
             this.toastr.error(data.message, 'Error');
@@ -68,32 +66,36 @@ export class GroupComponent implements OnInit {
           } else {
             this.user = data.user;
             this.shouldGetUser = false;
+            this.getGroupInfo(params);
           }
         });
+      } else {
+        this.getGroupInfo(params);
       }
 
-      // Wait a little bit so that we can get the user if we need to
-      setTimeout(() => {
-        this.groupsService.getSingleGroup(params.id).subscribe((data: ServerResponse) => {
-          if (!data.success) {
-            this.toastr.error(data.message, 'Error');
-            this.isLoading = false;
-          } else {
-            this.currentGroup = data.group;
-            this.setNumberOfBosses();
-            if (this.authService.loggedIn() && this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) > -1) {
-              this.isFavorited = true;
-            } else {
-              this.isFavorited = false;
-            }
-  
-            this.setGroupAverageIlvl();
-            this.createNewGroupForm();
-            this.createAddCharacterForm();
-            this.isLoading = false;
-          }
-        });
-      }, timeout)
+
+    });
+  }
+
+  private getGroupInfo(params: Params): void {
+    this.groupsService.getSingleGroup(params.id).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isLoading = false;
+      } else {
+        this.currentGroup = data.group;
+        this.setNumberOfBosses();
+        if (this.authService.loggedIn() && this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) > -1) {
+          this.isFavorited = true;
+        } else {
+          this.isFavorited = false;
+        }
+
+        this.setGroupAverageIlvl();
+        this.createNewGroupForm();
+        this.createAddCharacterForm();
+        this.isLoading = false;
+      }
     });
   }
 
@@ -297,9 +299,9 @@ export class GroupComponent implements OnInit {
           this.toastr.warning(data.message, 'Characters Not Found');
         }
 
-        this.setGroupAverageIlvl();
-        
         this.currentGroup = data.group;
+        this.setGroupAverageIlvl();
+        this.setNumberOfBosses();
         this.modalAddChars.hide();
         this.isProcessing = false;
         this.addCharacterForm.reset();
