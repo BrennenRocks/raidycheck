@@ -58,7 +58,9 @@ export class GroupComponent implements OnInit {
   ngOnInit() {
     this.isSidebarClosed = !this.authService.loggedIn();
     this.route.params.subscribe((params: Params) => {
+      let timeout = 0;
       if (this.authService.loggedIn() && this.shouldGetUser) {
+        timeout = 2000;
         this.groupsService.getGroups().subscribe((data: ServerResponse) => {
           if (!data.success) {
             this.toastr.error(data.message, 'Error');
@@ -70,32 +72,28 @@ export class GroupComponent implements OnInit {
         });
       }
 
-      this.groupsService.getSingleGroup(params.id).subscribe((data: ServerResponse) => {
-        if (!data.success) {
-          this.toastr.error(data.message, 'Error');
-          this.isLoading = false;
-        } else {
-          this.currentGroup = data.group;
-          this.setNumberOfBosses();
-          if (this.authService.loggedIn() && this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) > -1) {
-            this.isFavorited = true;
+      // Wait a little bit so that we can get the user if we need to
+      setTimeout(() => {
+        this.groupsService.getSingleGroup(params.id).subscribe((data: ServerResponse) => {
+          if (!data.success) {
+            this.toastr.error(data.message, 'Error');
+            this.isLoading = false;
           } else {
-            this.isFavorited = false;
-          }
-
-          this.averageGroupIlvl = 0;
-          if (this.currentGroup.characters[0]) {
-            for (let i = 0; i < this.currentGroup.characters.length; i++) {
-              this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
+            this.currentGroup = data.group;
+            this.setNumberOfBosses();
+            if (this.authService.loggedIn() && this.currentGroup.favoritedBy.indexOf(this.user.bnet.battletag) > -1) {
+              this.isFavorited = true;
+            } else {
+              this.isFavorited = false;
             }
-            this.averageGroupIlvl /= this.currentGroup.characters.length;
+  
+            this.setGroupAverageIlvl();
+            this.createNewGroupForm();
+            this.createAddCharacterForm();
+            this.isLoading = false;
           }
-
-          this.createNewGroupForm();
-          this.createAddCharacterForm();
-          this.isLoading = false;
-        }
-      });
+        });
+      }, timeout)
     });
   }
 
@@ -135,13 +133,24 @@ export class GroupComponent implements OnInit {
         this.isProcessing = false;
       } else {
         this.currentGroup = data.group;
+        this.setGroupAverageIlvl();
         this.isProcessing = false;
       }
     });
   }
 
   public onRemoveCharacter(charId: string): void {
-    // remove
+    this.isProcessing = true;
+    this.groupsService.removeCharacterFromGroup(this.currentGroup._id, charId).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isProcessing = false;
+      } else {
+        this.currentGroup = data.group;
+        this.setGroupAverageIlvl();
+        this.isProcessing = false;
+      }
+    });
   }
 
   public setNumberOfBosses(): void {
@@ -161,6 +170,16 @@ export class GroupComponent implements OnInit {
       }
     });
     return numOfBossesDefeated;
+  }
+
+  private setGroupAverageIlvl(): void {
+    this.averageGroupIlvl = 0;
+    if (this.currentGroup.characters[0]) {
+      for (let i = 0; i < this.currentGroup.characters.length; i++) {
+        this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
+      }
+      this.averageGroupIlvl /= this.currentGroup.characters.length;
+    }
   }
 
   public onSidebarOpenClose(): void {
@@ -250,6 +269,7 @@ export class GroupComponent implements OnInit {
         return;
       }
 
+      console.log(char.value['realm'].realm);
       chars.push({
         name: char.value['name'],
         realm: char.value['realm'].realm
@@ -266,7 +286,7 @@ export class GroupComponent implements OnInit {
 
     const region = this.addCharacterForm.controls['region'].value;
 
-    this.groupsService.addCharactersToGroup(this.currentGroup._id, region, chars).subscribe((data: ServerResponse) => {
+    this.groupsService.addCharactersToGroup(this.currentGroup._id, region, chars, false).subscribe((data: ServerResponse) => {
       if (!data.success) {
         this.toastr.error(data.message, 'Error');
         this.isProcessing = false;
@@ -276,13 +296,8 @@ export class GroupComponent implements OnInit {
         if (data.message) {
           this.toastr.warning(data.message, 'Characters Not Found');
         }
-        this.averageGroupIlvl = 0;
-        if (this.currentGroup.characters[0]) {
-          for (let i = 0; i < this.currentGroup.characters.length; i++) {
-            this.averageGroupIlvl += this.currentGroup.characters[i].iLvl;
-          }
-          this.averageGroupIlvl /= this.currentGroup.characters.length;
-        }
+
+        this.setGroupAverageIlvl();
         
         this.currentGroup = data.group;
         this.modalAddChars.hide();

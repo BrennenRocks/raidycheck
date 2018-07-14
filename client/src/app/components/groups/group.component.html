@@ -128,13 +128,6 @@
 
       <div class="modal-body">
 
-      <!-- Loader Spinner -->
-      <div class="flex-center">
-        <div *ngIf="isProcessing" class="text-center loader">
-        </div>
-      </div>
-      <!-- Loader Spinner -->
-
         <!-- Form -->
         <form [formGroup]="addCharacterForm">
           <div class="form-sm pb-2 text-center">
@@ -152,6 +145,13 @@
               <i class="fa fa-plus"></i>
             </button>
           </div>
+
+        <!-- Loader Spinner -->
+        <div class="flex-center">
+          <div *ngIf="isProcessing" class="text-center loader">
+          </div>
+        </div>
+        <!-- Loader Spinner -->
 
           <div class="md-form form-sm input-group ml-3">
             <div formArrayName="characters">
@@ -366,7 +366,7 @@
                             <button [ngClass]="isProcessing ? 'disabled' : ''" class="btn btn-secondary btn-sm mt-0 waves-light"
                               mdbTooltip="Update Character" placement="top" (click)="onUpdateCharacter(char._id)" type="button"
                               mdbWavesEffect>
-                              <i class="fa fa-refresh"></i>
+                              <i [ngClass]="isProcessing ? 'fa-spin' : ''" class="fa fa-refresh"></i>
                             </button>
                             <button *ngIf="user?.bnet.battletag == currentGroup.owner" [ngClass]="isProcessing ? 'disabled' : ''" class="btn btn-danger btn-sm waves-light" mdbTooltip="Remove from Group"
                               placement="top" (click)="onRemoveCharacter(char._id)" type="button" mdbWavesEffect>

@@ -40,15 +40,17 @@ export class GroupsService {
     return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader });
   }
 
-  public addCharactersToGroup(groupId: string, region: string, characters: Array<Character>): Observable<ServerResponse> {
-    return this.http.post<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/add', { region, characters } );
+  public addCharactersToGroup(groupId: string, region: string, characters: Array<Character>, gettingStarted: boolean): Observable<ServerResponse> {
+    return this.http.post<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/add', { region, characters, gettingStarted } );
   }
 
-  updateCharacter(groupId: string, charId: string): Observable<ServerResponse> {
-    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/update/' + charId, {});
+  public updateCharacter(groupId: string, charId: string): Observable<ServerResponse> {
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/update/' + charId, { headers: this.getAuthHeader });
 
   }
 
-  // remove character from group
+  public removeCharacterFromGroup(groupId: string, charId: string): Observable<ServerResponse> {
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/remove/' + charId, { headers: this.getAuthHeader });
+  }
   
 }

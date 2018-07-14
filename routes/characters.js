@@ -21,6 +21,7 @@ const constants = require('../config/constants'),
    }
 
    req.body {
+     *gettingStarted: boolean,
      *region: String,
      *characters: [
        {
@@ -41,8 +42,8 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
     return res.json({ success: false, message: 'Must pass in an array' });
   }
 
-  if (req.body.characters.length > 25) {
-    return res.json({ success: false, message: 'Can not get more than 25 characters' });
+  if (req.body.characters.length > 5 && !req.body.gettingStarted) {
+    return res.json({ success: false, message: 'Can not get more than 5 characters' });
   }
 
   if(!req.body.region) {
@@ -81,7 +82,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
         return res.json({ success: false, message: constants.errMsg });
       }
 
-      if (characters) {
+      if (characters.length > 0) {
         const dbChars = [];
         characters.map(character => {
           dbChars.push({ name: character.cid.name, realm: character.cid.realm, region: req.body.region });
@@ -137,6 +138,11 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
           .then(charsResponse => {
             // Remove the nulls (errored out) responses
             charsResponse = _.compact(charsResponse);
+
+            if (charsResponse.length == 0) {
+              return res.json({ success: false, message: charactersNotFoundInArmory})
+            }
+
             const resChars = charsResponse.map(r => r.data);
 
             let progressionURLs = [];
@@ -216,7 +222,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                   items = {};
                   raids = [];
                 }
-    
+
                   Character.create(newChars, (err, newCharacters) => {
                     if (err) {
                       console.log('/groups/:groupId/characters/add creating characters', err)
@@ -265,7 +271,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
 
    returns the group
 ==============================================*/
-router.put('/groups/:groupId/characters/update/:charId', middleware.getAuthToken, (req, res) => {
+router.put('/groups/:groupId/characters/update/:charId', (req, res) => {
   Group.findOne({ _id: req.params.groupId }, (err, group) => {
     if (err) {
       console.log('/groups/:groupId/characters/update/:charId finding group', err);
@@ -276,9 +282,9 @@ router.put('/groups/:groupId/characters/update/:charId', middleware.getAuthToken
       return res.json({ success: false, message: constants.groupNotFound });
     }
 
-    if (!group.allowOthersToUpdateCharacters && req.decodedUser.bnet.battletag !== group.owner) {
-      return res.json({ success: false, message: 'You don\'t have permission to do that' });
-    }
+    // if (!group.allowOthersToUpdateCharacters && req.decodedUser.bnet.battletag !== group.owner) {
+    //   return res.json({ success: false, message: 'You don\'t have permission to do that' });
+    // }
 
     Character.findOne({ _id: req.params.charId }, (err, char) => {
       if (err) {
@@ -405,7 +411,7 @@ router.put('/groups/:groupId/characters/remove/:charId', middleware.getAuthToken
     i++;
     return char.equals(req.params.charId);
   });
-  console.log(inArray);
+
   if (!inArray) {
     return res.json({ success: false, message: 'Character doesn\'t exist in that group' });
   }
@@ -418,7 +424,14 @@ router.put('/groups/:groupId/characters/remove/:charId', middleware.getAuthToken
       return res.json({ success: false, message: constants.errMsg });
     }
 
-    return res.json({ success: true, message: '', group: retGroup });
+    Group.findById(retGroup._id).populate('characters').exec((err, retGroup) => {
+      if (err) {
+        console.log('/groups/:groupId/characters/update/:charId finding group', err);
+        return res.json({ success: false, message: constants.errMsg });
+      }
+
+      return res.json({ success: true, message: '', group: retGroup });
+    });
   })
 });
 

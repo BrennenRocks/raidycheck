@@ -72,7 +72,7 @@ export class GetStartedComponent implements OnInit {
             this.toastr.error(data.message, 'Error');
             this.isProcessing = false;
           } else {
-            this.groupsService.addCharactersToGroup(data.group._id, this.user.bnet.personalCharacters[0].region, chars).subscribe((data: ServerResponse) => {
+            this.groupsService.addCharactersToGroup(data.group._id, this.user.bnet.personalCharacters[0].region, chars, true).subscribe((data: ServerResponse) => {
               if (!data.success) {
                 this.toastr.error(data.message, 'Error');
                 this.isProcessing = false;
