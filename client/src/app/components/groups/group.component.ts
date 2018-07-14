@@ -127,11 +127,20 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  public onUpdateCharacter(id: string): void {
-    // update
+  public onUpdateCharacter(charId: string): void {
+    this.isProcessing = true;
+    this.groupsService.updateCharacter(this.currentGroup._id, charId).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isProcessing = false;
+      } else {
+        this.currentGroup = data.group;
+        this.isProcessing = false;
+      }
+    });
   }
 
-  public onRemoveCharacter(id: string): void {
+  public onRemoveCharacter(charId: string): void {
     // remove
   }
 

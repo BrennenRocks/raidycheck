@@ -5,6 +5,7 @@ export interface Character {
     realm: string,
     region: string
   },
+  faction: number,
   lastModified: number,
   iLvl: number,
   class: number,

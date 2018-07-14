@@ -10,6 +10,7 @@ const characterSchema = new Schema({
     realm: { type: String, required: true },
     region: { type: String },
   },
+  faction: { type: Number },
   lastModified: { type: Number},
   iLvl: { type: Number },
   iLvlInBags: { type: Number },

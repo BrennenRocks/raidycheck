@@ -27,6 +27,20 @@
   opacity: 0.7; 
 }
 
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #8c0e97;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .iLvl-form {
   margin: 0;
 }
@@ -172,20 +186,6 @@
   color: rgb(255, 255, 0); 
 }
 
-.loader {
-  border: 16px solid #f3f3f3;
-  border-top: 16px solid #8c0e97;
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 img {
   vertical-align: baseline;
 }
@@ -327,3 +327,10 @@ ul.gear li .slot.q6 {
   box-shadow: 0 0 0 1px #e5cc80, 0 0 12px #e5cc80;
 }
 
+img.f0 {
+  box-shadow: 0 0 0 1px #0073AA, 0 0 15px #0073AA;
+}
+
+img.f1 {
+  box-shadow: 0 0 0 1px #E60607, 0 0 15px #E60607;
+}
