@@ -32,7 +32,9 @@ export class GroupsService {
     return this.http.get<ServerResponse>(DOMAIN + '/api/groups/' + groupId);
   }
 
-  // update group
+  public updateGroup(groupId: string, group: Object): Observable<ServerResponse> {
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/update/' + groupId, group);
+  }
 
   public deleteGroup(groupId: string): Observable<ServerResponse> {
     return this.http.delete<ServerResponse>(DOMAIN + '/api/groups/delete/' + groupId)

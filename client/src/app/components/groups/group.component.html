@@ -110,6 +110,78 @@
 </div>
 <!--Modal: Create New Group Form-->
 
+<!--Modal: Edit New Group Form-->
+<div *ngIf="!isLoading && authService.loggedIn()" mdbModal #modalEditGroup="mdb-modal" class="modal fade" id="modalEditGroup"
+  tabindex="-1" role="dialog" aria-labelledby="EditGroupModal" aria-hidden="true">
+  <div class="modal-dialog cascading-modal" role="document">
+    <!--Content-->
+    <div class="modal-content">
+
+      <!--Header-->
+      <div class="modal-header default-color white-text">
+        <h4 class="title">
+          <i class="fa fa-edit"></i> Edit {{currentGroup.title}}
+        </h4>
+        <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close" (click)="onModalEditGroupClose()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <!--Body-->
+      <div class="modal-body mb-0">
+        <form [formGroup]="editGroupForm">
+          <div class="md-form form-sm">
+            <i class="fa fa-group prefix"></i>
+            <input mdbInputDirective [mdbValidate]="false" [ngClass]="editGroupForm.controls.name.errors ? 'counter-danger' : 'counter-success'"
+              type="text" id="name" data-error="Must be between 3 and 20 characters" data-success="Valid" formControlName="name"
+              autofocus class="form-control">
+            <label for="name">Name <span style="font-size: 10px">(Currently: {{currentGroup.title}})</span></label>
+            <span [ngClass]="editGroupForm.controls.name.errors ? 'text-danger' : 'text-success'" class="inputVal">
+              {{editGroupForm.controls.name.errors ? 'Must be between 3 and 20 characters' : 'Valid'}}
+            </span>
+          </div>
+
+          <div class="form-sm pt-3 pb-2">
+            <h5>Allow others to see this group
+              <span style="font-size: 10px">(Currently: {{currentGroup.isPublic ? 'Public' : 'Private'}})</span>
+            </h5>
+            <div class="btn-group">
+              <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="true" mdbWavesEffect>
+                Public
+              </label>
+              <label class="btn btn-primary waves-light" formControlName="public" mdbRadio="false" mdbWavesEffect>
+                Private
+              </label>
+            </div>
+          </div>
+
+          <div class="form-sm pt-2 pb-2">
+            <h5>Allow others to update characters
+              <span style="font-size: 10px">(Currently: {{currentGroup.allowOthersToUpdateCharacters ? 'Yes' : 'No'}})</span>
+            </h5>
+            <div class="btn-group">
+              <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="true" mdbWavesEffect>
+                Yes
+              </label>
+              <label class="btn btn-primary waves-light" formControlName="allowOthersToUpdateCharacters" mdbRadio="false" mdbWavesEffect>
+                No
+              </label>
+            </div>
+          </div>
+
+          <div class="text-center mt-1-half">
+            <button [ngClass]="editGroupForm.controls.name.errors || isProcessing ? 'disabled' : ''" (click)="onEditGroup()" class="btn btn-info mb-2 waves-light"
+              mdbWavesEffect>
+              Edit Group<i class="fa fa-send ml-1"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.Content-->
+  </div>
+</div>
+<!--Modal: Edit Group Form-->
+
 <!-- Modal: Add New Chars -->
 <div *ngIf="!isLoading && authService.loggedIn()" mdbModal #modalAddChars="mdb-modal" class="modal fade right" id="fullHeightModalRight"
   tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -213,11 +285,15 @@
             <i class="fa fa-user-plus mr-1"></i>Add Characters To Group
           </button>
         </div>
-        <div *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" class="float-right">
-          <button (click)="onDeleteGroup()" type="button" class="btn btn-sm danger-color-dark waves-light" mdbWavesEffect>
+        <div *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" [ngClass]="user.groups.personal.length == 1 ? 'btn-excel' : ''" class="float-right">
+          <button (click)="onDeleteGroup()" type="button" [ngClass]="isProcessing || user.groups.personal.length == 1 ? 'disabled' : ''" class="btn btn-sm danger-color-dark waves-light" mdbWavesEffect>
             <i class="fa fa-trash-o mr-1"></i>Delete Group
           </button>
         </div>
+        <button *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" [ngClass]="isProcessing ? 'disabled' : ''" class="btn btn-sm default-color float-right waves-light" 
+          (click)="onModalEditGroupOpen()" mdbWavesEffect>
+          <i class="fa fa-edit mr-1"></i>Edit Group Settings
+        </button>
         <div class="float-right btn-excel">
           <button type="button" class="btn btn-sm success-color-dark waves-light" mdbWavesEffect disabled>
             <i class="fa fa-file-excel-o mr-1"></i>Export to Excel

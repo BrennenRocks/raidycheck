@@ -153,7 +153,18 @@ router.put('/groups/update/:groupId', middleware.getAuthToken, middleware.checkG
         return res.json({ success: false, message: constants.errMsg });
       }
 
-      return res.json({ success: true, message: '', group: savedGroup });
+      Group.findOne({ _id: savedGroup._id }).populate('characters').exec((err, group) => {
+        if (err) {
+          console.log('/groups/update/:groupId finding group', err)
+          return res.json({ success: false, message: constants.errMsg });
+        }
+    
+        if (!group) {
+          return res.json({ success: false, message: constants.groupNotFound });
+        }
+        
+        return res.json({ success: true, message: '', group: group });
+      });
     });
   });
 });
@@ -176,13 +187,52 @@ router.delete('/groups/delete/:groupId', middleware.getAuthToken, middleware.che
       return res.json({ success: false, message: constants.groupNotFound });
     }
 
-    group.remove(err => {
+    User.findOne({ _id: req.decodedUser.id }, (err, user) => {
       if (err) {
-        console.log('/groups/delete/:groupId removing group', err);
-        return res.json({ success: false, message: constants.errMsg });
+        console.log('/groups/delete/:groupId finding user', err);
+        return res.json({ success: false, message: constants.userNotFound });
       }
 
-      return res.json({ success: true, message: 'Group successfully deleted' });
+      if (user.groups.personal.length == 1) {
+        return res.json({ success: false, message: 'You only have one group left, you cannot delete it' });
+      }
+
+      // TODO: Put inside middleware function
+      // User.find({ 'bnet.battletag': { $in: group.favoritedBy } }, (err, users) => {
+      //   if (err) {
+      //     console.log('/groups/delete/:groupId finding users who have favorited this group', err);
+      //     return res.json({ success: false, message: constants.errMsg });
+      //   }
+
+      //   if (users.length > 0) {
+      //     users.map(singleUser => {
+      //       singleUser.groups.favorites.splice(singleUser.groups.favorites.indexOf(group._id), 1);
+      //       singleUser.save(err => {
+      //         if (err) {
+      //           console.log('/groups/delete/:groupId saving singleUser', err);
+      //           return res.json({ success: false, message: constants.errMsg });
+      //         }
+      //       })
+      //     });
+      //   }
+      // });
+
+      group.remove(err => {
+        if (err) {
+          console.log('/groups/delete/:groupId removing group', err);
+          return res.json({ success: false, message: constants.errMsg });
+        }
+        
+        user.groups.personal.splice(user.groups.personal.indexOf(group._id), 1);
+        user.save(err => {
+          if (err) {
+            console.log('/groups/delete/:groupId saving user', err);
+            return res.json({ success: false, message: constants.errMsg });
+          }
+
+          return res.json({ success: true, message: 'Group successfully deleted' });
+        });
+      });
     });
   });
 });

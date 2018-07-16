@@ -20,6 +20,7 @@ export class GroupComponent implements OnInit {
 
   @ViewChild('modalNewGroup') public modalNewGroup: ModalDirective;
   @ViewChild('modalAddChars') public modalAddChars: ModalDirective;
+  @ViewChild('modalEditGroup') public modalEditGroup: ModalDirective;
 
   isLoading: boolean = true;
   isProcessing: boolean = false;
@@ -45,6 +46,7 @@ export class GroupComponent implements OnInit {
   addCharacterForm: FormGroup;
   counterAddCharacterForm: number = 1;
   maxAddCharacterForm: number = 5;
+  editGroupForm: FormGroup;
   
   constructor(
     public authService: AuthService,
@@ -65,6 +67,7 @@ export class GroupComponent implements OnInit {
             this.isLoading = false;
           } else {
             this.user = data.user;
+            console.log(this.user);
             this.shouldGetUser = false;
             this.getGroupInfo(params);
           }
@@ -92,6 +95,7 @@ export class GroupComponent implements OnInit {
         this.setGroupAverageIlvl();
         this.createNewGroupForm();
         this.createAddCharacterForm();
+        this.createEditGroupForm();
         this.isLoading = false;
       }
     });
@@ -115,6 +119,7 @@ export class GroupComponent implements OnInit {
           index = 1;
         }
 
+        this.isProcessing = false;
         this.shouldGetUser = true;
         this.router.navigate(['/group', this.user.groups.personal[index]._id]);
       }
@@ -228,7 +233,7 @@ export class GroupComponent implements OnInit {
 
     const newGroup = {
       title: this.newGroupForm.get('name').value,
-      public: this.newGroupForm.get('public').value,
+      isPublic: this.newGroupForm.get('public').value,
       allowOthersToUpdateCharacters: this.newGroupForm.get('allowOthersToUpdateCharacters').value
     }
 
@@ -240,7 +245,7 @@ export class GroupComponent implements OnInit {
       } else {
         this.shouldGetUser = true;
         this.router.navigate(['/group', data.group._id]);
-        this.modalNewGroup.hide();
+        this.onModalNewGroupClose();
         this.newGroupForm.reset();
         this.toastr.success('Add some characters', data.group.title + ' created');
         this.isProcessing = false;
@@ -281,6 +286,63 @@ export class GroupComponent implements OnInit {
     this.modalAddChars.hide();
   }
 
+  public onEditGroup(): void {
+    this.isProcessing = true;
+    this.disableEditGroupForm();
+
+    const newGroup = {
+      title: this.editGroupForm.get('name').value,
+      isPublic: this.editGroupForm.get('public').value,
+      allowOthersToUpdateCharacters: this.editGroupForm.get('allowOthersToUpdateCharacters').value
+    }
+
+    this.groupsService.updateGroup(this.currentGroup._id, newGroup).subscribe((data: ServerResponse) => {
+      if (!data.success) {
+        this.toastr.error(data.message, 'Error');
+        this.isProcessing = false;
+        this.enableEditGroupForm();
+      } else {
+        this.onModalEditGroupClose();
+        this.currentGroup = data.group;
+        this.editGroupForm.reset();
+        this.enableEditGroupForm();
+        this.isProcessing = false;
+      }
+    });
+  }
+
+  private createEditGroupForm(): void {
+    this.editGroupForm = this.fb.group({
+      name: [null, Validators.compose([
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(20),
+      ])],
+      public: new FormControl(true),
+      allowOthersToUpdateCharacters: new FormControl(false)
+    });
+  }
+
+  private disableEditGroupForm(): void {
+    this.editGroupForm.controls['name'].disable();
+    this.editGroupForm.controls['public'].disable();
+    this.editGroupForm.controls['allowOthersToUpdateCharacters'].disable();
+  }
+
+  private enableEditGroupForm(): void {
+    this.editGroupForm.controls['name'].enable();
+    this.editGroupForm.controls['public'].enable();
+    this.editGroupForm.controls['allowOthersToUpdateCharacters'].enable();
+  }
+
+  public onModalEditGroupOpen(): void {
+    this.modalEditGroup.show();
+  }
+
+  public onModalEditGroupClose(): void {
+    this.modalEditGroup.hide();
+  }
+
   public onAddNewCharacters(): void {
     this.isProcessing = true;
     this.disableAddCharacterForm();
@@ -293,7 +355,6 @@ export class GroupComponent implements OnInit {
         return;
       }
 
-      console.log(char.value['realm'].realm);
       chars.push({
         name: char.value['name'],
         realm: char.value['realm'].realm
