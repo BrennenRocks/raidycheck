@@ -408,7 +408,7 @@
                                   <img src="http://localhost:8080/{{char.items[slot]?.icon}}">
                                 </a>
                               </div>
-                              <span *ngIf="char.items[slot]?.itemLevel" [style.color]="char.items[slot].itemLevel >= iLvlRequirement ? '#689f38' : '#d50000'"
+                              <span *ngIf="char.items[slot]?.itemLevel != null" [style.color]="char.items[slot].itemLevel >= iLvlRequirement ? '#689f38' : '#d50000'"
                                 style="font-size: 10px">{{char.items[slot].itemLevel}}</span>
                             </li>
                           </ul>

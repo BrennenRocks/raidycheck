@@ -67,7 +67,6 @@ export class GroupComponent implements OnInit {
             this.isLoading = false;
           } else {
             this.user = data.user;
-            console.log(this.user);
             this.shouldGetUser = false;
             this.getGroupInfo(params);
           }
