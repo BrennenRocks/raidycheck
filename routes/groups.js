@@ -198,53 +198,56 @@ router.delete('/groups/delete/:groupId', middleware.getAuthToken, middleware.che
         return res.json({ success: false, message: 'You only have one group left, you cannot delete it' });
       }
 
-      User.find({ 'bnet.battletag': { $in: group.favoritedBy } }.populate('groups.favorites').exec((err, users) => {
+      group.remove(err => {
         if (err) {
-          console.log('/groups/delete/:groupId finding users who have favorited this group', err);
+          console.log('/groups/delete/:groupId removing group', err);
           return res.json({ success: false, message: constants.errMsg });
         }
-
-        const bulkUpdateOps = [];
-        // If a different user has favorited this group, remove it
-        console.log(group._id);
-        if (users.length > 0) {
-          users.map(singleUser => {
-            console.log(singleUser);
-            bulkUpdateOps.push({
-              updateOne: {
-                filter: { _id: singleUser._id },
-                update: { $pull: { 'singleUser.groups.favorites': { _id: group._id } }}
-              }
-            });
-          });
-        }
-
-        User.bulkWrite(bulkUpdateOps, (err, data) => {
+        
+        user.groups.personal.splice(user.groups.personal.indexOf(group._id), 1);
+        user.save(err => {
           if (err) {
-            console.log('/groups/delete/:groupId bulk writing users', err);
+            console.log('/groups/delete/:groupId saving user', err);
             return res.json({ success: false, message: constants.errMsg });
           }
 
-          console.log('data', data);
-
-          group.remove(err => {
-            if (err) {
-              console.log('/groups/delete/:groupId removing group', err);
-              return res.json({ success: false, message: constants.errMsg });
-            }
-            
-            user.groups.personal.splice(user.groups.personal.indexOf(group._id), 1);
-            user.save(err => {
-              if (err) {
-                console.log('/groups/delete/:groupId saving user', err);
-                return res.json({ success: false, message: constants.errMsg });
-              }
-    
-              return res.json({ success: true, message: 'Group successfully deleted' });
-            });
-          });
+          return res.json({ success: true, message: 'Group successfully deleted' });
         });
-      }));
+      });
+
+      // TODO: Remove the removed group from users who have favorited it
+      // User.find({ 'bnet.battletag': { $in: group.favoritedBy } }, (err, users) => {
+      //   if (err) {
+      //     console.log('/groups/delete/:groupId finding users who have favorited this group', err);
+      //     return res.json({ success: false, message: constants.errMsg });
+      //   }
+
+        // const bulkUpdateOps = [];
+        // If a different user has favorited this group, remove it
+        // console.log(group._id);
+        // if (users.length > 0) {
+        //   users.map(singleUser => {
+            // singleUser.groups.favorites.remove(group._id);
+            // singleUser.save();
+        //     bulkUpdateOps.push({
+        //       updateOne: {
+        //         filter: { _id: singleUser._id },
+        //         update: { $pull: { 'singleUser.groups.favorites': new mongoose.Types.ObjectId(req.params.groupId) }}
+        //       }
+        //     });
+          // });
+
+        //   User.bulkWrite(bulkUpdateOps, (err, data) => {
+        //     if (err) {
+        //       console.log('/groups/delete/:groupId bulk writing users', err);
+        //       return res.json({ success: false, message: constants.errMsg });
+        //     }
+            
+        //     console.log('data', data);
+        //   });
+        // }
+          
+      // });
     });
   });
 });
