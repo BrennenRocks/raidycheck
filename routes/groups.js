@@ -198,14 +198,13 @@ router.delete('/groups/delete/:groupId', middleware.getAuthToken, middleware.che
         return res.json({ success: false, message: 'You only have one group left, you cannot delete it' });
       }
 
-      // TODO: Remove the removed group from users who have favorited it
       User.find({ 'bnet.battletag': { $in: group.favoritedBy } }, (err, users) => {
         if (err) {
           console.log('/groups/delete/:groupId finding users who have favorited this group', err);
           return res.json({ success: false, message: constants.errMsg });
         }
 
-        const bulkUpdateOps = [];
+        // const bulkUpdateOps = [];
         //If a different user has favorited this group, remove it
         console.log(group._id);
         if (users.length > 0) {

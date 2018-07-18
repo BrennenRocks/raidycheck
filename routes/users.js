@@ -63,14 +63,14 @@ router.get('/users/:battletag', (req, res) => {
      *image: String
    }
 ============================*/
-router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
+router.put('/users/update/', middleware.getAuthToken, (req, res) => {
   if (!req.body.image) {
     return res.json({ success: false, message: 'No image provided' });
   }
 
   User.findOne({ _id: req.decodedUser.id }, (err, user) => {
     if (err) {
-      console.log('/users/update/:userId finding User', err);
+      console.log('/users/update/ finding User', err);
       return res.json({ success: false, message: constants.errMsg });
     }
 
@@ -85,7 +85,7 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
       let image = './images/characters/' + _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-inset.jpg';
       fs.writeFile(image, Buffer.from(insetResponse.data, 'binary').toString('base64'), 'base64', (err) => {
         if (err) {
-          console.log('/users/update/:userId downloading inset image')
+          console.log('/users/update/ downloading inset image')
         }
 
         user.inset = image;
@@ -97,14 +97,14 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
         image = './images/characters/' +  _.replace(_.toLower(user.bnet.battletag), '#', '-') + '-avatar.jpg';
         fs.writeFile(image, Buffer.from(response.data, 'binary').toString('base64'), 'base64', (err) => {
           if (err) {
-            console.log('/users/update/:userId downloading avatar image', err);
+            console.log('/users/update/ downloading avatar image', err);
             return res.json({ success: false, message: constants.errMsg });
           }
   
           user.avatar = image;
           user.save((err, savedUser) => {
             if (err) {
-              console.log('/users/update/:userId saving User', err);
+              console.log('/users/update/ saving User', err);
               return res.json({ success: false, message: constants.errMsg });
             }
       
@@ -113,12 +113,12 @@ router.put('/users/update/:userId', middleware.getAuthToken, (req, res) => {
         });
       })
       .catch(err => {
-        console.log('/users/update/:userId saving avatar image', err);
+        console.log('/users/update/ saving avatar image', err);
         return res.json({ success: false, message: contants.errMsg });
       });
     })
     .catch(err => {
-      console.log('/users/update/:userId saving isnet image', err);
+      console.log('/users/update/ saving isnet image', err);
       return res.json({ success: false, message: contants.errMsg });
     });
   });

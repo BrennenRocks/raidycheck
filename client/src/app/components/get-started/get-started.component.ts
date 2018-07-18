@@ -62,7 +62,7 @@ export class GetStartedComponent implements OnInit {
         chars.push({ name: char.name, realm: char.realm });
       }
     });
-    this.authService.updateUser(this.user._id, image).subscribe((data: ServerResponse) => {
+    this.authService.updateUser(image).subscribe((data: ServerResponse) => {
       if (!data.success) {
         this.toastr.error(data.message, 'Error');
         this.isProcessing = false;

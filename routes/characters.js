@@ -245,8 +245,11 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
                           console.log('/groups/:groupId/characters/add finding group', err);
                           return res.json({ success: false, message: constants.errMsg });
                         }
-    
-                        return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+
+                        // Wait at least 3 seconds for all images to be downloaded
+                        setTimeout(() => {
+                          return res.json({ success: true, message: charactersNotFoundInArmory, group: retGroup });
+                        }, 3000);
                       });
                     });
                   });
