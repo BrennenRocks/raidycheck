@@ -65,6 +65,10 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
       return res.json({ success: false, message: constants.groupNotFound });
     }
 
+    if (group.characters.length > 25) {
+      return res.json({ success: false, message: 'Cannot have more than 25 characters in a group' });
+    }
+
     const groupChars = [];
     group.characters.map(char => {
       groupChars.push({ name: char.cid.name, realm: char.cid.realm, region: char.cid.region });

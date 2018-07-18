@@ -50,11 +50,9 @@ export class AuthService {
   }
 
   public updateUser(image: string): Observable<ServerResponse> {
-    // Navbar was getting the user before it was updated.
-    setTimeout(() => {
-      this.refreshUser.next(true);
-    }, 5000);
-    return this.http.put<ServerResponse>(DOMAIN + '/api/users/update', { image }, { headers: this.getAuthHeader() });
+    let response = this.http.put<ServerResponse>(DOMAIN + '/api/users/update', { image }, { headers: this.getAuthHeader() });
+    this.refreshUser.next(true);
+    return response;
   }
 
   public updateUserFinish(): void {

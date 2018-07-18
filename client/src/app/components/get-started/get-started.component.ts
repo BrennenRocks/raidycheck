@@ -57,9 +57,13 @@ export class GetStartedComponent implements OnInit {
       allowOthersToUpdateCharacters: false
     };
     let chars = [];
+    let i = 0;
     this.user.bnet.personalCharacters.map(char => {
-      if (char.lastModified > 0) {
+      if (char.lastModified > 0 && i < 5) {
         chars.push({ name: char.name, realm: char.realm });
+        i++;
+      } else {
+        return;
       }
     });
     this.authService.updateUser(image).subscribe((data: ServerResponse) => {
