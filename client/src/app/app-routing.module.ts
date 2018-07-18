@@ -1,6 +1,9 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 
+import { AuthGuard } from './guards/auth.guard';
+import { NotAuthGuard } from './guards/not-auth.guard';
+
 import { HomeComponent } from './components/home/home.component';
 import { GroupComponent } from './components/groups/group.component';
 import { LoginComponent } from './components/login/login.component';
@@ -10,9 +13,9 @@ import { GetStartedComponent } from './components/get-started/get-started.compon
 const appRoutes = [
   { path: '', component: HomeComponent },
   { path: 'group/:id', component: GroupComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'logging-in', component: LoggingInComponent },
-  { path: 'get-started', component: GetStartedComponent },
+  { path: 'login', component: LoginComponent, canActivate: [NotAuthGuard] },
+  { path: 'logging-in', component: LoggingInComponent, canActivate: [NotAuthGuard] },
+  { path: 'get-started', component: GetStartedComponent, canActivate: [AuthGuard] },
   { path: '**', component: HomeComponent }
 ]
 
