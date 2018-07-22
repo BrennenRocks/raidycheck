@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 import { ServerResponse } from '../../interfaces/server-response';
 import { User } from '../../interfaces/user';
+import { GroupsService } from '../../services/groups.service';
 
 @Component({
   selector: 'app-navbar',
@@ -18,8 +19,11 @@ export class NavbarComponent implements OnInit {
   refreshUser: boolean = false;
   user: User;
 
+  query: string = '';
+
   constructor(
     private authService: AuthService,
+    private groupsService: GroupsService,
     private router: Router,
     private toastr: ToastrService
   ) { }
@@ -68,6 +72,14 @@ export class NavbarComponent implements OnInit {
     }
 
     this.router.navigate(['/group', this.user.groups.personal[0]._id]);
+  }
+
+  public clearSearchBar(): void {
+    this.query = '';
+  }
+
+  public onSearchClick(): void {
+    this.router.navigate(['/search'], { queryParams: { query: this.query } });
   }
 
   public onLogoutClick(): void {

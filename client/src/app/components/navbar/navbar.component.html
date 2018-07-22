@@ -1,7 +1,7 @@
 <header>
   <mdb-navbar SideClass="navbar navbar-expand-lg navbar-dark yellow darken-4 fixed-top scrolling-navbar">
     <logo>
-      <a class="navbar-brand" routerLink="/">RaidyCheck
+      <a class="navbar-brand" (click)="clearSearchBar()" routerLink="/">RaidyCheck
       </a>
     </logo>
     <links>
@@ -9,14 +9,14 @@
       <!-- Left Side -->
       <ul class="navbar-nav mr-auto">
         <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-          <a class="nav-link waves-light" routerLink="/" mdbWavesEffect>Home</a>
+          <a class="nav-link waves-light" (click)="clearSearchBar()" routerLink="/" mdbWavesEffect>Home</a>
         </li>
 
         <li *ngIf="isLoggedIn && isLoading" class="nav-item">
-            <a class="nav-link waves-light" routerLink="/" mdbWavesEffect>My Groups</a>
+            <a class="nav-link waves-light" (click)="clearSearchBar()" routerLink="/" mdbWavesEffect>My Groups</a>
           </li>
         <li *ngIf="isLoggedIn && !isLoading" class="nav-item" [routerLinkActive]="['active']">
-          <a class="nav-link waves-light" (click)="onMyGroupsClick()" mdbWavesEffect>My Groups</a>
+          <a class="nav-link waves-light" (click)="clearSearchBar()" (click)="onMyGroupsClick()" mdbWavesEffect>My Groups</a>
         </li>
 
         <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
@@ -31,14 +31,14 @@
         <li>
           <form class="form-inline waves-light waves-light ml-auto" mdbWavesEffect>
             <div class="md-form my-0">
-                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-                <button class="btn primary-color-dark btn-sm my-0 waves-light" type="submit" mdbWavesEffect>Search</button>
+                <input class="form-control" type="text" [(ngModel)]="query" name="query" placeholder="Search Groups" aria-label="Search">
+                <button class="btn primary-color-dark btn-sm my-0 waves-light" (click)="onSearchClick()" mdbWavesEffect>Search</button>
             </div>
           </form>
         </li>
 
         <li *ngIf="!isLoggedIn" class="nav-item">
-          <button class="btn btn-sm primary-color-dark waves-light" mdbWavesEffect routerLink="/login">Login With Bnet</button>
+          <button class="btn btn-sm primary-color-dark waves-light" (click)="clearSearchBar()" mdbWavesEffect routerLink="/login">Login With Bnet</button>
         </li>
 
         <li *ngIf="isLoggedIn && isLoading" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"
@@ -56,7 +56,7 @@
             <span class="caret"></span>
           </a>
           <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-            <a class="dropdown-item waves-light" (click)="onLogoutClick()" mdbWavesEffect>Logout</a>
+            <a class="dropdown-item waves-light" (click)="onLogoutClick()" (click)="clearSearchBar()" mdbWavesEffect>Logout</a>
           </div>
         </li>
       </ul>

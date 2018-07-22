@@ -41,7 +41,11 @@ export class GroupsService {
   }
 
   public favoriteGroup(groupId: string): Observable<ServerResponse> {
-    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader });
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader() });
+  }
+
+  public searchGroups(query: string): Observable<ServerResponse> {
+    return this.http.post<ServerResponse>(DOMAIN + '/api/groups/search', { query });
   }
 
   public addCharactersToGroup(groupId: string, region: string, characters: Array<Character>, gettingStarted: boolean): Observable<ServerResponse> {
@@ -49,12 +53,12 @@ export class GroupsService {
   }
 
   public updateCharacter(groupId: string, charId: string): Observable<ServerResponse> {
-    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/update/' + charId, { headers: this.getAuthHeader });
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/update/' + charId, { headers: this.getAuthHeader() });
 
   }
 
   public removeCharacterFromGroup(groupId: string, charId: string): Observable<ServerResponse> {
-    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/remove/' + charId, { headers: this.getAuthHeader });
+    return this.http.put<ServerResponse>(DOMAIN + '/api/groups/' + groupId + '/characters/remove/' + charId, { headers: this.getAuthHeader() });
   }
   
 }

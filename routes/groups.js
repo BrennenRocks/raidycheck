@@ -1,6 +1,6 @@
 const express = require('express'),
   mongoose = require('mongoose'),
-  ObjectId = require('mongoose').Types.ObjectId,
+  fuzzy = require('fuzzy'),
   _ = require('lodash');
   
 router = express.Router();
@@ -306,6 +306,34 @@ router.put('/groups/favorite/:groupId', middleware.getAuthToken, (req, res) => {
         });
       });
     });
+  });
+});
+
+/*=======================================
+   Fuzzy Search for Groups by title
+
+   req.body {
+     *query: string
+   }
+=========================================*/
+router.post('/groups/search', (req, res) => {
+  Group.find({}, 'title owner', (err, groups) => {
+    if (err) {
+      console.log('/groups/search finding groups', err);
+      return res.json({ success: false, message: constants.errMsg });
+    }
+
+    const options = {
+      pre: '<',
+      post: '>',
+      extract: function(el) { return el.title; }
+    };
+
+    const results = fuzzy.filter(req.body.query, groups, options);
+    const matches = results.map(function(el) { return el.original; });
+
+    return res.json({ success: true, message: '', groups: matches });
+
   });
 });
 
