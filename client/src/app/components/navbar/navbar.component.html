@@ -15,8 +15,8 @@
         <li *ngIf="isLoggedIn && isLoading" class="nav-item">
             <a class="nav-link waves-light" routerLink="/" mdbWavesEffect>My Groups</a>
           </li>
-        <li *ngIf="isLoggedIn && !isLoading && user.groups.personal[0]" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-          <a class="nav-link waves-light" [routerLink]="['/group', user.groups.personal[0]._id]" mdbWavesEffect>My Groups</a>
+        <li *ngIf="isLoggedIn && !isLoading" class="nav-item" [routerLinkActive]="['active']">
+          <a class="nav-link waves-light" (click)="onMyGroupsClick()" mdbWavesEffect>My Groups</a>
         </li>
 
         <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">

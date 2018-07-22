@@ -61,6 +61,15 @@ export class NavbarComponent implements OnInit {
     }, 1000);
   }
 
+  public onMyGroupsClick(): void {
+    if (!this.user.groups.personal[0]) {
+      this.router.navigate(['/get-started']);
+      return;
+    }
+
+    this.router.navigate(['/group', this.user.groups.personal[0]._id]);
+  }
+
   public onLogoutClick(): void {
     this.authService.logout();
     this.router.navigate(['/']);

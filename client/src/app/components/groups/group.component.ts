@@ -355,7 +355,7 @@ export class GroupComponent implements OnInit {
       }
 
       chars.push({
-        name: char.value['name'],
+        name: char.value['name'].toLowerCase(),
         realm: char.value['realm'].realm
       });
     });
@@ -378,7 +378,7 @@ export class GroupComponent implements OnInit {
         this.enableAddCharacterForm();
       } else {
         if (data.message) {
-          this.toastr.warning(data.message, 'Characters Not Found');
+          this.toastr.warning(data.message, 'More Information');
         }
 
         this.currentGroup = data.group;

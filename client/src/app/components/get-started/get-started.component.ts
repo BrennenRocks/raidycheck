@@ -56,6 +56,7 @@ export class GetStartedComponent implements OnInit {
       isPublic: false,
       allowOthersToUpdateCharacters: false
     };
+
     let chars = [];
     let i = 0;
     this.user.bnet.personalCharacters.map(char => {
@@ -81,6 +82,7 @@ export class GetStartedComponent implements OnInit {
                 this.toastr.error(data.message, 'Error');
                 this.isProcessing = false;
               } else {
+                this.authService.updateUserStart();
                 this.isProcessing = false;
                 this.router.navigate(['/group', data.group._id]);
               }

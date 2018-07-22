@@ -52,7 +52,7 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
 
   const chars = [];
   req.body.characters.map(character => {
-    chars.push({ name: character.name, realm: character.realm, region: req.body.region });
+    chars.push({ name: character.name.charAt(0).toUpperCase() + character.name.slice(1), realm: character.realm.charAt(0).toUpperCase() + character.realm.slice(1), region: req.body.region });
   });
 
   Group.findOne({ _id: req.params.groupId }).populate('characters').exec((err, group) => {
@@ -117,6 +117,8 @@ router.post('/groups/:groupId/characters/add', middleware.getAuthToken, middlewa
             });
           });
         }
+      } else if (charsNotInDb.length == 0) {
+        return res.json({ success: true, message: 'All characters are already in your group', group: group });
       }
 
       if (!allCharsFound) {

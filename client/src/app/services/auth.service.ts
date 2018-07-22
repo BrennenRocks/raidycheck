@@ -50,9 +50,11 @@ export class AuthService {
   }
 
   public updateUser(image: string): Observable<ServerResponse> {
-    let response = this.http.put<ServerResponse>(DOMAIN + '/api/users/update', { image }, { headers: this.getAuthHeader() });
+    return this.http.put<ServerResponse>(DOMAIN + '/api/users/update', { image }, { headers: this.getAuthHeader() });
+  }
+
+  public updateUserStart(): void {
     this.refreshUser.next(true);
-    return response;
   }
 
   public updateUserFinish(): void {
