@@ -10,7 +10,6 @@ import { LoginComponent } from './components/login/login.component';
 import { LoggingInComponent } from './components/logging-in/logging-in.component';
 import { GetStartedComponent } from './components/get-started/get-started.component';
 import { SearchComponent } from './components/search/search.component';
-import { SearchResolver } from './services/search-resolver.service';
 
 const appRoutes = [
   { path: '', component: HomeComponent },
@@ -18,7 +17,7 @@ const appRoutes = [
   { path: 'login', component: LoginComponent, canActivate: [NotAuthGuard] },
   { path: 'logging-in', component: LoggingInComponent, canActivate: [NotAuthGuard] },
   { path: 'get-started', component: GetStartedComponent, canActivate: [AuthGuard] },
-  { path: 'search', component: SearchComponent, resolve: { search: SearchResolver } },
+  { path: 'search', component: SearchComponent },
   { path: '**', component: HomeComponent }
 ]
 

@@ -1,3 +1,15 @@
+<div *ngIf="!isLoading && !currentGroup.isPublic && user?.bnet.battletag !== currentGroup.owner">
+  <div class="container pt-5">
+    <div class="flex-center">
+      <div class="text-center text-white">
+        <h2 class="h2-responsive">Raidy Check - Private Group</h2>
+        <h5 class="h5-responsive">This is a private group, unfortunately you aren't able to view it.</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="(!isLoading && currentGroup.isPublic) || (!isLoading && user?.bnet.battletag === currentGroup.owner)">
 <!-- Sidemenu -->
 <div *ngIf="authService.loggedIn()" class="sidebar position-fixed" [ngClass]="isSidebarClosed ? 'sidebar-hide' : ''">
 
@@ -430,7 +442,7 @@
                               </div>
                             </div>
                           </ng-template>
-                          <div *ngIf="selectedRaid && selectedDifficulty && char" [mdbTooltip]="popBossKillCount" placement="top">
+                          <div *ngIf="selectedRaid && selectedDifficulty && char" [mdbTooltip]="popBossKillCount" placement="left">
                             <div class="progress">
                               <div class="progress-bar" [ngClass]="((char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100) > 50 ? 'light-green darken-2' : 'red accent-4'"
                                 role="progressbar" [style.width.%]="(char.raids[selectedRaid.id][selectedDifficulty + 'Progress'] / numberOfBosses) * 100"
@@ -479,3 +491,4 @@
     </section>
   </div>
 </main>
+</div>

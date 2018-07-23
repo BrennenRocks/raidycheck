@@ -317,7 +317,7 @@ router.put('/groups/favorite/:groupId', middleware.getAuthToken, (req, res) => {
    }
 =========================================*/
 router.post('/groups/search', (req, res) => {
-  Group.find({}, 'title owner', (err, groups) => {
+  Group.find({ isPublic: true }, 'title owner', (err, groups) => {
     if (err) {
       console.log('/groups/search finding groups', err);
       return res.json({ success: false, message: constants.errMsg });

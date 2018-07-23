@@ -1,3 +1,34 @@
-<p>
-  search works!
-</p>
+<div class="container pt-5">
+  <h2 class="text-center text-white">Search Results</h2>
+
+  <!-- Loader Spinner -->
+  <div class="flex-center">
+    <div *ngIf="isLoading" class="text-center loader">
+    </div>
+  </div>
+  <!-- Loader Spinner -->
+
+  <div *ngIf="!isLoading">
+    <!-- Card -->
+    <div class="card">
+
+      <!--Card content-->
+      <div class="card-body">
+          <!--Title-->
+          <!--Text-->
+          <div class="row">
+            <h4 class="col-xl-6">Group Name</h4>
+            <h4 class="col-xl-6">Group Owner</h4>
+          </div>
+
+          <div *ngFor="let group of groups; let i=index" [routerLink]="['/group', group._id]" class="row bd-row my-1">
+            <div class="col-xl-6">{{i + 1}}. {{group.title}}</div>
+            <div class="col-xl-6">{{group.owner | titlecase}}</div>
+          </div>
+      </div>
+      <!--Card content-->
+    </div>
+    <!-- Card -->
+
+  </div>
+</div>

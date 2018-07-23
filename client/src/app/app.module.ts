@@ -21,12 +21,6 @@ import { GetStartedComponent } from './components/get-started/get-started.compon
 import { SeparateArrayPipe } from './pipes/separate-array.pipe';
 import { SearchComponent } from './components/search/search.component';
 
-import { AuthGuard } from './guards/auth.guard';
-import { NotAuthGuard } from './guards/not-auth.guard';
-import { AuthService } from './services/auth.service';
-import { GroupsService } from './services/groups.service';
-import { SearchResolver } from './services/search-resolver.service';
-
 export function jwtTokenGetter() {
   return localStorage.getItem('rc_token');
 }
@@ -67,7 +61,7 @@ export function jwtTokenGetter() {
       easing: 'ease-in'
     })
   ],
-  providers: [AuthGuard, NotAuthGuard, AuthService, GroupsService, SearchResolver],
+  providers: [],
   bootstrap: [AppComponent],
   schemas: [ NO_ERRORS_SCHEMA ]
 })
