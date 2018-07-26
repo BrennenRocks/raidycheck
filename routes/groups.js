@@ -1,6 +1,8 @@
 const express = require('express'),
   mongoose = require('mongoose'),
   fuzzy = require('fuzzy'),
+  fs = require('fs'),
+  json2csv = require('json2csv').parse,
   _ = require('lodash');
   
 router = express.Router();
@@ -334,6 +336,64 @@ router.post('/groups/search', (req, res) => {
 
     return res.json({ success: true, message: '', groups: matches });
 
+  });
+});
+
+/*=======================================
+   Download characters in the group to csv
+
+   req.params {
+     groupId - the Group ID
+   }
+=========================================*/
+router.get('/groups/download/:groupId', (req, res) => {
+  Group.findById(req.params.groupId).populate('characters').exec((err, group) => {
+    if (err) {
+      console.log('/groups/download/:groupId', err);
+      return res.json({ success: false, message: constants.errMsg });
+    }
+
+    if (!group) {
+      return res.json({ success: false, message: constants.groupNotFound });
+    }
+    
+    const data = [];
+    group.characters.map(char => {
+      data.push({
+        name: char.cid.name,
+        realm: char.cid.realm,
+        head: char.items.head.itemLevel,
+        neck: char.items.neck.itemLevel,
+        shoulder: char.items.shoulder.itemLevel,
+        back: char.items.back.itemLevel,
+        chest: char.items.chest.itemLevel,
+        wrist: char.items.wrist.itemLevel,
+        hands: char.items.hands.itemLevel,
+        waist: char.items.waist.itemLevel,
+        legs: char.items.legs.itemLevel,
+        feet: char.items.feet.itemLevel,
+        finger1: char.items.finger1.itemLevel,
+        finger2: char.items.finger2.itemLevel,
+        trinket1: char.items.trinket1.itemLevel,
+        trinket2: char.items.trinket2.itemLevel,
+        mainHand: char.items.mainHand.itemLevel,
+        offHand: char.items.offHand.itemLevel,
+      });
+    });
+
+    const fields = ['name', 'realm', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainHand', 'offHand'];
+    const csv = json2csv(data, { fields: fields });
+
+    const path = './files/' + group.title + '.csv';
+    fs.writeFile(path, csv, (err, data) => {
+      if (err) {
+        console.log('/group/download/:groupId saving csv', err);
+        return res.json({ success: false, message: constants.errMsg });
+      }
+
+      res.download(path);
+      // fs.unlink(path, (err) => {});
+    });
   });
 });
 

@@ -5,7 +5,6 @@ import { DOMAIN } from '../constants/constants';
 import { Observable } from 'rxjs';
 import { ServerResponse } from '../interfaces/server-response';
 import { Character } from '../interfaces/character';
-import { Group } from '../interfaces/group';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +41,10 @@ export class GroupsService {
 
   public favoriteGroup(groupId: string): Observable<ServerResponse> {
     return this.http.put<ServerResponse>(DOMAIN + '/api/groups/favorite/' + groupId, { headers: this.getAuthHeader() });
+  }
+
+  public downloadGroup(groupId: string) {
+    return this.http.get(DOMAIN + '/api/groups/download/' + groupId, { responseType: 'blob' });
   }
 
   public searchGroups(query: string): Observable<ServerResponse> {

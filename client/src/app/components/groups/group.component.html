@@ -306,8 +306,8 @@
           (click)="onModalEditGroupOpen()" mdbWavesEffect>
           <i class="fa fa-edit mr-1"></i>Edit Group Settings
         </button>
-        <div class="float-right btn-excel">
-          <button type="button" class="btn btn-sm success-color-dark waves-light" mdbWavesEffect disabled>
+        <div class="float-right">
+          <button type="button" (click)="onDownloadGroup()" class="btn btn-sm success-color-dark waves-light" mdbWavesEffect>
             <i class="fa fa-file-excel-o mr-1"></i>Export to CSV
           </button>
         </div>

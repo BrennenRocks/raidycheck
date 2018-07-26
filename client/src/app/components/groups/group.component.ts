@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
+import { saveAs } from 'file-saver/FileSaver';
 
 import { AuthService } from '../../services/auth.service';
 import { GroupsService } from '../../services/groups.service';
@@ -151,6 +152,13 @@ export class GroupComponent implements OnInit {
         }
       });
     }
+  }
+
+  public onDownloadGroup(): void {
+    this.groupsService.downloadGroup(this.currentGroup._id).subscribe((data: any) => {
+      let blob = new Blob([data], { type: 'text/csv' });
+      saveAs(blob, this.currentGroup.title.replace(/\s/g, '_') + '.csv');
+    });
   }
 
   public onUpdateCharacter(charId: string): void {

@@ -22,7 +22,6 @@ export class SearchComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      console.log(params);
       this.groupsService.searchGroups(params.query).subscribe((data: any) => {
         if (!data.success) {
           this.toastr.error(data.message, 'Error');
