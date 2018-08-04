@@ -17,13 +17,13 @@
           <!--Title-->
           <!--Text-->
           <div class="row">
-            <h4 class="col-xl-6">Group Name</h4>
-            <h4 class="col-xl-6">Group Owner</h4>
+            <h4 class="col-6">Group Name</h4>
+            <h4 class="col-6">Group Owner</h4>
           </div>
 
           <div *ngFor="let group of groups; let i=index" [routerLink]="['/group', group._id]" class="row bd-row my-1">
-            <div class="col-xl-6">{{i + 1}}. {{group.title}}</div>
-            <div class="col-xl-6">{{group.owner | titlecase}}</div>
+            <div class="col-6">{{i + 1}}. {{group.title}}</div>
+            <div class="col-6">{{group.owner | titlecase}}</div>
           </div>
       </div>
       <!--Card content-->

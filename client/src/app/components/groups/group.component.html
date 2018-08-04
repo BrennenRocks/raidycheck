@@ -144,7 +144,7 @@
           <div class="md-form form-sm">
             <i class="fa fa-group prefix"></i>
             <input mdbInputDirective [mdbValidate]="false" [ngClass]="editGroupForm.controls.name.errors ? 'counter-danger' : 'counter-success'"
-              type="text" id="name" data-error="Must be between 3 and 20 characters" data-success="Valid" formControlName="name"
+              type="text" id="name" data-error="Must be between 3 and 20 characters" data-success="Valid" formControlName="name" placeholder="{{currentGroup.title}}"
               autofocus class="form-control">
             <label for="name">Name <span style="font-size: 10px">(Currently: {{currentGroup.title}})</span></label>
             <span [ngClass]="editGroupForm.controls.name.errors ? 'text-danger' : 'text-success'" class="inputVal">
@@ -282,33 +282,31 @@
   <div class="group-container">
 
     <div class="row">
-      <div class="col-12">
-        <div class="float-left">
-          <button *ngIf="authService.loggedIn()" (click)="onSidebarOpenClose()" type="button" class="btn btn-sm btn-default waves-light"
-            mdbWavesEffect>
-            <i class="fa fa-bars mr-1"></i>{{isSidebarClosed ? 'Show Groups' : 'Hide Groups'}}
-          </button>
-          <button *ngIf="!isLoading && authService.loggedIn()" (click)="onModalNewGroupOpen()" type="button" class="btn btn-sm btn-success waves-light"
-            mdbWavesEffect>
-            <i class="fa fa-group mr-1"></i>Create New Group
-          </button>
-          <button *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" (click)="onModalAddCharsOpen()"
-            type="button" class="btn btn-sm btn-deep-orange waves-light" mdbWavesEffect>
-            <i class="fa fa-user-plus mr-1"></i>Add Characters To Group
-          </button>
-        </div>
-        <div *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" [ngClass]="user.groups.personal.length == 1 ? 'btn-excel' : ''" class="float-right">
+      <div class="col-md-6">
+        <button *ngIf="authService.loggedIn()" (click)="onSidebarOpenClose()" type="button" class="btn btn-sm btn-default waves-light"
+          mdbWavesEffect>
+          <i class="fa fa-bars mr-1"></i>{{isSidebarClosed ? 'Show Groups' : 'Hide Groups'}}
+        </button>
+        <button *ngIf="!isLoading && authService.loggedIn()" (click)="onModalNewGroupOpen()" type="button" class="btn btn-sm btn-success waves-light"
+          mdbWavesEffect>
+          <i class="fa fa-group mr-1"></i>Create New Group
+        </button>
+        <button *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" (click)="onModalAddCharsOpen()"
+          type="button" class="btn btn-sm btn-deep-orange waves-light" mdbWavesEffect>
+          <i class="fa fa-user-plus mr-1"></i>Add Characters
+        </button>
+      </div>
+      <div class="col-md-6">
+        <button type="button" (click)="onDownloadGroup()" class="btn btn-sm success-color-dark waves-light" mdbWavesEffect>
+          <i class="fa fa-file-excel-o mr-1"></i>Export to CSV
+        </button>
+        <button *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" [ngClass]="isProcessing ? 'disabled' : ''" class="btn btn-sm default-color waves-light" 
+        (click)="onModalEditGroupOpen()" mdbWavesEffect>
+        <i class="fa fa-edit mr-1"></i>Edit Group Settings
+        </button>
+        <div *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" [ngClass]="user.groups.personal.length == 1 ? 'btn-excel' : ''" class="d-inline-block">
           <button (click)="onDeleteGroup()" type="button" [ngClass]="isProcessing || user.groups.personal.length == 1 ? 'disabled' : ''" class="btn btn-sm danger-color-dark waves-light" mdbWavesEffect>
             <i class="fa fa-trash-o mr-1"></i>Delete Group
-          </button>
-        </div>
-        <button *ngIf="!isLoading && authService.loggedIn() && user?.bnet.battletag === currentGroup.owner" [ngClass]="isProcessing ? 'disabled' : ''" class="btn btn-sm default-color float-right waves-light" 
-          (click)="onModalEditGroupOpen()" mdbWavesEffect>
-          <i class="fa fa-edit mr-1"></i>Edit Group Settings
-        </button>
-        <div class="float-right">
-          <button type="button" (click)="onDownloadGroup()" class="btn btn-sm success-color-dark waves-light" mdbWavesEffect>
-            <i class="fa fa-file-excel-o mr-1"></i>Export to CSV
           </button>
         </div>
       </div>
@@ -362,7 +360,7 @@
             <div class="card-body">
               <!-- Group avgIlvl row -->
               <div class="row">
-                <div class="col-xl-7 col-md-6">
+                <div class="col-lg-7 col-sm-6">
                   <div class="float-left">
                     Group average iLvl
                     <strong [style.color]="averageGroupIlvl >= iLvlRequirement ? '#689f38' : '#d50000'" style="font-size: 20px">{{averageGroupIlvl | number}}</strong>
@@ -375,12 +373,12 @@
                 </div>
 
                 <!-- Spacing Column -->
-                <div class="col-xl-2">
+                <div class="col-sm-2">
                 </div>
                 <!-- Spacing Column -->
 
                 <!-- Raid Dropdowns -->
-                <div class="col-xl-3 col-md-4 mb-2" style="display: inline">
+                <div class="col-lg-3 col-sm-4 mb-2" style="display: inline">
                   <ng-select class="custom" 
                     [items]="raids" 
                     bindLabel="name" 
@@ -411,7 +409,7 @@
                     </h5>
                     <div class="slots-container">
                       <div class="row">
-                        <div [ngClass]="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner ? 'col-md-6' : 'col-md-8'" class="col-xl-9">
+                        <div [ngClass]="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner ? 'col-sm-6' : 'col-sm-8'" class="col-lg-9">
                           <ul class="gear">
                             <li *ngFor="let slot of slots" class="gear {{slot}}" [ngClass]="!char.items[slot]?.icon ? 'empty' : '' ">
                               <div class="slot q{{char.items[slot]?.quality}}">
@@ -427,7 +425,7 @@
                         </div>
 
                         <!-- Progression -->
-                        <div [ngClass]="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner ? 'col-xl-2 col-md-3' : 'col-xl-3 col-md-4'">
+                        <div [ngClass]="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner ? 'col-lg-2 col-sm-3' : 'col-lg-3 col-sm-4'">
                           <ng-template #popBossKillCount>
                             <div class="p-2">
                               <div class="text-left">
@@ -456,7 +454,7 @@
                         <!-- Progression -->
 
                         <!-- Update and Remove buttons -->
-                          <div *ngIf="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner" class="col-xl-1">
+                          <div *ngIf="currentGroup.allowOthersToUpdateCharacters || user?.bnet.battletag == currentGroup.owner" class="col-sm-1">
                             <button [ngClass]="isProcessing ? 'disabled' : ''" class="btn btn-secondary btn-sm mt-0 waves-light"
                               mdbTooltip="Update Character" placement="top" (click)="onUpdateCharacter(char._id)" type="button"
                               mdbWavesEffect>
