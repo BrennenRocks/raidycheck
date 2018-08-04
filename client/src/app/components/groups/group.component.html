@@ -333,7 +333,7 @@
             <!--Card Data-->
             <div class="admin-up">
               <div class="float-left">
-                <img src="http://localhost:8080/{{currentGroup.image}}" alt="User image" class="img-fluid rounded" style="width: 200px">
+                <img src="{{currentGroup.image}}" alt="User image" class="img-fluid rounded" style="width: 200px">
               </div>
               <div class="row text-left">
                 <div class="col-md-4">
@@ -415,7 +415,7 @@
                               <div class="slot q{{char.items[slot]?.quality}}">
                                 <a *ngIf="char.items[slot]?.icon" href="//www.wowhead.com/item={{char.items[slot].id}}/lvl={{char.level}}&amp;ench={{char.items[slot].tooltipParams.enchant}}&amp;gems={{char.items[slot].tooltipParams.gem0}}:{{char.items[slot].tooltipParams.gem1}}:{{char.items[slot].tooltipParams.gem2}}&amp;ilvl={{char.items[slot].itemLevel}}&amp;pcs={{char.items[slot].tooltipParams.set | separateArray:':'}}&amp;bonus={{char.items[slot].bonusLists | separateArray:':'}}"
                                   target="_blank">
-                                  <img src="http://localhost:8080/{{char.items[slot]?.icon}}">
+                                  <img src="{{char.items[slot]?.icon}}">
                                 </a>
                               </div>
                               <span *ngIf="char.items[slot]?.itemLevel != null" [style.color]="char.items[slot].itemLevel >= iLvlRequirement ? '#689f38' : '#d50000'"

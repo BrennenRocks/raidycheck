@@ -27,7 +27,7 @@ router.get('/auth/bnet/callback', (req, res, next) => {
       return next(constants.errMsg);
     }
 
-    console.log(user.jwt);
+    // console.log(user.jwt);
     const body = {
       'new': user.isNewUser,
       'rc_token': user.jwt

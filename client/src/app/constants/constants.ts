@@ -1,4 +1,4 @@
-export const DOMAIN: string = 'http://localhost:8080'; //'http://localhost:8080' for dev. '' for production.
+export const DOMAIN: string = ''; //'http://localhost:8080' for dev. '' for production.
 export const REALMS: Array<{ id: number, realm: string }> = [
   { id: 0, realm: "Aegwynn" }, { id: 1, realm: "Aerie Peak" }, { id: 2, realm: "Agamaggan" }, { id: 3, realm: "Aggramar" }, { id: 4, realm: "Akama" }, { id: 5, realm: "Alexstrasza" }, { id: 6, realm: "Alleria" }, { id: 7, realm: "Altar of Storms" }, { id: 8, realm: "Alterac Mountains" },
   { id: 9, realm: "Aman'Thul" }, { id: 10, realm: "Andorhal" }, { id: 11, realm: "Anetheron" }, { id: 12, realm: "Antonidas" }, { id: 13, realm: "Anub'arak" }, { id: 14, realm: "Anvilmar" }, { id: 15, realm: "Arathor" }, { id: 16, realm: "Archimonde" }, { id: 17, realm: "Area 52" }, { id: 18, realm: "Argent Dawn" }, { id: 19, realm: "Arthas" },

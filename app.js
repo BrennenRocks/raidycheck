@@ -13,8 +13,6 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.uri, (err) => {
   if (err) {
     console.log('Could NOT connect to database: ', err);
-  } else {
-    console.log('Connected to database: ', config.db);
   }
 });
 
@@ -48,12 +46,12 @@ app.use('/api', users);
 app.use('/api', characters);
 
 //Entrance to the website
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname + '/public/index.html'))
-// });
 app.get('*', (req, res) => {
-  res.send('Catch all route');
-})
+    res.sendFile(path.join(__dirname + '/public/index.html'))
+});
+// app.get('*', (req, res) => {
+//   res.send('Catch all route');
+// })
 
 app.listen(8080, () => {
   console.log('Server started on port 8080');

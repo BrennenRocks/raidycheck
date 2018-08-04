@@ -19,8 +19,16 @@
           <a class="nav-link waves-light" (click)="clearSearchBar()" (click)="onMyGroupsClick()" mdbWavesEffect>My Groups</a>
         </li>
 
-        <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}">
-          <a class="nav-link waves-light" href="https://www.patreon.com/brennenrocks" target="_blank" mdbWavesEffect>Donate</a>
+        <li class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" dropdown>
+          <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+            Donate
+            <span class="caret"></span>
+          </a>
+          <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
+            <a class="dropdown-item waves-light" href="https://www.patreon.com/brennenrocks" target="_blank" mdbWavesEffect>Patreon</a>
+            <a class="dropdown-item waves-light" href="https://paypal.me/brennenrocks" target="_blank" mdbWavesEffect>PayPal</a>
+            <a class="dropdown-item">Venmo: @BrennenRocks</a>
+          </div>
         </li>
       </ul>
       <!-- Left Side -->
@@ -52,7 +60,7 @@
         <li *ngIf="isLoggedIn && !isLoading" class="nav-item dropdown btn-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"
           dropdown>
           <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-            <img src="http://localhost:8080/{{user.avatar}}" class="rounded-circle img-fluid" style="width: 28px;"> {{ user.bnet.battletag | titlecase }}
+            <img src="{{user.avatar}}" class="rounded-circle img-fluid" style="width: 28px;"> {{ user.bnet.battletag | titlecase }}
             <span class="caret"></span>
           </a>
           <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
